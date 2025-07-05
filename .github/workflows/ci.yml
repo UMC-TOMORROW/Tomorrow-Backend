@@ -1,11 +1,13 @@
+# .github/workflows/ci.yml
+
 name: PR CI Test
 
 on:
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "dev" ]
 
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "dev" ]
 
 jobs:
   build-and-test:
@@ -35,19 +37,7 @@ jobs:
       - name: Start MySQL with Docker Compose
         run: |
           docker-compose -f ./docker/docker-compose.yml up -d
-          echo "Waiting for MySQL to be ready..."
-          for i in {1..15}; do
-            STATUS=$(docker inspect --format='{{.State.Health.Status}}' mysql8-local || echo "not found")
-            if [ "$STATUS" == "healthy" ]; then
-              echo "✅ MySQL is healthy."
-              exit 0
-            fi
-            echo "⏳ Waiting for MySQL health... ($i)"
-            sleep 5
-          done
-          echo "❌ MySQL did not become healthy in time."
-          docker-compose -f ./docker/docker-compose.yml logs
-          exit 1
+          docker ps
 
       - name: Run Gradle Build
         run: |
