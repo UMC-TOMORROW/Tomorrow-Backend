@@ -2,7 +2,10 @@ name: PR CI Test
 
 on:
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "develop" ]
+
+  push:
+    branches: [ "main", "develop" ]
 
 jobs:
   build-and-test:
@@ -34,10 +37,23 @@ jobs:
           docker-compose -f ./docker/docker-compose.yml up -d
           echo "Waiting for MySQL to be ready..."
           for i in {1..15}; do
-            docker exec mysql8-local mysqladmin ping -h "localhost" --silent && echo "✅ MySQL is ready." && exit 0
-            echo "⏳ Waiting for MySQL... ($i)"
-            sleep 2
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' mysql8-local || echo "not found")
+            if [ "$STATUS" == "healthy" ]; then
+              echo "✅ MySQL is healthy."
+              exit 0
+            fi
+            echo "⏳ Waiting for MySQL health... ($i)"
+            sleep 5
           done
-          echo "❌ MySQL did not become ready in time."
+          echo "❌ MySQL did not become healthy in time."
           docker-compose -f ./docker/docker-compose.yml logs
           exit 1
+
+      - name: Run Gradle Build
+        run: |
+          ./gradlew clean build
+
+      - name: Stop Docker Compose
+        if: always()
+        run: |
+          docker-compose -f ./docker/docker-compose.yml down
