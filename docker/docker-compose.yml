@@ -15,7 +15,6 @@ services:
       TZ: 'Asia/Seoul'
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
   mysql-data:
