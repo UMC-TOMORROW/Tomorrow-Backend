@@ -18,6 +18,12 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Create .env file for Docker Compose
+        run: |
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+
       - name: Start MySQL with Docker Compose
         run: |
           docker compose -f ./docker/docker-compose.yml up -d
@@ -33,7 +39,7 @@ jobs:
           docker compose logs
           exit 1
 
-      - name: Create .env.properties from secrets
+      - name: Create .env.properties for Spring
         run: |
           cat <<EOF > ./src/main/resources/.env.properties
           spring.datasource.url=jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}
