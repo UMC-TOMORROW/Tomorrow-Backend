@@ -2,7 +2,7 @@ name: PR CI Test
 
 on:
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: [ "develop" ]
 
 jobs:
   build-and-test:
@@ -20,15 +20,17 @@ jobs:
 
       - name: Start MySQL with Docker Compose
         run: |
-          docker-compose -f ./docker/docker-compose.yml up -d
+          docker compose -f ./docker/docker-compose.yml up -d
+
           echo "Waiting for MySQL to be ready..."
           for i in {1..15}; do
-            docker exec mysql8-local mysqladmin ping -h "localhost" --silent && echo "✅ MySQL is ready." && exit 0
+            docker compose exec mysql8-local mysqladmin ping -h "localhost" --silent && echo "✅ MySQL is ready." && exit 0
             echo "⏳ Waiting for MySQL... ($i)"
             sleep 2
           done
+
           echo "❌ MySQL did not become ready in time."
-          docker-compose -f ./docker/docker-compose.yml logs
+          docker compose logs
           exit 1
 
       - name: Create .env.properties from secrets
