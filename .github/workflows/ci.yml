@@ -18,26 +18,19 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Install docker-compose
-        run: |
-          echo "🔧 Installing docker-compose..."
-          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
-
       - name: Start MySQL with Docker Compose
         run: |
-          docker-compose -f ./docker/docker-compose.yml up -d
+          docker compose -f ./docker/docker-compose.yml up -d
 
           echo "Waiting for MySQL to be ready..."
           for i in {1..15}; do
-            docker-compose exec mysql8-local mysqladmin ping -h "localhost" --silent && echo "✅ MySQL is ready." && exit 0
+            docker compose exec mysql8-local mysqladmin ping -h "localhost" --silent && echo "✅ MySQL is ready." && exit 0
             echo "⏳ Waiting for MySQL... ($i)"
             sleep 2
           done
 
           echo "❌ MySQL did not become ready in time."
-          docker-compose logs
+          docker compose logs
           exit 1
 
       - name: Create .env.properties from secrets
