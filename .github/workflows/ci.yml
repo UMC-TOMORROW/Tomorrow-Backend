@@ -4,10 +4,10 @@ name: PR CI Test
 
 on:
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "develop" ]
 
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "develop" ]
 
 jobs:
   build-and-test:
