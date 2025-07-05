@@ -23,11 +23,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose-plugin
 
+      - name: Create .env for Docker Compose
+        run: |
+          echo "DB_NAME=${{ secrets.DB_NAME }}" > ./docker/.env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> ./docker/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./docker/.env
+
       - name: Start MySQL with Docker Compose
-        env:
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
           docker compose -f ./docker/docker-compose.yml up -d
 
