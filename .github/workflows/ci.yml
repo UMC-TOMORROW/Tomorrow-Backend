@@ -1,25 +1,37 @@
-# .github/workflows/ci.yml
-
-name: PR CI Test
+name: CI - Build and Test
 
 on:
-  pull_request:
-    branches: [ "main", "develop" ]
-
   push:
-    branches: [ "main", "develop" ]
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root1234
+          MYSQL_DATABASE: tomorrow_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     env:
-      DB_USER: root
+      DB_USERNAME: root
       DB_PASSWORD: root1234
-      DB_NAME: tomorrow_db
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Set up JDK 17
@@ -28,22 +40,18 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Install Docker Compose
+      - name: Wait for MySQL
         run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.1/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
+          echo "Waiting for MySQL to be ready..."
+          for i in {1..15}; do
+            if mysqladmin ping -h 127.0.0.1 -uroot -proot1234 --silent; then
+              echo "✅ MySQL is ready."
+              break
+            fi
+            echo "Waiting for MySQL ($i)..."
+            sleep 5
+          done
 
-      - name: Start MySQL with Docker Compose
-        run: |
-          docker-compose -f ./docker/docker-compose.yml up -d
-          docker ps
-
-      - name: Run Gradle Build
+      - name: Build and Test
         run: |
           ./gradlew clean build
-
-      - name: Stop Docker Compose
-        if: always()
-        run: |
-          docker-compose -f ./docker/docker-compose.yml down
