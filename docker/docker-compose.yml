@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mysql8-local:
     image: mysql:8.0
@@ -8,11 +6,18 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root1234
       MYSQL_DATABASE: tomorrow_db
+      MYSQL_USER: tomorrow_user
+      MYSQL_PASSWORD: tomorrow_user_password
+      TZ: Asia/Seoul
     ports:
       - "3306:3306"
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - tomorrow-local-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "--silent"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+volumes:
+  tomorrow-local-data:
