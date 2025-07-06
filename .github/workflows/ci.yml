@@ -27,6 +27,7 @@ jobs:
           --health-retries=3
 
     env:
+      SPRING_PROFILES_ACTIVE: local 
       DB_USERNAME: root
       DB_PASSWORD: root1234
 
@@ -53,5 +54,4 @@ jobs:
           done
 
       - name: Build and Test
-        run: |
-          ./gradlew clean build
+        run: ./gradlew clean build
