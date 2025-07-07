@@ -27,6 +27,11 @@ spring:
           lob:
             non_contextual_creation: true
 
+
+# JWT 시크릿 키 설정 추가
+jwt:
+  secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalaaaaaaaaaaaaaaaabbbbb
+
 # 전반
 com.umc.tomorrow: DEBUG
 
