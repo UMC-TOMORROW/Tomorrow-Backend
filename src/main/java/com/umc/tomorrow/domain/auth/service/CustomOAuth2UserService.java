@@ -1,6 +1,8 @@
 package com.umc.tomorrow.global.service;
 
-import com.umc.tomorrow.global.dto.*;
+import com.umc.tomorrow.domain.auth.dto.*;
+import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
+import com.umc.tomorrow.domain.member.dto.UserDTO;
 import com.umc.tomorrow.global.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

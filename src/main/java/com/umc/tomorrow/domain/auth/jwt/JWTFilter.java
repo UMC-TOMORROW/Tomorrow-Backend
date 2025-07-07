@@ -1,7 +1,7 @@
 package com.umc.tomorrow.global.jwt;
 
-import com.umc.tomorrow.global.dto.CustomOAuth2User;
-import com.umc.tomorrow.global.dto.UserDTO;
+import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
+import com.umc.tomorrow.domain.member.dto.UserDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
