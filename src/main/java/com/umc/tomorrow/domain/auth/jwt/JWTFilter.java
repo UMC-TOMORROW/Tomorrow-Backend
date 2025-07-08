@@ -1,4 +1,4 @@
-package com.umc.tomorrow.global.jwt;
+package com.umc.tomorrow.domain.auth.jwt;
 
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.member.dto.UserDTO;

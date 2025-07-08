@@ -1,4 +1,4 @@
-package com.umc.tomorrow.global.jwt;
+package com.umc.tomorrow.domain.auth.jwt;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,6 +41,16 @@ public class JWTUtil {
         return Jwts.builder()
                 .claim("username", username)
                 .claim("role", role)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiredMs))
+                .signWith(secretKey)
+                .compact();
+    }
+
+    // Refresh Token 생성 (username만 claim, 만료시간은 더 길게)
+    public String createRefreshToken(String username, Long expiredMs) {
+        return Jwts.builder()
+                .claim("username", username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)

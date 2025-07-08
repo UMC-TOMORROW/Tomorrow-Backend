@@ -1,5 +1,6 @@
-package com.umc.tomorrow.global.dto;
+package com.umc.tomorrow.domain.auth.security;
 
+import com.umc.tomorrow.domain.member.dto.UserDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
