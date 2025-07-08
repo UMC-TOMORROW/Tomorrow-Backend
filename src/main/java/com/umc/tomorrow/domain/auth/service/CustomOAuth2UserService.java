@@ -36,9 +36,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } else if (registrationId.equals("google")) {
 
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-        } else {
+        } else if(registrationId.equals("kakao")){
 
-            return null;
+            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+        } else {
+            throw new OAuth2AuthenticationException("지원하지 않는 로그인 방식입니다.");
         }
 
         String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
