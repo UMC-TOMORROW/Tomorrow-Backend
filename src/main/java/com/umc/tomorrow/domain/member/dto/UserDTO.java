@@ -1,4 +1,4 @@
-package com.umc.tomorrow.global.dto;
+package com.umc.tomorrow.domain.member.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,4 +10,5 @@ public class UserDTO {
     private String role;
     private String name;
     private String username;
+    private String refreshToken;
 }

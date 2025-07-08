@@ -1,4 +1,4 @@
-package com.umc.tomorrow.global.entity;
+package com.umc.tomorrow.domain.member.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,4 +22,7 @@ public class UserEntity {
     private String email;
 
     private String role;
+
+    // Refresh Token 저장
+    private String refreshToken;
 }

@@ -1,4 +1,4 @@
-package com.umc.tomorrow.global.dto;
+package com.umc.tomorrow.domain.auth.dto;
 
 import java.util.Map;
 

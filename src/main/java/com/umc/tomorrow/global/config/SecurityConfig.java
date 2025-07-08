@@ -1,13 +1,13 @@
 package com.umc.tomorrow.global.config;
 
-import com.umc.tomorrow.global.jwt.JWTFilter;
-import com.umc.tomorrow.global.jwt.JWTUtil;
-import com.umc.tomorrow.global.oauth2.CustomSuccessHandler;
-import com.umc.tomorrow.global.service.CustomOAuth2UserService;
+import com.umc.tomorrow.domain.auth.jwt.JWTFilter;
+import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
+import com.umc.tomorrow.domain.auth.security.CustomSuccessHandler;
+import com.umc.tomorrow.domain.auth.service.CustomOAuth2UserService;
+import com.umc.tomorrow.domain.member.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -26,12 +26,14 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTUtil jwtUtil) {
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTUtil jwtUtil, UserRepository userRepository) {
 
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
         this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
     }
 
     @Bean
@@ -76,7 +78,7 @@ public class SecurityConfig {
                 .oauth2Login((oauth2) -> oauth2
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService))
-                        .successHandler(customSuccessHandler)
+                        .successHandler(new CustomSuccessHandler(jwtUtil, userRepository))
                 );
         http
                 .authorizeHttpRequests((auth) -> auth
