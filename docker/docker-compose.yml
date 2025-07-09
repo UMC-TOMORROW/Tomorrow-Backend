@@ -4,7 +4,7 @@ services:
     container_name: tomorrow-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root1234}
       MYSQL_DATABASE: tomorrow_db
       MYSQL_USER: tomorrow_user
       MYSQL_PASSWORD: tomorrow_user_password

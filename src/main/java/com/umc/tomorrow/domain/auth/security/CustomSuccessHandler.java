@@ -1,11 +1,13 @@
-package com.umc.tomorrow.global.oauth2;
+package com.umc.tomorrow.domain.auth.security;
 
-import com.umc.tomorrow.global.dto.CustomOAuth2User;
-import com.umc.tomorrow.global.jwt.JWTUtil;
+import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
+import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.domain.member.repository.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -19,10 +21,12 @@ import java.util.Iterator;
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JWTUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    public CustomSuccessHandler(JWTUtil jwtUtil) {
-
+    @Autowired
+    public CustomSuccessHandler(JWTUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -40,10 +44,21 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String token = jwtUtil.createJwt(username, role, 60*60*60L);
 
-        System.out.println("Generated JWT Token: " + token);
+        // Refresh Token 생성 (2주)
+        String refreshToken = jwtUtil.createRefreshToken(username, 60L * 60 * 24 * 14 * 1000); // 2주
 
+        // DB에 저장
+        User user = userRepository.findByUsername(username);
+        if (user != null) {
+            user.setRefreshToken(refreshToken);
+            userRepository.save(user);
+        }
+
+        // 클라이언트에 전달 (쿠키/헤더)
         response.addCookie(createCookie("Authorization", token));
-        response.addHeader("Authorization", "Bearer " + token);//헤더정보에 추가
+        response.addHeader("Authorization", "Bearer " + token);
+        response.addCookie(createCookie("RefreshToken", refreshToken));
+        response.addHeader("RefreshToken", refreshToken);
         //response.sendRedirect("http://localhost:3000/");
         //response.sendRedirect("/success");//로컬 테스트 확인용
     }
