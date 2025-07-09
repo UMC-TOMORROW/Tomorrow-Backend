@@ -1,7 +1,9 @@
-package com.umc.tomorrow.global.service;
+package com.umc.tomorrow.domain.auth.service;
 
-import com.umc.tomorrow.global.dto.*;
-import com.umc.tomorrow.global.repository.UserRepository;
+import com.umc.tomorrow.domain.auth.dto.*;
+import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
+import com.umc.tomorrow.domain.member.dto.UserDTO;
+import com.umc.tomorrow.domain.member.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -34,9 +36,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } else if (registrationId.equals("google")) {
 
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-        } else {
+        } else if(registrationId.equals("kakao")){
 
-            return null;
+            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+        } else {
+            throw new OAuth2AuthenticationException("지원하지 않는 로그인 방식입니다.");
         }
 
         String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();

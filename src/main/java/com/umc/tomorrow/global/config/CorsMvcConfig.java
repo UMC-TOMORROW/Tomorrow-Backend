@@ -11,7 +11,11 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry corsRegistry) {
 
         corsRegistry.addMapping("/**")
-                .exposedHeaders("Set-Cookie")
-                .allowedOrigins("http://localhost:3000");
+                .allowedOrigins("http://localhost:3000", "http://localhost:8080")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .exposedHeaders("Set-Cookie", "Authorization")
+                .allowCredentials(true)
+                .maxAge(3600L);
     }
 }
