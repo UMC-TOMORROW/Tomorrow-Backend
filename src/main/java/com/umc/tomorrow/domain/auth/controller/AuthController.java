@@ -8,7 +8,7 @@
 package com.umc.tomorrow.domain.auth.controller;
 
 import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
-import com.umc.tomorrow.domain.member.entity.UserEntity;
+import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,7 +55,7 @@ public class AuthController {
             // username 추출
             String username = jwtUtil.getUsername(refreshToken);
             // DB에서 사용자 조회
-            UserEntity user = userRepository.findByUsername(username);
+            User user = userRepository.findByUsername(username);
             if (user == null || user.getRefreshToken() == null || !user.getRefreshToken().equals(refreshToken)) {
                 return ResponseEntity.status(401).body("Invalid refresh token");
             }
