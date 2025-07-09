@@ -1,7 +1,7 @@
 package com.umc.tomorrow.domain.auth.security;
 
 import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
-import com.umc.tomorrow.domain.member.entity.UserEntity;
+import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -48,7 +48,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String refreshToken = jwtUtil.createRefreshToken(username, 60L * 60 * 24 * 14 * 1000); // 2주
 
         // DB에 저장
-        UserEntity user = userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username);
         if (user != null) {
             user.setRefreshToken(refreshToken);
             userRepository.save(user);
