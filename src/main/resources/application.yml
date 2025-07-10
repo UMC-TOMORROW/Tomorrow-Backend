@@ -86,6 +86,7 @@ logging:
   level:
     com.umc.tomorrow: INFO
     root: INFO
+    # org.springframework.security: DEBUG #  logging을 위해
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
