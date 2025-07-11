@@ -30,6 +30,5 @@ public class BusinessVerification extends BaseEntity {
     private LocalDate openingDate;
 
     //연관관계
-    @OneToOne(mappedBy = "businessVerification")
-    private Job job;
+
 }

@@ -9,6 +9,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+//제거 예정
 @Getter
 @Setter
 @NoArgsConstructor

@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 
+//BusinessVerification와 동일, 삭제 예정
 @Entity
 @Getter
 @Setter
@@ -31,6 +32,5 @@ public class Business extends BaseEntity {
     private LocalDate openingDate;
 
     //연관관계
-    @OneToOne(mappedBy = "businessVerification")
-    private Job job;
+
 }
