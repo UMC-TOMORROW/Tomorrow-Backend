@@ -1,6 +1,6 @@
 package com.umc.tomorrow.domain.job.converter;
 
-import com.umc.tomorrow.domain.job.dto.request.CreateJobRequestDTO;
+import com.umc.tomorrow.domain.job.dto.request.JobRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.WorkDaysRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.WorkEnvironmentRequestDTO;
 import com.umc.tomorrow.domain.job.entity.*;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobConverter {
 
-    public Job toJob(CreateJobRequestDTO dto) {
+    public Job toJob(JobRequestDTO dto) {
         return Job.builder()
                 .title(dto.getTitle())
                 .jobCategory(dto.getJobCategory())

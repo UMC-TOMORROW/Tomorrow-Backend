@@ -8,9 +8,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class JobSessionDTO {
+public class JobSessionDTO { //임시
     private String title;
-    private String jobCategory;
     private LocalDateTime deadline;
     private RegistrantType registrantType;
 }
