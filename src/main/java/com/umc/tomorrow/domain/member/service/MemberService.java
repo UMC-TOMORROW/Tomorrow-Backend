@@ -39,18 +39,6 @@ public class MemberService {
         user.setRole(userDTO.getRole());
         user.setRefreshToken(userDTO.getRefreshToken());
         // 변경된 엔티티를 저장 
-        return toDTO(user);
-    }
-
-    /**
-     * User 엔티티를 UserDTO로 변환
-     */
-    public UserDTO toDTO(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setUsername(user.getUsername());
-        dto.setName(user.getName());
-        dto.setRole(user.getRole());
-        dto.setRefreshToken(user.getRefreshToken());
-        return dto;
+        return UserDTO.from(user);
     }
 } 

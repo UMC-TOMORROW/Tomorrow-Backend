@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -66,8 +67,9 @@ public class AuthController {
                 user.getName(),
                 user.getRole(),
                 60*60*60L
-            ); // 기존과 동일한 만료시간
-            return ResponseEntity.ok().body(newAccessToken);
+            );
+            // JSON 형태로 반환
+            return ResponseEntity.ok().body(Map.of("accessToken", newAccessToken));
         } catch (Exception e) {
             return ResponseEntity.status(401).body("Invalid refresh token");
         }

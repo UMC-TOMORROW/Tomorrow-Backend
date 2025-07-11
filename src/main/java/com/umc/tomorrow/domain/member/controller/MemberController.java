@@ -29,9 +29,6 @@ public class MemberController {
     @Operation(summary = "내 정보 조회", description = "현재 로그인한 회원의 정보를 조회합니다.")
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getMe(@AuthenticationPrincipal CustomOAuth2User user) {
-        if (user == null) {
-            return ResponseEntity.status(401).build();
-        }
         UserDTO userDTO = user.getUserDTO();
         return ResponseEntity.ok(userDTO);
     }
@@ -43,10 +40,6 @@ public class MemberController {
     @Operation(summary = "내 정보 수정", description = "현재 로그인한 회원의 정보를 수정합니다.")
     @PutMapping("/me")
     public ResponseEntity<UserDTO> updateMe(@AuthenticationPrincipal CustomOAuth2User user, @RequestBody UserDTO userDTO) {
-        if (user == null) {
-            return ResponseEntity.status(401).build();
-        }
-        // 실제 DB에 회원 정보 업데이트
         UserDTO updated = memberService.updateUser(user.getUserDTO(), userDTO);
         return ResponseEntity.ok(updated);
     }
