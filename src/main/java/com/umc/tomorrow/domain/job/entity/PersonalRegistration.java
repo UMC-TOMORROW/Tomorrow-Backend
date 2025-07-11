@@ -8,7 +8,8 @@ import java.math.BigDecimal;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor
 @Builder
 public class PersonalRegistration extends BaseEntity {
@@ -20,10 +21,10 @@ public class PersonalRegistration extends BaseEntity {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, precision = 10, scale = 7)
+    @Column(precision = 10, scale = 7)
     private BigDecimal latitude;
 
-    @Column(nullable = false, precision = 10, scale = 7)
+    @Column( precision = 10, scale = 7)
     private BigDecimal longitude;
 
     @Column(nullable = false, length = 20)
@@ -32,7 +33,7 @@ public class PersonalRegistration extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String registrationPurpose;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String address;
 
     //연관관계
