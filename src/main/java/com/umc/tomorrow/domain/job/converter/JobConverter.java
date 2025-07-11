@@ -12,7 +12,6 @@ public class JobConverter {
     public Job toJob(JobRequestDTO dto) {
         return Job.builder()
                 .title(dto.getTitle())
-                .jobCategory(dto.getJobCategory())
                 .workPeriod(dto.getWorkPeriod())
                 .isPeriodNegotiable(dto.getIsPeriodNegotiable())
                 .workStart(dto.getWorkStart())

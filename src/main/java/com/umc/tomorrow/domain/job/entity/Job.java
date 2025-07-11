@@ -102,7 +102,7 @@ public class Job {
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "business_verification_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_job_business_verification"))
-    private Business businessVerification;
+    private BusinessVerification businessVerification;
 
     //personalRegistration와 1:1관계
     @OneToOne(cascade = CascadeType.ALL, optional = false)
