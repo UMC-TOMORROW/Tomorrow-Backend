@@ -6,12 +6,14 @@ import lombok.*;
 
 import java.time.LocalDate;
 
+//BusinessVerification와 동일, 삭제 예정
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor
 @Builder
-public class BusinessVerification extends BaseEntity {
+public class Business extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
