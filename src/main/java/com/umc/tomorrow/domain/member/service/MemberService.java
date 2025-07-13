@@ -10,6 +10,7 @@ package com.umc.tomorrow.domain.member.service;
 import com.umc.tomorrow.domain.member.dto.UserDTO;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
+import com.umc.tomorrow.domain.member.dto.UserConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,23 +35,15 @@ public class MemberService {
     public UserDTO updateUser(UserDTO currentUser, UserDTO userDTO) {
         Long userId = currentUser.getId();
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
-        user.setUsername(userDTO.getUsername());
-        user.setName(userDTO.getName());
-        user.setRole(userDTO.getRole());
-        user.setRefreshToken(userDTO.getRefreshToken());
-        // 변경된 엔티티를 저장 
-        return toDTO(user);
+        UserConverter.updateEntity(user, userDTO);
+        userRepository.save(user);
+        return UserConverter.toDTO(user);
     }
 
     /**
      * User 엔티티를 UserDTO로 변환
      */
     public UserDTO toDTO(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setUsername(user.getUsername());
-        dto.setName(user.getName());
-        dto.setRole(user.getRole());
-        dto.setRefreshToken(user.getRefreshToken());
-        return dto;
+        return UserConverter.toDTO(user);
     }
 } 
