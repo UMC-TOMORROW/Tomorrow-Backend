@@ -45,11 +45,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
 
-
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername(username);
-        userDTO.setName(oAuth2Response.getName());
-        userDTO.setRole("ROLE_USER");
+        UserDTO userDTO = UserDTO.builder()
+            .name(oAuth2Response.getName())
+            .provider(oAuth2Response.getProvider())
+            .providerUserId(oAuth2Response.getProviderId())
+            .email(oAuth2Response.getEmail())
+            // .role("ROLE_USER") // UserDTO에 role 필드가 없으므로 주석 처리 또는 필요시 추가
+            .build();
 
         return new CustomOAuth2User(userDTO);
 

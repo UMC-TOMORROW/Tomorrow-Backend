@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class JWTFilter extends OncePerRequestFilter {
 
@@ -97,11 +98,13 @@ public class JWTFilter extends OncePerRequestFilter {
             System.out.println("JWTFilter: Token Payload - Username: " + username + ", Role: " + role + ", ID: " + id + ", Name: " + name);
 
             // UserDTO 생성 및 값 설정
-            UserDTO userDTO = new UserDTO();
-            userDTO.setId(id);
-            userDTO.setUsername(username);
-            userDTO.setRole(role);
-            userDTO.setName(name);
+            UserDTO userDTO = UserDTO.builder()
+                .id(id)
+                .name(name)
+                .role(role)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
 
             // UserDetails에 회원 정보 객체 담기
             CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
@@ -126,4 +129,8 @@ public class JWTFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+}
+
+public enum Gender {
+    MALE, FEMALE
 }
