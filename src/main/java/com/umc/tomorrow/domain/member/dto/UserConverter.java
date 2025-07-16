@@ -1,3 +1,10 @@
+/**
+ * User <-> UserDTO 변환
+ * - User Entity와 UserDTO 간 변환 및 업데이트
+ *
+ * 작성자: 정여진
+ * 생성일: 2025-07-13
+ */
 package com.umc.tomorrow.domain.member.dto;
 
 import com.umc.tomorrow.domain.member.entity.User;
@@ -5,22 +12,22 @@ import com.umc.tomorrow.domain.member.entity.User;
 public class UserConverter {
     public static UserDTO toDTO(User user) {
         if (user == null) return null;
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setEmail(user.getEmail());
-        dto.setName(user.getName());
-        dto.setGender(user.getGender() != null ? user.getGender().name() : null);
-        dto.setPhoneNumber(user.getPhoneNumber());
-        dto.setAddress(user.getAddress());
-        dto.setStatus(user.getStatus() != null ? user.getStatus().name() : null);
-        dto.setInactiveAt(user.getInactiveAt());
-        dto.setIsOnboarded(user.getIsOnboarded());
-        dto.setProvider(user.getProvider() != null ? user.getProvider().name() : null);
-        dto.setProviderUserId(user.getProviderUserId());
-        dto.setCreatedAt(user.getCreatedAt());
-        dto.setUpdatedAt(user.getUpdatedAt());
-        dto.setResumeId(user.getResumeId());
-        return dto;
+        return UserDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .gender(user.getGender() != null ? user.getGender().name() : null)
+                .phoneNumber(user.getPhoneNumber())
+                .address(user.getAddress())
+                .status(user.getStatus() != null ? user.getStatus().name() : null)
+                .inactiveAt(user.getInactiveAt())
+                .isOnboarded(user.getIsOnboarded())
+                .provider(user.getProvider() != null ? user.getProvider().name() : null)
+                .providerUserId(user.getProviderUserId())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .resumeId(user.getResumeId())
+                .build();
     }
 
     public static void updateEntity(User user, UserDTO dto) {
