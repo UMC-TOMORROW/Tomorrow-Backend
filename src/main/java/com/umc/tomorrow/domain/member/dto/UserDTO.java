@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import com.umc.tomorrow.domain.member.enums.Gender;
 
 @Getter
 @Builder
@@ -34,7 +35,7 @@ public class UserDTO {
     private final String name; // 이름
 
     @NotNull(message = "{user.gender.notnull}")
-    private final String gender; // 성별 (MALE, FEMALE)
+    private final Gender gender; // 성별 (MALE, FEMALE)
 
     @NotBlank(message = "{user.phoneNumber.notblank}")
     @Size(max = 20, message = "{user.phoneNumber.size}")
