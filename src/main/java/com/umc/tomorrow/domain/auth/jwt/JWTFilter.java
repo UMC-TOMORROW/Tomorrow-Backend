@@ -130,3 +130,7 @@ public class JWTFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+
+public enum Gender {
+    MALE, FEMALE
+}
