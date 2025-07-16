@@ -36,12 +36,10 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createJwt(Long id, String username, String name, String role, Long expiredMs) {
+    public String createJwt(Long id, String name, Long expiredMs) {
         return Jwts.builder()
                 .claim("id", id)
-                .claim("username", username)
                 .claim("name", name)
-                .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)

@@ -18,29 +18,28 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 30, nullable = false, unique = true)
+    @Column(length = 30, unique = true)
     private String email;
 
     @Column(length = 10, nullable = false)
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 10, nullable = false)
+    @Column(length = 10)
     private Gender gender;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 20)
     private String phoneNumber;
 
     @Column(length = 255)
     private String address;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 10, nullable = false)
+    @Column(length = 10)
     private Status status;
 
     private LocalDateTime inactiveAt;
 
-    @Column(nullable = false)
     private Boolean isOnboarded;
 
     @Enumerated(EnumType.STRING)
@@ -56,8 +55,14 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
     private Long resumeId;
+
+    @Column(length = 255)
+    private String refreshToken;
+
+    /** 사용자명(로그인 ID 또는 소셜 ID) */
+    @Column(length = 30, unique = true, nullable = false)
+    private String username;
 
     //연관관계
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
