@@ -46,16 +46,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (user == null) {
             // 소셜 로그인 정보로 새 회원 생성
             user = new User();
-            user.setUsername(username);
             user.setName(customUserDetails.getName()); // 필요시
-            user.setRole(role);
             userRepository.save(user);
         }
         String token = jwtUtil.createJwt(
             user.getId(),
-            user.getUsername(),
             user.getName(),
-            role,
             60*60*60L
         );
 

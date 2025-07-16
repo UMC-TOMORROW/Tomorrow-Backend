@@ -20,45 +20,47 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class UserDTO {
-    private final Long id;
+    private final Long id; // 회원 고유 ID
+    private final String role; // 권한 (예: ROLE_USER, ROLE_ADMIN)
+    private final String username; // 사용자명(로그인 ID 또는 소셜 ID)
 
     @Email(message = "{user.email.invalid}")
     @NotBlank(message = "{user.email.notblank}")
     @Size(max = 30, message = "{user.email.size}")
-    private final String email;
+    private final String email; // 이메일
 
     @NotBlank(message = "{user.name.notblank}")
     @Size(max = 10, message = "{user.name.size}")
-    private final String name;
+    private final String name; // 이름
 
     @NotNull(message = "{user.gender.notnull}")
-    private final String gender; // ENUM("MALE", "FEMALE")
+    private final String gender; // 성별 (MALE, FEMALE)
 
     @NotBlank(message = "{user.phoneNumber.notblank}")
     @Size(max = 20, message = "{user.phoneNumber.size}")
-    private final String phoneNumber;
+    private final String phoneNumber; // 휴대폰 번호
 
     @Size(max = 255, message = "{user.address.size}")
-    private final String address;
+    private final String address; // 주소
 
     @NotNull(message = "{user.status.notnull}")
-    private final String status; // ENUM("ACTIVE", "INACTIVE")
+    private final String status; // 상태 (ACTIVE, INACTIVE)
 
-    private final LocalDateTime inactiveAt;
+    private final LocalDateTime inactiveAt; // 비활성화 일시
 
     @NotNull(message = "{user.isOnboarded.notnull}")
-    private final Boolean isOnboarded;
+    private final Boolean isOnboarded; // 온보딩 여부
 
     @NotNull(message = "{user.provider.notnull}")
-    private final String provider; // ENUM("KAKAO", "NAVER", "GOOGLE")
+    private final String provider; // 소셜 제공자 (KAKAO, NAVER, GOOGLE)
 
     @NotBlank(message = "{user.providerUserId.notblank}")
     @Size(max = 10, message = "{user.providerUserId.size}")
-    private final String providerUserId;
+    private final String providerUserId; // 소셜 제공자 ID
 
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private final LocalDateTime createdAt; // 생성일시
+    private final LocalDateTime updatedAt; // 수정일시
 
     @NotNull(message = "{user.resumeId.notnull}")
-    private final Long resumeId;
+    private final Long resumeId; // 이력서 ID
 }

@@ -62,9 +62,7 @@ public class AuthController {
             // accessToken 재발급
             String newAccessToken = jwtUtil.createJwt(
                 user.getId(),
-                user.getUsername(),
                 user.getName(),
-                user.getRole(),
                 60*60*60L
             ); // 기존과 동일한 만료시간
             return ResponseEntity.ok().body(newAccessToken);
