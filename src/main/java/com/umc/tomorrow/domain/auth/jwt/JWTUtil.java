@@ -36,14 +36,21 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createJwt(Long id, String name, Long expiredMs) {
+    public String createJwt(Long id, String name, String username, String role, Long expiredMs) {
         return Jwts.builder()
                 .claim("id", id)
                 .claim("name", name)
+                .claim("username", username)
+                .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)
                 .compact();
+    }
+
+    // 기존 시그니처도 남겨둠 (호환성)
+    public String createJwt(Long id, String name, Long expiredMs) {
+        return createJwt(id, name, null, null, expiredMs);
     }
 
     // Refresh Token 생성 (username만 claim, 만료시간은 더 길게)
