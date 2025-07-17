@@ -1,0 +1,81 @@
+---
+name: 기능 수정 (BUG)
+about: Create a report to help us improve
+title: "[FIX] "
+labels: ''
+assignees: ''
+
+---
+
+name: [FIX] (오류 수정)
+about: 발견된 오류를 수정하고 개선합니다.
+title: "[FIX] " # 이슈 생성 시 기본 제목
+labels: [fix, bug, priority:medium] # 기본으로 붙을 라벨 (필요에 따라 변경)
+assignees: # 기본으로 할당될 담당자 (선택 사항)
+  - # 이곳에 기본 담당자 GitHub 사용자 이름을 입력하세요 (예: your_github_username)
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🛠️ 오류 수정 (FIX)
+        이슈를 통해 특정 오류를 수정하고 개선하는 작업을 기록합니다.
+
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: 어떤 오류를 수정하려 하나요?
+      description: 수정하려는 오류의 구체적인 내용과 현재 상태를 설명해주세요. (예: 어떤 기능에서, 어떤 상황에서 오류가 발생했는지)
+      placeholder: 간단 명료하게 설명해주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: root-cause
+    attributes:
+      label: 오류의 근본 원인 (선택 사항)
+      description: 오류의 원인이 무엇이라고 파악했는지 작성해주세요. (예: 데이터베이스 스키마 불일치, 로직 오류 등)
+    validations:
+      required: false
+
+  - type: textarea
+    id: solution-plan
+    attributes:
+      label: 해결 방안 및 작업 목록
+      description: |
+        오류를 해결하기 위한 구체적인 작업 계획을 단계별로 작성해주세요.
+
+        - [ ] 작업 항목 1
+        - [ ] 작업 항목 2
+        - [ ] 작업 항목 3
+      placeholder: 해결 계획을 상세히 작성해주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification-steps
+    attributes:
+      label: 수정 확인 방법
+      description: |
+        오류가 제대로 수정되었는지 확인하기 위한 테스트 방법이나 시나리오를 작성해주세요.
+      placeholder: 테스트 방법 및 예상 결과
+    validations:
+      required: true
+
+  - type: textarea
+    id: related-issues
+    attributes:
+      label: 관련 이슈/PR (선택 사항)
+      description: 이 수정과 관련된 다른 이슈나 Pull Request가 있다면 링크를 추가해주세요.
+      placeholder: 예: #123, #456 또는 PR 링크
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-notes
+    attributes:
+      label: 기타 참고 사항 (선택 사항)
+      description: 추가적으로 공유할 내용이 있다면 작성해주세요.
+      render: markdown
+    validations:
+      required: false
