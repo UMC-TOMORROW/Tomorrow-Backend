@@ -1,13 +1,4 @@
----
-name: 기능 수정 (BUG)
-about: Create a report to help us improve
-title: "[FIX] "
-labels: ''
-assignees: ''
-
----
-
-name: [FIX] (오류 수정)
+name: FIX (오류 수정)
 about: 발견된 오류를 수정하고 개선합니다.
 title: "[FIX] " # 이슈 생성 시 기본 제목
 labels: [fix, bug, priority:medium] # 기본으로 붙을 라벨 (필요에 따라 변경)
