@@ -4,6 +4,7 @@ about: 새로운 기능을 제안합니다
 title: "[FEAT] "
 labels: enhancement
 assignees: ''
+
 ---
 
 ## 어떤 기능인가요?
