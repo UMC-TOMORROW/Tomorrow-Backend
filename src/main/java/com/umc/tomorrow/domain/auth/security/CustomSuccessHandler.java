@@ -47,11 +47,27 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             // 소셜 로그인 정보로 새 회원 생성
             user = new User();
             user.setName(customUserDetails.getName()); // 필요시
+            // 필수값 세팅
+            user.setCreatedAt(java.time.LocalDateTime.now());
+            user.setUpdatedAt(java.time.LocalDateTime.now());
+            // provider, providerUserId, username, email 세팅
+            String providerStr = customUserDetails.getUserDTO().getProvider();
+            String providerUserId = customUserDetails.getUserDTO().getProviderUserId();
+            if (providerStr != null) {
+                user.setProvider(User.Provider.valueOf(providerStr.toUpperCase()));
+            }
+            user.setProviderUserId(providerUserId);
+            // username은 provider + '_' + providerUserId로 생성
+            String usernameValue = (providerStr != null && providerUserId != null) ? providerStr + "_" + providerUserId : null;
+            user.setUsername(usernameValue);
+            user.setEmail(customUserDetails.getUserDTO().getEmail());
             userRepository.save(user);
         }
         String token = jwtUtil.createJwt(
             user.getId(),
             user.getName(),
+            user.getUsername(),
+            (user.getStatus() != null ? user.getStatus().name() : null),
             60*60*60L
         );
 

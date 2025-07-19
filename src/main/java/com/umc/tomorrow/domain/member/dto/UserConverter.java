@@ -16,7 +16,7 @@ public class UserConverter {
                 .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
-                .gender(user.getGender() != null ? user.getGender().name() : null)
+                .gender(user.getGender() != null ? com.umc.tomorrow.domain.member.enums.Gender.valueOf(user.getGender().name()) : null)
                 .phoneNumber(user.getPhoneNumber())
                 .address(user.getAddress())
                 .status(user.getStatus() != null ? user.getStatus().name() : null)
@@ -33,7 +33,7 @@ public class UserConverter {
     public static void updateEntity(User user, UserDTO dto) {
         if (dto.getEmail() != null) user.setEmail(dto.getEmail());
         if (dto.getName() != null) user.setName(dto.getName());
-        if (dto.getGender() != null) user.setGender(User.Gender.valueOf(dto.getGender()));
+        if (dto.getGender() != null) user.setGender(User.Gender.valueOf(String.valueOf(dto.getGender())));
         if (dto.getPhoneNumber() != null) user.setPhoneNumber(dto.getPhoneNumber());
         if (dto.getAddress() != null) user.setAddress(dto.getAddress());
         if (dto.getStatus() != null) user.setStatus(User.Status.valueOf(dto.getStatus()));
