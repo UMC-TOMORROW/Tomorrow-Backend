@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "user")
 @Getter
 @Setter
 public class User {
@@ -46,7 +47,7 @@ public class User {
     @Column(length = 10, nullable = false)
     private Provider provider;
 
-    @Column(length = 10, nullable = false)
+    @Column(length = 255, nullable = false)
     private String providerUserId;
 
     @Column(nullable = false)
