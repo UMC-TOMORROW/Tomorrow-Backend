@@ -1,12 +1,15 @@
+/**
+ * PreferenceConverter
+ * - Preference Entity와 PreferencesDTO 간 변환 및 업데이트
+ * 
+ * 작성자: 정여진
+ * 생성일: 2025-07-17
+ */
 package com.umc.tomorrow.domain.preferences.converter;
 
 import com.umc.tomorrow.domain.preferences.entity.Preference;
 import com.umc.tomorrow.domain.preferences.dto.PreferencesDTO;
 
-/**
- * PreferenceConverter
- * - Preference Entity와 PreferencesDTO 간 변환 및 업데이트
- */
 public class PreferenceConverter {
     /**
      * Entity -> DTO 변환

@@ -17,17 +17,13 @@ import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class PreferenceServiceImpl implements PreferenceService {
     private final PreferenceRepository preferenceRepository;
     private final UserRepository userRepository;
-
-    @Autowired
-    public PreferenceServiceImpl(PreferenceRepository preferenceRepository, UserRepository userRepository) {
-        this.preferenceRepository = preferenceRepository;
-        this.userRepository = userRepository;
-    }
 
     /**
      * 희망 조건 저장
@@ -37,9 +33,10 @@ public class PreferenceServiceImpl implements PreferenceService {
     public PreferencesDTO savePreferences(Long userId, PreferencesDTO dto) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
-        Preference entity = new Preference();
-        entity.setUser(user);
-        entity.setPreferences(dto.getPreferences());
+        Preference entity = Preference.builder()
+            .user(user)
+            .preferences(dto.getPreferences())
+            .build();
         preferenceRepository.save(entity);
         return PreferenceConverter.toDTO(entity);
     }

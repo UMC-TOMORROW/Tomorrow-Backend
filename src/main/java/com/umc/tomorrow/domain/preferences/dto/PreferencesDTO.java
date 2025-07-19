@@ -1,3 +1,10 @@
+/**
+ * PreferencesDTO
+ * - 사용자의 희망 조건 목록을 전달하는 DTO
+ * 
+ * 작성자: 정여진
+ * 생성일: 2025-07-17
+ */
 package com.umc.tomorrow.domain.preferences.dto;
 
 import com.umc.tomorrow.domain.preferences.entity.PreferenceType;
@@ -5,10 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import java.util.Set;
 
-/**
- * PreferencesDTO
- * - 사용자의 희망 조건 목록을 전달하는 DTO
- */
+
 @Getter
 @Builder
 public class PreferencesDTO {
