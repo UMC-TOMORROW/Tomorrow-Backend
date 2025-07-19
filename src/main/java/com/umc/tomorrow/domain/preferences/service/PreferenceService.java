@@ -7,6 +7,7 @@
 package com.umc.tomorrow.domain.preferences.service;
 
 import com.umc.tomorrow.domain.preferences.dto.PreferencesDTO;
+
 public interface PreferenceService {
     /**
      * 희망 조건 저장
