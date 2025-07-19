@@ -6,10 +6,11 @@
  */
 package com.umc.tomorrow.domain.resume.service;
 
-import com.umc.tomorrow.domain.resume.dto.ResumeSummaryResponseDTO;
+import com.umc.tomorrow.domain.resume.dto.response.ResumeSummaryResponseDTO;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.entity.Certificate;
 import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
+import com.umc.tomorrow.domain.resume.converter.ResumeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
@@ -29,22 +30,8 @@ public class ResumeSummaryService {
      * @return 이력서 요약 응답 DTO
      */
     public ResumeSummaryResponseDTO getResumeSummary(Long userId) {
-        Resume resume = resumeRepository.findAll().stream()
-            .filter(r -> r.getUser() != null && r.getUser().getId().equals(userId))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("이력서를 찾을 수 없습니다."));
-
-        return ResumeSummaryResponseDTO.builder()
-            .introduction(resume.getIntroduction())
-            .experiences(resume.getExperiences().stream().map(exp ->
-                ResumeSummaryResponseDTO.ExperienceSummary.builder()
-                    .place(exp.getPlace())
-                    .task(exp.getTask())
-                    .year(exp.getYear())
-                    .duration(exp.getDuration())
-                    .build()
-            ).collect(Collectors.toList()))
-            .certificates(resume.getCertificates().stream().map(Certificate::getName).collect(Collectors.toList()))
-            .build();
+        Resume resume = resumeRepository.findByUserId(userId);
+        if (resume == null) throw new IllegalArgumentException("이력서를 찾을 수 없습니다.");
+        return ResumeConverter.toSummaryDTO(resume);
     }
 } 

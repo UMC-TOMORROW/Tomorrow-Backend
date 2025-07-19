@@ -23,8 +23,6 @@ public class Experience {
     private String place;
     private String task;
     private String duration;
-    private LocalDate startDate;
-    private LocalDate endDate;
     private int year;
 
     @ManyToOne(fetch = FetchType.LAZY)
