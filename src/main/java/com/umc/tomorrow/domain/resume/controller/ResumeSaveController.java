@@ -6,7 +6,7 @@
  */
 package com.umc.tomorrow.domain.resume.controller;
 
-import com.umc.tomorrow.domain.resume.dto.ResumeSaveRequestDTO;
+import com.umc.tomorrow.domain.resume.dto.request.ResumeSaveRequestDTO;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.service.ResumeSaveService;
 import com.umc.tomorrow.global.common.base.BaseResponse;

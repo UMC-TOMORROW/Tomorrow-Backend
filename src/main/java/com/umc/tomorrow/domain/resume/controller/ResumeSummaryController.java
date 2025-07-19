@@ -6,7 +6,7 @@
  */
 package com.umc.tomorrow.domain.resume.controller;
 
-import com.umc.tomorrow.domain.resume.dto.ResumeSummaryResponseDTO;
+import com.umc.tomorrow.domain.resume.dto.response.ResumeSummaryResponseDTO;
 import com.umc.tomorrow.domain.resume.service.ResumeSummaryService;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;

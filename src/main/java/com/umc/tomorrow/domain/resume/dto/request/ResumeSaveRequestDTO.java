@@ -4,7 +4,7 @@
  * 작성자: 정여진
  * 생성일: 2025-07-20
  */
-package com.umc.tomorrow.domain.resume.dto;
+package com.umc.tomorrow.domain.resume.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -6,13 +6,14 @@
  */
 package com.umc.tomorrow.domain.resume.service;
 
-import com.umc.tomorrow.domain.resume.dto.ResumeSaveRequestDTO;
+import com.umc.tomorrow.domain.resume.dto.request.ResumeSaveRequestDTO;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.entity.Experience;
 import com.umc.tomorrow.domain.resume.entity.Certificate;
 import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
+import com.umc.tomorrow.domain.resume.converter.ResumeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,33 +42,7 @@ public class ResumeSaveService {
     public Resume saveResume(Long userId, ResumeSaveRequestDTO dto) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
-
-        Resume resume = Resume.builder()
-            .user(user)
-            .introduction(dto.getIntroduction())
-            .build();
-
-        // 경력 저장
-        List<Experience> experiences = dto.getExperiences().stream().map(expDto ->
-            Experience.builder()
-                .place(expDto.getPlace())
-                .task(expDto.getTask())
-                .year(expDto.getYear())
-                .duration(expDto.getDuration())
-                .resume(resume)
-                .build()
-        ).collect(Collectors.toList());
-        resume.setExperiences(experiences);
-
-        // 자격증 저장
-        List<Certificate> certificates = dto.getCertificates().stream().map(name ->
-            Certificate.builder()
-                .name(name)
-                .resume(resume)
-                .build()
-        ).collect(Collectors.toList());
-        resume.setCertificates(certificates);
-
+        Resume resume = ResumeConverter.toEntity(dto, user);
         return resumeRepository.save(resume);
     }
 } 

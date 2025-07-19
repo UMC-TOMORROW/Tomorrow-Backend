@@ -12,7 +12,7 @@ import lombok.*;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @AllArgsConstructor
 @Builder
 @Entity
@@ -25,16 +25,13 @@ public class Resume {
     private User user;
 
     // 자기소개
-    @Getter
     private String introduction;
 
     // 경력 목록
-    @Setter
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Experience> experiences;
 
     // 자격증 목록
-    @Setter
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Certificate> certificates;
 
