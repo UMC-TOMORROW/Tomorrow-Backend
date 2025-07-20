@@ -1,5 +1,5 @@
 /**
- * 이력서 저장 API 컨트롤러
+ * 이력서 API 컨트롤러
  * - /api/v1/resumes POST
  * 작성자: 정여진
  * 생성일: 2025-07-20
@@ -8,7 +8,7 @@ package com.umc.tomorrow.domain.resume.controller;
 
 import com.umc.tomorrow.domain.resume.dto.request.ResumeSaveRequestDTO;
 import com.umc.tomorrow.domain.resume.entity.Resume;
-import com.umc.tomorrow.domain.resume.service.ResumeSaveService;
+import com.umc.tomorrow.domain.resume.service.ResumeService;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,14 +21,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
-@Tag(name = "resume-save-controller", description = "이력서 저장 API")
+@Tag(name = "resume-controller", description = "이력서 저장 API")
 @RestController
 @RequestMapping("/api/v1/resumes")
-public class ResumeSaveController {
-    private final ResumeSaveService resumeSaveService;
+public class ResumeController {
+    private final ResumeService resumeService;
 
-    public ResumeSaveController(ResumeSaveService resumeSaveService) {
-        this.resumeSaveService = resumeSaveService;
+    public ResumeController(ResumeService resumeService) {
+        this.resumeService = resumeService;
     }
 
     /**
@@ -43,7 +43,7 @@ public class ResumeSaveController {
             @AuthenticationPrincipal CustomOAuth2User user,
             @RequestBody ResumeSaveRequestDTO dto) {
         Long userId = user.getUserDTO().getId();
-        Resume saved = resumeSaveService.saveResume(userId, dto);
+        Resume saved = resumeService.saveResume(userId, dto);
         return ResponseEntity.ok(
             BaseResponse.onSuccess(Map.of("resumeId", saved.getId()))
         );
