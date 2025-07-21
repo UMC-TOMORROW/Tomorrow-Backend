@@ -1,5 +1,13 @@
+/**
+ * 커리어톡 조회 서비스
+ * - 커리어톡 조회 비즈니스 로직
+ * 작성자: 이승주
+ * 생성일: 2020-07-10
+ * 수정일: 2025-07-20
+ */
 package com.umc.tomorrow.domain.careertalk.service.query;
 
+import com.umc.tomorrow.domain.careertalk.converter.CareertalkConverter;
 import com.umc.tomorrow.domain.careertalk.dto.response.GetCareertalkResponseDto;
 import com.umc.tomorrow.domain.careertalk.dto.response.GetCareertalkListResponseDto;
 import com.umc.tomorrow.domain.careertalk.entity.Careertalk;
@@ -12,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,28 +33,41 @@ public class CareertalkQueryServiceImpl implements CareertalkQueryService {
 
     private final CareertalkRepository careertalkRepository;
 
+    /**
+     * 커리어톡 게시글 목록 조회
+     * @param cursor 이전 요청에서의 마지막 게시글 번호
+     * @param size 요청할 게시글 개수
+     * @return 게시글 목록 DTO
+     */
     @Override
-    public GetCareertalkListResponseDto getCareertalks(int page, int size) {
+    public GetCareertalkListResponseDto getCareertalks(Long cursor, int size) {
+        Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        Pageable pageable = PageRequest.of(page, size);
+        Slice<Careertalk> slice;
 
-        // Slice 조회 (더 효율적: totalCount 없이 hasNext 판단)
-        Slice<Careertalk> careertalkSlice = careertalkRepository.findAllByOrderByCreatedAtDesc(pageable);
+        if (cursor == null) {
+            // 첫 페이지 요청: 최신순 전체
+            slice = careertalkRepository.findAllByOrderByIdDesc(pageable);
+        } else {
+            // 커서 이후 데이터
+            slice = careertalkRepository.findByIdLessThanOrderByIdDesc(cursor, pageable);
+        }
 
-        List<GetCareertalkResponseDto> getCareertalkResponseDtoList = careertalkSlice.getContent().stream()
-                .map(c -> GetCareertalkResponseDto.builder()
-                        .id(c.getId())
-                        .category(c.getCategory())
-                        .title(c.getTitle())
-                        .createdAt(c.getCreatedAt().toString())
-                        .build())
+        List<GetCareertalkResponseDto> dtoList = slice.getContent().stream()
+                .map(CareertalkConverter::toGetCareertalkResponseDto)
                 .toList();
 
         return GetCareertalkListResponseDto.builder()
-                .careertalkList(getCareertalkResponseDtoList)
-                .hasNext(careertalkSlice.hasNext())
+                .careertalkList(dtoList)
+                .hasNext(slice.hasNext())
                 .build();
     }
+
+    /**
+     * 커리어톡 게시글 상세 조회
+     * @param careertalkId 조회하고자 하는 커리어톡 게시글 Id
+     * @return 해당 게시글 DTO
+     */
 
     @Override
     public GetCareertalkResponseDto getCareertalk(Long careertalkId){
@@ -56,7 +78,7 @@ public class CareertalkQueryServiceImpl implements CareertalkQueryService {
                 .id(careertalk.getId())
                 .category(careertalk.getCategory())
                 .title(careertalk.getTitle())
-                .createdAt(careertalk.getCreatedAt().toString())
+                .createdAt(careertalk.getCreatedAt())
                 .build();
     }
 }
