@@ -1,3 +1,10 @@
+/**
+ * 커리어톡 API 컨트롤러
+ * - /api/v1/careertalks
+ * 작성자: 이승주
+ * 생성일: 2025-07-10
+ * 수정일: 2025-07-20
+ */
 package com.umc.tomorrow.domain.careertalk.controller;
 
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
@@ -25,13 +32,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Careertalk", description = "커리어톡 관련 API")
 @RestController
-@RequestMapping("/api/v1/careertalk")
+@RequestMapping("/api/v1/careertalks")
 @RequiredArgsConstructor
 public class CareertalkController {
 
     private final CareertalkCommandService careertalkCommandService;
     private final CareertalkQueryService careertalkQueryService;
 
+    /**
+     * 커리어톡 게시글 저장(POST)
+     * @param customOAuth2User 인증된 사용자
+     * @param requestDto 게시글 생성 요청 DTO
+     * @return 커리어톡 생성 응답 DTO
+     */
     @PostMapping
     @Operation(summary = "커리어톡 게시글 작성", description = "로그인한 사용자가 커리어톡 게시글을 작성합니다.")
     @ApiResponse(responseCode = "201", description = "게시글 생성 성공")
@@ -43,18 +56,29 @@ public class CareertalkController {
         return BaseResponse.onSuccessCreate(careertalkCommandService.createCareertalk(username, requestDto));
     }
 
+    /**
+     * 커리어톡 게시글 목록 조회(GET)
+     * @param cursor 이전 요청에서의 마지막 게시글 id
+     * @param size 요청한 게시글 개수
+     * @return 커리어톡 게시글 목록 DTO
+     */
     @GetMapping
     @Operation(summary = "커리어톡 게시글 목록 조회 (무한 스크롤)", description = "커리어톡 게시글 목록을 무한 스크롤 방식으로 조회합니다.")
     @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공")
     public BaseResponse<GetCareertalkListResponseDto> getCareertalks(
-            @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "8") int size
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(defaultValue = "8") int size
     ) {
-        return BaseResponse.onSuccess(careertalkQueryService.getCareertalks(page, size));
+        return BaseResponse.onSuccess(careertalkQueryService.getCareertalks(cursor, size));
     }
 
+    /**
+     * 커리어톡 게시글 상세 조회(GET)
+     * @param careertalkId 조회하고자 하는 커리어톡 게시글 id
+     * @return 해당하는 커리어톡 게시글 DTO
+     */
     @GetMapping("/{careertalkId}")
-    @Operation(summary = "커리어톡 게시글 상세 조회", description = "커리어톡 게시글을 싱세 조회합니다.")
+    @Operation(summary = "커리어톡 게시글 상세 조회", description = "커리어톡 게시글을 상세 조회합니다.")
     @ApiResponse(responseCode = "200", description = "게시글 상세 조회 성공")
     public BaseResponse<GetCareertalkResponseDto> getCareertalk(
             @PathVariable Long careertalkId

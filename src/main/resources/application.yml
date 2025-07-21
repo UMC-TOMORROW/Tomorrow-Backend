@@ -4,6 +4,9 @@ spring:
     import: optional:file:./env.properties
   application:
     name: tomorrow
+  messages:
+    encoding: UTF-8
+    basename: validation
 
   profiles:
     active: local #임시수정
