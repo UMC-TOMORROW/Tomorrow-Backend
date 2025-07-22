@@ -1,10 +1,3 @@
-/**
- * 커리어톡 조회 서비스
- * - 커리어톡 조회 비즈니스 로직
- * 작성자: 이승주
- * 생성일: 2020-07-10
- * 수정일: 2025-07-20
- */
 package com.umc.tomorrow.domain.careertalk.service.query;
 
 import com.umc.tomorrow.domain.careertalk.converter.CareertalkConverter;
@@ -78,6 +71,7 @@ public class CareertalkQueryServiceImpl implements CareertalkQueryService {
                 .id(careertalk.getId())
                 .category(careertalk.getCategory())
                 .title(careertalk.getTitle())
+                .content(careertalk.getContent())
                 .createdAt(careertalk.getCreatedAt())
                 .build();
     }
