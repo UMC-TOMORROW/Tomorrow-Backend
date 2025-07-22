@@ -1,13 +1,19 @@
+/**
+ * 커리어톡 게시글 단일 조회 응답 DTO
+ * 커리어톡 게시글 단일 조회 API의 응답 구조 정의
+ * 작성자: 이승주
+ * 생성일: 2025-07-10
+ * 수정일: 2025-07-20
+ */
 package com.umc.tomorrow.domain.careertalk.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import lombok.*;
 
-@Schema(description = "커리어톡 게시글 단일 조회 응답 DTO")
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@Schema(description = "커리어톡 게시글 단일 조회 응답 DTO")
 public class GetCareertalkResponseDto {
 
     @Schema(description = "게시글 ID", example = "1")
@@ -20,5 +26,6 @@ public class GetCareertalkResponseDto {
     private String title;
 
     @Schema(description = "작성일시", example = "2025-07-08T09:00:00")
-    private String createdAt;
+    private LocalDateTime createdAt;
+
 }
