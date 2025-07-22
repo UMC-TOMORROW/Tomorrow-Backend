@@ -1,3 +1,10 @@
+/**
+ * 커리어톡 Entity
+ * - 자신의 커리어를 기록
+ * 작성자: 이승주
+ * 생성일: 2025-07-10
+ * 수정일: 2025-07-20
+ */
 package com.umc.tomorrow.domain.careertalk.entity;
 
 import com.umc.tomorrow.domain.member.entity.User;
@@ -22,8 +29,8 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
 public class Careertalk extends BaseEntity {
