@@ -8,6 +8,7 @@
 package com.umc.tomorrow.domain.member.repository;
 
 import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.domain.member.enums.Provider;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -18,5 +19,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return 주어진 username에 해당하는 User 엔티티. 없으면 null 반환.
      */
     User findByUsername(String username);
-    User findByProviderAndProviderUserId(User.Provider provider, String providerUserId);
+
+    User findByProviderAndProviderUserId(Provider provider, String providerUserId);
 }

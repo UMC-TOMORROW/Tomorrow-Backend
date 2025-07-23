@@ -30,6 +30,9 @@ public enum GlobalErrorStatus implements BaseCodeInterface {
     NEGATIVE_PAGE_SIZE_REQUEST(HttpStatus.BAD_REQUEST, "PAGE4001", "잘못된 페이지 사이즈 요청입니다."),
     ;
 
+    // applicationErrorStatus(지원자 상태)
+    
+
     private final HttpStatus httpStatus;
     private final boolean isSuccess = false; //성공 여부 실패로 고정
     private final String code;
