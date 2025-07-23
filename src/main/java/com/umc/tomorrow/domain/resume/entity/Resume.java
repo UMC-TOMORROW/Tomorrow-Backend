@@ -6,6 +6,7 @@
  */
 package com.umc.tomorrow.domain.resume.entity;
 
+import com.umc.tomorrow.domain.introduction.entity.Introduction;
 import com.umc.tomorrow.domain.member.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,7 +27,8 @@ public class Resume {
     private User user;
 
     // 자기소개
-    private String introduction;
+    @OneToOne(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Introduction introduction;
 
     // 경력 목록
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)

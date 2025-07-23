@@ -32,7 +32,7 @@ public class JobCommandController {
             @Valid @RequestBody JobRequestDTO requestDTO,
             HttpSession session
     ) {
-        JobStepResponseDTO result = jobCommandService.saveInitialJobStep(user.getUsername(), requestDTO, session);
+        JobStepResponseDTO result = jobCommandService.saveInitialJobStep(user.getId(), requestDTO, session);
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
 
@@ -41,9 +41,10 @@ public class JobCommandController {
     @Operation(summary = "사업자 인증", description = "일자리 등록 페이지에서 회사를 선택한 사람은 사업자 인증 페이지로 이동한다")
     @PostMapping("/business-verifications")
     public ResponseEntity<BaseResponse<Object>> saveBusinessVerification(
+            @AuthenticationPrincipal User user,
             @Valid @RequestBody BusinessRequestDTO requestDTO
     ) {
-        jobCommandService.saveBusinessVerification(requestDTO);
+        jobCommandService.saveBusinessVerification(user.getId(), requestDTO);
 
         return ResponseEntity.ok(BaseResponse.onSuccess("verifications_suceess"));
     }
@@ -52,9 +53,10 @@ public class JobCommandController {
     @Operation(summary = "개인 등록 사유", description = "일자리 등록 페이지에서 개인를 선택한 사람은 개인 등록 사유 페이지로 이동한다")
     @PostMapping("/personal-registrations")
     public ResponseEntity<BaseResponse<Object>> savePersonalRegistration(
+            @AuthenticationPrincipal User user,
             @Valid @RequestBody PersonalRequestDTO requestDTO
     ) {
-        jobCommandService.savePersonalRegistration(requestDTO);
+        jobCommandService.savePersonalRegistration(user.getId(), requestDTO);
 
         return ResponseEntity.ok(BaseResponse.onSuccess("personal-registrations_suceess"));
     }
