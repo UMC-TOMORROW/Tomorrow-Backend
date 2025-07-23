@@ -2,6 +2,7 @@ package com.umc.tomorrow.domain.introduction.service.command;
 
 import com.umc.tomorrow.domain.introduction.converter.IntroductionConverter;
 import com.umc.tomorrow.domain.introduction.dto.request.IntroductionCreateRequestDTO;
+import com.umc.tomorrow.domain.introduction.dto.request.IntroductionUpdateRequestDTO;
 import com.umc.tomorrow.domain.introduction.dto.response.GetIntroductionResponseDTO;
 import com.umc.tomorrow.domain.introduction.dto.response.IntroductionResponseDTO;
 import com.umc.tomorrow.domain.introduction.entity.Introduction;
@@ -85,5 +86,35 @@ public class IntroductionCommandServiceImpl implements IntroductionCommandServic
         }
 
         return introductionConverter.toGetResponseDTO(introduction);
+    }
+
+    /**
+     * 이력서 자기소개 생성 메서드
+     * @param userId 자기소개를 수정할 사용자
+     * @param resumeId 수정할 이력서 id
+     * @param dto 자기소개 수정 요청 DTO
+     * @return converter로 이동
+     */
+    @Override
+    public IntroductionResponseDTO updateIntroduction(Long userId, Long resumeId, IntroductionUpdateRequestDTO dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+
+        if (!resume.getUser().getId().equals(user.getId())) {
+            throw new RestApiException(GlobalErrorStatus._ACCESS_DENIED);
+        }
+
+        Introduction introduction = resume.getIntroduction();
+        if (introduction == null) {
+            throw new RestApiException(GlobalErrorStatus._NOT_FOUND);
+        }
+
+        introduction.setContent(dto.getContent());
+
+        Introduction saved = introductionRepository.save(introduction);
+        return introductionConverter.toResponseDTO(saved);
     }
 }

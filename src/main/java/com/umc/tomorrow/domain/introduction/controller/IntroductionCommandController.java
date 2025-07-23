@@ -2,6 +2,7 @@ package com.umc.tomorrow.domain.introduction.controller;
 
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.introduction.dto.request.IntroductionCreateRequestDTO;
+import com.umc.tomorrow.domain.introduction.dto.request.IntroductionUpdateRequestDTO;
 import com.umc.tomorrow.domain.introduction.dto.response.GetIntroductionResponseDTO;
 import com.umc.tomorrow.domain.introduction.dto.response.IntroductionResponseDTO;
 import com.umc.tomorrow.domain.introduction.service.command.IntroductionCommandService;
@@ -61,6 +62,27 @@ public class IntroductionCommandController {
         Long userId = user.getUserDTO().getId();
 
         GetIntroductionResponseDTO response = introductionCommandService.getIntroduction(userId, resumeId);
+
+        return ResponseEntity.ok(BaseResponse.onSuccess(response));
+    }
+
+    /**
+     * 이력서 자기소개 수정(PUT)
+     * @param resumeId 이력서 아이디
+     * @param user 인증된 사용자
+     * @param requestDTO 자기소개 수정 요청 DTO
+     * @return 성공 응답
+     */
+    @Operation(summary = "이력서 자기소개 수정", description = "자기소개를 수정하는 api입니다.")
+    @PutMapping
+    public ResponseEntity<BaseResponse<IntroductionResponseDTO>> updateIntroduction(
+            @PathVariable Long resumeId,
+            @AuthenticationPrincipal CustomOAuth2User user,
+            @RequestBody @Valid IntroductionUpdateRequestDTO requestDTO) {
+
+        Long userId = user.getUserDTO().getId();
+
+        IntroductionResponseDTO response = introductionCommandService.updateIntroduction(userId, resumeId, requestDTO);
 
         return ResponseEntity.ok(BaseResponse.onSuccess(response));
     }
