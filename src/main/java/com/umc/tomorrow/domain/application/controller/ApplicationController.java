@@ -9,7 +9,7 @@ package com.umc.tomorrow.domain.application.controller;
 
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
-import com.umc.tomorrow.domain.application.service.ApplicationService;
+import com.umc.tomorrow.domain.application.service.command.ApplicationService;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "지원서", description = "지원서 관련 API")
+@Tag(name = "Application", description = "지원서 관련 API")
 @RestController
 @RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor

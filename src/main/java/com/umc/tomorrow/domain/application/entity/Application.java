@@ -8,6 +8,7 @@
  */
 package com.umc.tomorrow.domain.application.entity;
 
+import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
 import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.review.entity.Review;
@@ -31,9 +32,10 @@ public class Application extends BaseEntity {
     
     @Column(length = 100, nullable = false)
     private String content; // 지원정보 입력란
-    
-    @Column(nullable = true)
-    private Boolean status; // 합격여부 (true: 합격, false: 불합격, null: 미정)
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private ApplicationStatus status;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id", nullable = false)
@@ -46,20 +48,15 @@ public class Application extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    
+
+    @Column(nullable = false)
+    private LocalDateTime appliedAt;
+
     /**
      * 합격/불합격 상태 업데이트
      */
-    public void updateStatus(Boolean newStatus) {
+    public void updateStatus(ApplicationStatus newStatus) {
         this.status = newStatus;
-        this.setUpdatedAt(LocalDateTime.now());
-    }
-    
-    /**
-     * 지원 내용 업데이트
-     */
-    public void updateContent(String content) {
-        this.content = content;
         this.setUpdatedAt(LocalDateTime.now());
     }
 
