@@ -9,6 +9,7 @@ package com.umc.tomorrow.domain.careertalk.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -23,6 +24,7 @@ public class CreateCareertalkRequestDto {
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     @NotBlank(message = "careertalk.category.notblank")
+    @Size(max = 20, message = "careertalk.category.size")
     private String category;
 
     @Schema(
@@ -31,6 +33,7 @@ public class CreateCareertalkRequestDto {
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     @NotBlank(message = "careertalk.title.notblank")
+    @Size(max = 50, message = "careertalk.title.size")
     private String title;
 
     @Schema(
