@@ -9,7 +9,12 @@
 package com.umc.tomorrow.domain.member.controller;
 
 import com.umc.tomorrow.domain.member.dto.UserDTO;
+import com.umc.tomorrow.domain.member.dto.request.DeactivateUserRequest;
+import com.umc.tomorrow.domain.member.dto.response.DeactivateUserResponse;
+import com.umc.tomorrow.domain.member.dto.response.RecoverUserResponse;
+import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +22,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.umc.tomorrow.domain.member.exception.MemberStatus;
 
 @Tag(name = "member-controller", description = "회원 관련 API")
 @RestController
@@ -50,4 +56,22 @@ public class MemberController {
         UserDTO updated = memberService.updateUser(user.getUserDTO(), userDTO);
         return ResponseEntity.ok(updated);
     }
-} 
+
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 API입니다. 14일 내로 복구가 가능합니다.")
+    @PatchMapping("/{memberId}/deactivate")
+    public ResponseEntity<BaseResponse<DeactivateUserResponse>> deactivateUser(
+            @PathVariable("memberId") Long memberId,
+            @RequestBody DeactivateUserRequest request
+    ) {
+        DeactivateUserResponse result = memberService.deactivateUser(memberId, request);
+        return ResponseEntity.ok(BaseResponse.of(MemberStatus.MEMBER_DEACTIVATED, result));
+    }
+    @Operation(summary = "회원 복구", description = "14일 내에 탈퇴한 회원만 복구 가능합니다.")
+    @PatchMapping("/{memberId}/recover")
+    public ResponseEntity<BaseResponse<RecoverUserResponse>> recoverUser(
+            @PathVariable("memberId") Long memberId
+    ) {
+        RecoverUserResponse result = memberService.recoverUser(memberId);
+        return ResponseEntity.ok(BaseResponse.of(MemberStatus.MEMBER_RECOVERED, result));
+    }
+}

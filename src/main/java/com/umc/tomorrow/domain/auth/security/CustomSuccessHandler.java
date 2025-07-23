@@ -2,6 +2,7 @@ package com.umc.tomorrow.domain.auth.security;
 
 import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
 import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.domain.member.enums.Provider;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -44,7 +45,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String providerStr = customUserDetails.getUserDTO().getProvider();
         String providerUserId = customUserDetails.getUserDTO().getProviderUserId();
-        User.Provider provider = User.Provider.valueOf(providerStr.toUpperCase());
+        Provider provider = Provider.valueOf(providerStr.toUpperCase());
 
         User user = userRepository.findByProviderAndProviderUserId(provider, providerUserId);
         if (user == null) {
@@ -58,7 +59,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             providerStr = customUserDetails.getUserDTO().getProvider();
             providerUserId = customUserDetails.getUserDTO().getProviderUserId();
             if (providerStr != null) {
-                user.setProvider(User.Provider.valueOf(providerStr.toUpperCase()));
+                user.setProvider(Provider.valueOf(providerStr.toUpperCase()));
             }
             user.setProviderUserId(providerUserId);
             // username은 provider + '_' + providerUserId로 생성

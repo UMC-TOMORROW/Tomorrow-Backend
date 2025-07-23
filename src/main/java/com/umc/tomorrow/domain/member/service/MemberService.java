@@ -8,12 +8,21 @@
 package com.umc.tomorrow.domain.member.service;
 
 import com.umc.tomorrow.domain.member.dto.UserDTO;
+import com.umc.tomorrow.domain.member.dto.request.DeactivateUserRequest;
+import com.umc.tomorrow.domain.member.dto.response.DeactivateUserResponse;
+import com.umc.tomorrow.domain.member.dto.response.RecoverUserResponse;
 import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.domain.member.enums.UserStatus;
+import com.umc.tomorrow.domain.member.exception.MemberStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.domain.member.dto.UserConverter;
+import com.umc.tomorrow.global.common.exception.RestApiException;
+import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 public class MemberService {
@@ -46,4 +55,56 @@ public class MemberService {
     public UserDTO toDTO(User user) {
         return UserConverter.toDTO(user);
     }
+
+    /**
+     * 회원 탈퇴 처리 (DELETED 상태로 변경)
+     * 14일 이내 복구 가능
+     */
+    @Transactional
+    public DeactivateUserResponse deactivateUser(Long userId, DeactivateUserRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+        if (user.getStatus() == UserStatus.DELETED) {
+            throw new IllegalStateException("이미 탈퇴한 사용자입니다.");
+        }
+
+        // 상태 변경 및 시간 기록
+        user.setStatus(UserStatus.DELETED);
+        user.setInactiveAt(LocalDateTime.now());
+
+        return DeactivateUserResponse.builder()
+                .status(user.getStatus().name())
+                .deletedAt(user.getInactiveAt())
+                .recoverableUntil(user.getInactiveAt().plusDays(14))
+                .build();
+    }
+
+    /**
+     * 회원 복구 처리 (ACTIVE 상태로 변경)
+     * 14일 이내 복구 가능
+     */
+    @Transactional
+    public RecoverUserResponse recoverUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+
+        if (user.getStatus() != UserStatus.DELETED) {
+            throw new RestApiException(MemberStatus.NOT_DELETED_USER);
+        }
+
+        if (user.getInactiveAt().plusDays(14).isBefore(LocalDateTime.now())) {
+            throw new RestApiException(MemberStatus.INVALID_RECOVERY_PERIOD);
+        }
+
+        user.setStatus(UserStatus.ACTIVE);
+        user.setInactiveAt(null);
+
+        return RecoverUserResponse.builder()
+                .status(user.getStatus().name())
+                .recoveredAt(LocalDateTime.now())
+                .build();
+    }
+
+
 } 
