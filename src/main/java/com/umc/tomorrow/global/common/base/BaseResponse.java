@@ -28,7 +28,7 @@ public class BaseResponse<T> {
     }
 
     public static <T> BaseResponse<T> onSuccessDelete(T result) {
-        return new BaseResponse<>("COMMON202", "삭제 요청에 성공하였습니다.", result);
+        return new BaseResponse<>("COMMON200", "삭제 요청에 성공하였습니다.", result);
     }
 
     public static <T> BaseResponse<T> of(BaseCodeInterface code, T result) {
