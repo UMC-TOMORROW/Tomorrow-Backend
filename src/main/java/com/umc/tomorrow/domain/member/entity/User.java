@@ -1,6 +1,9 @@
 package com.umc.tomorrow.domain.member.entity;
 
 import com.umc.tomorrow.domain.job.entity.Job;
+import com.umc.tomorrow.domain.member.enums.Gender;
+import com.umc.tomorrow.domain.member.enums.Provider;
+import com.umc.tomorrow.domain.member.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,7 +40,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
-    private Status status;
+    private UserStatus status;
 
     private LocalDateTime inactiveAt;
 
@@ -68,16 +71,4 @@ public class User {
     //연관관계
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Job> jobs = new ArrayList<>(); // 내가 등록한 일자리 목록
-
-    public enum Gender {
-        MALE, FEMALE
-    }
-
-    public enum Status {
-        ACTIVE, INACTIVE
-    }
-
-    public enum Provider {
-        KAKAO, NAVER, GOOGLE
-    }
 }

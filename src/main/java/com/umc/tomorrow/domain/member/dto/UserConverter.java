@@ -8,6 +8,9 @@
 package com.umc.tomorrow.domain.member.dto;
 
 import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.domain.member.enums.Gender;
+import com.umc.tomorrow.domain.member.enums.Provider;
+import com.umc.tomorrow.domain.member.enums.UserStatus;
 
 public class UserConverter {
     public static UserDTO toDTO(User user) {
@@ -33,13 +36,13 @@ public class UserConverter {
     public static void updateEntity(User user, UserDTO dto) {
         if (dto.getEmail() != null) user.setEmail(dto.getEmail());
         if (dto.getName() != null) user.setName(dto.getName());
-        if (dto.getGender() != null) user.setGender(User.Gender.valueOf(String.valueOf(dto.getGender())));
+        if (dto.getGender() != null) user.setGender(Gender.valueOf(String.valueOf(dto.getGender())));
         if (dto.getPhoneNumber() != null) user.setPhoneNumber(dto.getPhoneNumber());
         if (dto.getAddress() != null) user.setAddress(dto.getAddress());
-        if (dto.getStatus() != null) user.setStatus(User.Status.valueOf(dto.getStatus()));
+        if (dto.getStatus() != null) user.setStatus(UserStatus.valueOf(dto.getStatus()));
         if (dto.getInactiveAt() != null) user.setInactiveAt(dto.getInactiveAt());
         if (dto.getIsOnboarded() != null) user.setIsOnboarded(dto.getIsOnboarded());
-        if (dto.getProvider() != null) user.setProvider(User.Provider.valueOf(dto.getProvider()));
+        if (dto.getProvider() != null) user.setProvider(Provider.valueOf(dto.getProvider()));
         if (dto.getProviderUserId() != null) user.setProviderUserId(dto.getProviderUserId());
         if (dto.getCreatedAt() != null) user.setCreatedAt(dto.getCreatedAt());
         if (dto.getUpdatedAt() != null) user.setUpdatedAt(dto.getUpdatedAt());
