@@ -1,6 +1,7 @@
 package com.umc.tomorrow.domain.job.dto.response;
 
 import com.umc.tomorrow.domain.job.enums.RegistrantType;
+import com.umc.tomorrow.domain.member.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,4 +16,6 @@ public class JobStepResponseDTO {
 
     @Schema(description = "일자리 폼 저장 상태", example = "job_form_saved")
     private String step;
+
+    private User user;
 }
