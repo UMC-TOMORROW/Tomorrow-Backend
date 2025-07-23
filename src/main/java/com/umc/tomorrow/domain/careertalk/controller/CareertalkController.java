@@ -123,4 +123,36 @@ public class CareertalkController {
     ){
         return ResponseEntity.ok(BaseResponse.onSuccessDelete(careertalkCommandService.deleteCareertalk(customOAuth2User.getUserDTO().getId(),careertalkId)));
     }
+
+    /**
+     * 커리어톡 게시글 제목으로 검색 API
+     * @param title 커리어톡 게시글
+     * @return 커리어톡 게시글 목록 DTO
+     */
+    @GetMapping("/search/title")
+    @Operation(summary = "커리어톡 게시글 제목으로 검색", description = "로그인한 사용자가 커리어톡 게시글을 제목으로 검색하여 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "게시글 조회 성공")
+    public ResponseEntity<BaseResponse<GetCareertalkListResponseDto>> getCareertalksByTitle(
+            @RequestParam String title,
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(defaultValue = "8") int size
+    ){
+        return ResponseEntity.ok(BaseResponse.onSuccess(careertalkQueryService.getCareertalksByTitle(title,cursor,size)));
+    }
+
+    /**
+     * 커리어톡 게시글 카테고리로 검색 API
+     * @param category 커리어톡 게시글 카테고리
+     * @return 커리어톡 게시글 목록 DTO
+     */
+    @GetMapping("/search/category")
+    @Operation(summary = "커리어톡 게시글 카테고리로 검색", description = "로그인한 사용자가 커리어톡 게시글을 카테고리로 검색하여 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "게시글 조회 성공")
+    public ResponseEntity<BaseResponse<GetCareertalkListResponseDto>> getCareertalksByCategory(
+            @RequestParam String category,
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(defaultValue = "8") int size
+    ){
+        return ResponseEntity.ok(BaseResponse.onSuccess(careertalkQueryService.getCareertalksByCategory(category,cursor,size)));
+    }
 }
