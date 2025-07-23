@@ -5,6 +5,9 @@
  */
 package com.umc.tomorrow.domain.application.enums;
 
+import com.umc.tomorrow.domain.application.exception.ApplicationErrorStatus;
+import com.umc.tomorrow.domain.application.exception.ApplicationException;
+
 public enum ApplicationStatus {
     ACCEPTED("합격"),
     REJECTED("불합격");
@@ -23,7 +26,7 @@ public enum ApplicationStatus {
         return switch (label) {
             case "합격" -> ACCEPTED;
             case "불합격" -> REJECTED;
-            default -> throw new IllegalArgumentException("지원서 상태는 '합격' 또는 '불합격'이어야 합니다.");
+            default -> throw new ApplicationException(ApplicationErrorStatus.INVALID_STATUS);
         };
     }
 }
