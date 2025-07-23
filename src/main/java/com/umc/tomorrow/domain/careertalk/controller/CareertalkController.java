@@ -127,6 +127,8 @@ public class CareertalkController {
     /**
      * 커리어톡 게시글 제목으로 검색 API
      * @param title 커리어톡 게시글
+     * @param cursor 이전 요청에서의 마지막 게시글 id
+     * @param size 요청한 게시글 개수
      * @return 커리어톡 게시글 목록 DTO
      */
     @GetMapping("/search/title")
@@ -143,6 +145,8 @@ public class CareertalkController {
     /**
      * 커리어톡 게시글 카테고리로 검색 API
      * @param category 커리어톡 게시글 카테고리
+     * @param cursor 이전 요청에서의 마지막 게시글 id
+     * @param size 요청한 게시글 개수
      * @return 커리어톡 게시글 목록 DTO
      */
     @GetMapping("/search/category")
