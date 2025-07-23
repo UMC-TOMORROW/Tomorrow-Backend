@@ -11,11 +11,17 @@ import com.umc.tomorrow.domain.careertalk.entity.Careertalk;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface CareertalkRepository extends JpaRepository<Careertalk, Long> {
-    // 첫 요청 (cursor 없음)
-    Slice<Careertalk> findAllByOrderByIdDesc(Pageable pageable);
 
-    // 커서 기반 요청
+    Slice<Careertalk> findAllByOrderByIdDesc(Pageable pageable);
     Slice<Careertalk> findByIdLessThanOrderByIdDesc(Long id, Pageable pageable);
+
+    Slice<Careertalk> findByTitleContainingIgnoreCaseOrderByIdDesc(String title, Pageable pageable);
+    Slice<Careertalk> findByTitleContainingIgnoreCaseAndIdLessThanOrderByIdDesc(String title, Long id, Pageable pageable);
+
+    Slice<Careertalk> findByCategoryOrderByIdDesc(String category, Pageable pageable);
+    Slice<Careertalk> findByCategoryAndIdLessThanOrderByIdDesc(String category, Long id, Pageable pageable);
 }
