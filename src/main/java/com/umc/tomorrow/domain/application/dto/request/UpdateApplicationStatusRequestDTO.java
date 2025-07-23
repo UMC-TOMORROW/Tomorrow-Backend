@@ -16,7 +16,6 @@ import lombok.Getter;
 @Builder
 public class UpdateApplicationStatusRequestDTO {
     
-    @NotBlank(message = "상태는 필수입니다.")
-    @Pattern(regexp = "^(합격|불합격)$", message = "상태는 '합격' 또는 '불합격'이어야 합니다.")
+    @NotBlank(message = "{application.status.notblank}")
     private String status;
 } 
