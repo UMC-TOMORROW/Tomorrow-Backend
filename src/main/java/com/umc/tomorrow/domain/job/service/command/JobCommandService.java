@@ -8,9 +8,9 @@ import jakarta.servlet.http.HttpSession;
 
 public interface JobCommandService {
 
-    JobStepResponseDTO saveInitialJobStep(String username,JobRequestDTO requestDTO, HttpSession session);
+    JobStepResponseDTO saveInitialJobStep(Long userId,JobRequestDTO requestDTO, HttpSession session);
 
-    void saveBusinessVerification(BusinessRequestDTO requestDTO);
+    void saveBusinessVerification(Long userId, BusinessRequestDTO requestDTO);
 
-    void savePersonalRegistration(PersonalRequestDTO requestDTO);
+    void savePersonalRegistration(Long userId, PersonalRequestDTO requestDTO);
 }

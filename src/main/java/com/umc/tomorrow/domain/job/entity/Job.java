@@ -5,6 +5,7 @@ import com.umc.tomorrow.domain.job.enums.PaymentType;
 import com.umc.tomorrow.domain.job.enums.RegistrantType;
 import com.umc.tomorrow.domain.job.enums.WorkPeriod;
 import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +25,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Job {
+public class Job extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,11 +34,6 @@ public class Job {
 
     @Column(nullable = false, length = 100)
     private String title;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -6,6 +6,7 @@
  */
 package com.umc.tomorrow.domain.resume.converter;
 
+import com.umc.tomorrow.domain.introduction.entity.Introduction;
 import com.umc.tomorrow.domain.resume.dto.request.ResumeSaveRequestDTO;
 import com.umc.tomorrow.domain.resume.dto.response.ResumeSummaryResponseDTO;
 import com.umc.tomorrow.domain.resume.entity.Resume;
@@ -22,8 +23,15 @@ public class ResumeConverter {
     public static Resume toEntity(ResumeSaveRequestDTO dto, User user) {
         Resume resume = Resume.builder()
             .user(user)
-            .introduction(dto.getIntroduction())
             .build();
+
+        Introduction introduction = Introduction.builder()
+                .content(dto.getIntroduction())
+                .resume(resume)
+                .build();
+        resume.setIntroduction(introduction);
+
+
         List<Experience> experiences = dto.getExperiences().stream()
             .map(expDto -> Experience.builder()
                 .place(expDto.getPlace())
@@ -46,7 +54,9 @@ public class ResumeConverter {
      */
     public static ResumeSummaryResponseDTO toSummaryDTO(Resume resume) {
         return ResumeSummaryResponseDTO.builder()
-            .introduction(resume.getIntroduction())
+                .introduction(resume.getIntroduction() != null
+                        ? resume.getIntroduction().getContent()
+                        : null)
             .experiences(resume.getExperiences().stream()
                 .map(exp -> ResumeSummaryResponseDTO.ExperienceSummary.builder()
                     .place(exp.getPlace())
