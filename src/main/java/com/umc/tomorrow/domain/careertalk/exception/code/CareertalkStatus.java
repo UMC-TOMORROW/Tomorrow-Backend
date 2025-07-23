@@ -1,3 +1,8 @@
+/**
+ * 커리어톡 에 대한 예외처리 상태코드
+ * 작성자: 이승주
+ * 생성일: 2025-07-24
+ */
 package com.umc.tomorrow.domain.careertalk.exception.code;
 
 import com.umc.tomorrow.global.common.exception.code.BaseCode;
