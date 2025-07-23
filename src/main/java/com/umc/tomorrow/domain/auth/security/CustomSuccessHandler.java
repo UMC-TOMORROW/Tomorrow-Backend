@@ -42,7 +42,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        User user = userRepository.findByUsername(username);
+        String providerStr = customUserDetails.getUserDTO().getProvider();
+        String providerUserId = customUserDetails.getUserDTO().getProviderUserId();
+        User.Provider provider = User.Provider.valueOf(providerStr.toUpperCase());
+
+        User user = userRepository.findByProviderAndProviderUserId(provider, providerUserId);
         if (user == null) {
             // 소셜 로그인 정보로 새 회원 생성
             user = new User();
@@ -51,8 +55,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             user.setCreatedAt(java.time.LocalDateTime.now());
             user.setUpdatedAt(java.time.LocalDateTime.now());
             // provider, providerUserId, username, email 세팅
-            String providerStr = customUserDetails.getUserDTO().getProvider();
-            String providerUserId = customUserDetails.getUserDTO().getProviderUserId();
+            providerStr = customUserDetails.getUserDTO().getProvider();
+            providerUserId = customUserDetails.getUserDTO().getProviderUserId();
             if (providerStr != null) {
                 user.setProvider(User.Provider.valueOf(providerStr.toUpperCase()));
             }

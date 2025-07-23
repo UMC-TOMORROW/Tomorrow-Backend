@@ -25,6 +25,9 @@ public class GetCareertalkResponseDto {
     @Schema(description = "제목", example = "요양보호사 기초과정")
     private String title;
 
+    @Schema(description = "내용", example = "요양보호사는 좋은직업입니다.....")
+    private String content;
+
     @Schema(description = "작성일시", example = "2025-07-08T09:00:00")
     private LocalDateTime createdAt;
 
