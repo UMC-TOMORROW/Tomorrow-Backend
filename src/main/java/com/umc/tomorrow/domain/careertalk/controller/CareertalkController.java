@@ -22,6 +22,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,11 +53,12 @@ public class CareertalkController {
     @PostMapping
     @Operation(summary = "커리어톡 게시글 작성", description = "로그인한 사용자가 커리어톡 게시글을 작성합니다.")
     @ApiResponse(responseCode = "201", description = "게시글 생성 성공")
-    public BaseResponse<CareertalkResponseDto> createCareertalk(
+    public ResponseEntity<BaseResponse<CareertalkResponseDto>> createCareertalk(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @Valid @RequestBody CreateCareertalkRequestDto requestDto
     ) {
-        return BaseResponse.onSuccessCreate(careertalkCommandService.createCareertalk(customOAuth2User.getUserDTO().getId(), requestDto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(BaseResponse.onSuccessCreate(careertalkCommandService.createCareertalk(customOAuth2User.getUserDTO().getId(), requestDto)));
     }
 
     /**
@@ -67,11 +70,11 @@ public class CareertalkController {
     @GetMapping
     @Operation(summary = "커리어톡 게시글 목록 조회 (무한 스크롤)", description = "커리어톡 게시글 목록을 무한 스크롤 방식으로 조회합니다.")
     @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공")
-    public BaseResponse<GetCareertalkListResponseDto> getCareertalks(
+    public ResponseEntity<BaseResponse<GetCareertalkListResponseDto>> getCareertalks(
             @RequestParam(required = false) Long cursor,
             @RequestParam(defaultValue = "8") int size
     ) {
-        return BaseResponse.onSuccess(careertalkQueryService.getCareertalks(cursor, size));
+        return ResponseEntity.ok(BaseResponse.onSuccess(careertalkQueryService.getCareertalks(cursor, size)));
     }
 
     /**
@@ -82,10 +85,10 @@ public class CareertalkController {
     @GetMapping("/{careertalkId}")
     @Operation(summary = "커리어톡 게시글 상세 조회", description = "커리어톡 게시글을 상세 조회합니다.")
     @ApiResponse(responseCode = "200", description = "게시글 상세 조회 성공")
-    public BaseResponse<GetCareertalkResponseDto> getCareertalk(
+    public ResponseEntity<BaseResponse<GetCareertalkResponseDto>> getCareertalk(
             @PathVariable Long careertalkId
     ) {
-        return BaseResponse.onSuccess(careertalkQueryService.getCareertalk(careertalkId));
+        return ResponseEntity.ok(BaseResponse.onSuccess(careertalkQueryService.getCareertalk(careertalkId)));
     }
 
     /**
@@ -97,21 +100,27 @@ public class CareertalkController {
     @PutMapping("/{careertalkId}")
     @Operation(summary = "커리어톡 게시글 수정", description = "로그인한 사용자가 커리어톡 게시글을 수정합니다.")
     @ApiResponse(responseCode = "200", description = "게시글 수정 성공")
-    public BaseResponse<CareertalkResponseDto> updateCareertalk(
+    public ResponseEntity<BaseResponse<CareertalkResponseDto>> updateCareertalk(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @PathVariable Long careertalkId,
             @Valid @RequestBody UpdateCareertalkRequestDto requestDto
     ){
-        return BaseResponse.onSuccess(careertalkCommandService.updateCareertalk(customOAuth2User.getUserDTO().getId(),careertalkId,requestDto));
+        return ResponseEntity.ok(BaseResponse.onSuccess(careertalkCommandService.updateCareertalk(customOAuth2User.getUserDTO().getId(),careertalkId,requestDto)));
     }
 
+    /**
+     * 커리어톡 게시글 삭제 API
+     * @param customOAuth2User 인증된 사용자
+     * @param careertalkId 게시글 Id
+     * @return 커리어톡 응답 DTO
+     */
     @DeleteMapping("/{careertalkId}")
     @Operation(summary = "커리어톡 게시글 삭제", description = "로그인한 사용자가 커리어톡 게시글을 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "게시글 삭제 성공")
-    public BaseResponse<CareertalkResponseDto> deleteCareertalk(
+    public ResponseEntity<BaseResponse<CareertalkResponseDto>> deleteCareertalk(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @PathVariable Long careertalkId
     ){
-        return BaseResponse.onSuccessDelete(careertalkCommandService.deleteCareertalk(customOAuth2User.getUserDTO().getId(),careertalkId));
+        return ResponseEntity.ok(BaseResponse.onSuccessDelete(careertalkCommandService.deleteCareertalk(customOAuth2User.getUserDTO().getId(),careertalkId)));
     }
 }
