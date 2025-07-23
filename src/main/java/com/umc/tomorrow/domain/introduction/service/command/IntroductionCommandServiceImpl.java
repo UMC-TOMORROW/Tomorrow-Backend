@@ -6,6 +6,7 @@ import com.umc.tomorrow.domain.introduction.dto.request.IntroductionUpdateReques
 import com.umc.tomorrow.domain.introduction.dto.response.GetIntroductionResponseDTO;
 import com.umc.tomorrow.domain.introduction.dto.response.IntroductionResponseDTO;
 import com.umc.tomorrow.domain.introduction.entity.Introduction;
+import com.umc.tomorrow.domain.introduction.exception.code.IntroductionStatus;
 import com.umc.tomorrow.domain.introduction.repository.IntroductionRepository;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
@@ -39,15 +40,15 @@ public class IntroductionCommandServiceImpl implements IntroductionCommandServic
     public IntroductionResponseDTO saveIntroduction(Long userId, Long resumeId, IntroductionCreateRequestDTO dto) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(IntroductionStatus.INTRODUCTION_FORBIDDEN));
 
         // 존재하는 이력서인지 검증
         Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(IntroductionStatus.INTRODUCTION_NOT_FOUND));
 
         // 이력서의 소유자가 현재 유저인지 검증
         if (!resume.getUser().getId().equals(user.getId())) {
-            throw new RestApiException(GlobalErrorStatus._ACCESS_DENIED);//접근 권한
+            throw new RestApiException(IntroductionStatus.INTRODUCTION_FORBIDDEN);
         }
 
         Introduction introduction = Introduction.builder()
@@ -71,13 +72,13 @@ public class IntroductionCommandServiceImpl implements IntroductionCommandServic
      */
     public GetIntroductionResponseDTO getIntroduction(Long userId, Long resumeId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(IntroductionStatus.INTRODUCTION_FORBIDDEN));
 
         Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(IntroductionStatus.INTRODUCTION_NOT_FOUND));
 
         if (!resume.getUser().getId().equals(user.getId())) {
-            throw new RestApiException(GlobalErrorStatus._ACCESS_DENIED);
+            throw new RestApiException(IntroductionStatus.INTRODUCTION_FORBIDDEN);
         }
 
         Introduction introduction = resume.getIntroduction();
@@ -98,13 +99,13 @@ public class IntroductionCommandServiceImpl implements IntroductionCommandServic
     @Override
     public IntroductionResponseDTO updateIntroduction(Long userId, Long resumeId, IntroductionUpdateRequestDTO dto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(IntroductionStatus.INTRODUCTION_FORBIDDEN));
 
         Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(IntroductionStatus.INTRODUCTION_NOT_FOUND));
 
         if (!resume.getUser().getId().equals(user.getId())) {
-            throw new RestApiException(GlobalErrorStatus._ACCESS_DENIED);
+            throw new RestApiException(IntroductionStatus.INTRODUCTION_FORBIDDEN);
         }
 
         Introduction introduction = resume.getIntroduction();
