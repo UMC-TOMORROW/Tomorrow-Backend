@@ -9,7 +9,8 @@ package com.umc.tomorrow.domain.careertalk.controller;
 
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.careertalk.dto.request.CreateCareertalkRequestDto;
-import com.umc.tomorrow.domain.careertalk.dto.response.CreateCareertalkResponseDto;
+import com.umc.tomorrow.domain.careertalk.dto.request.UpdateCareertalkRequestDto;
+import com.umc.tomorrow.domain.careertalk.dto.response.CareertalkResponseDto;
 import com.umc.tomorrow.domain.careertalk.dto.response.GetCareertalkListResponseDto;
 import com.umc.tomorrow.domain.careertalk.dto.response.GetCareertalkResponseDto;
 import com.umc.tomorrow.domain.careertalk.service.command.CareertalkCommandService;
@@ -22,9 +23,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,17 +46,16 @@ public class CareertalkController {
      * 커리어톡 게시글 저장(POST)
      * @param customOAuth2User 인증된 사용자
      * @param requestDto 게시글 생성 요청 DTO
-     * @return 커리어톡 생성 응답 DTO
+     * @return 커리어톡 응답 DTO
      */
     @PostMapping
     @Operation(summary = "커리어톡 게시글 작성", description = "로그인한 사용자가 커리어톡 게시글을 작성합니다.")
     @ApiResponse(responseCode = "201", description = "게시글 생성 성공")
-    public BaseResponse<CreateCareertalkResponseDto> createCareertalk(
+    public BaseResponse<CareertalkResponseDto> createCareertalk(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @Valid @RequestBody CreateCareertalkRequestDto requestDto
     ) {
-        String username = customOAuth2User.getName();
-        return BaseResponse.onSuccessCreate(careertalkCommandService.createCareertalk(username, requestDto));
+        return BaseResponse.onSuccessCreate(careertalkCommandService.createCareertalk(customOAuth2User.getUserDTO().getId(), requestDto));
     }
 
     /**
@@ -84,5 +86,32 @@ public class CareertalkController {
             @PathVariable Long careertalkId
     ) {
         return BaseResponse.onSuccess(careertalkQueryService.getCareertalk(careertalkId));
+    }
+
+    /**
+     * 커리어톡 게시글 수정 API
+     * @param customOAuth2User 인증된 사용자
+     * @param requestDto 게시글 수정 요청 DTO
+     * @return 커리어톡 응답 DTO
+     */
+    @PutMapping("/{careertalkId}")
+    @Operation(summary = "커리어톡 게시글 수정", description = "로그인한 사용자가 커리어톡 게시글을 수정합니다.")
+    @ApiResponse(responseCode = "200", description = "게시글 수정 성공")
+    public BaseResponse<CareertalkResponseDto> updateCareertalk(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+            @PathVariable Long careertalkId,
+            @Valid @RequestBody UpdateCareertalkRequestDto requestDto
+    ){
+        return BaseResponse.onSuccess(careertalkCommandService.updateCareertalk(customOAuth2User.getUserDTO().getId(),careertalkId,requestDto));
+    }
+
+    @DeleteMapping("/{careertalkId}")
+    @Operation(summary = "커리어톡 게시글 삭제", description = "로그인한 사용자가 커리어톡 게시글을 삭제합니다.")
+    @ApiResponse(responseCode = "200", description = "게시글 삭제 성공")
+    public BaseResponse<CareertalkResponseDto> deleteCareertalk(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+            @PathVariable Long careertalkId
+    ){
+        return BaseResponse.onSuccessDelete(careertalkCommandService.deleteCareertalk(customOAuth2User.getUserDTO().getId(),careertalkId));
     }
 }
