@@ -19,5 +19,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     User findByUsername(String username);
     User findByProviderAndProviderUserId(User.Provider provider, String providerUserId);
-
 }

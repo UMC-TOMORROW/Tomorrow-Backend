@@ -1,5 +1,6 @@
 package com.umc.tomorrow.domain.job.entity;
 
+import com.umc.tomorrow.domain.job.enums.JobCategory;
 import com.umc.tomorrow.domain.job.enums.PaymentType;
 import com.umc.tomorrow.domain.job.enums.RegistrantType;
 import com.umc.tomorrow.domain.job.enums.WorkPeriod;
@@ -29,6 +30,7 @@ public class Job {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @Column(nullable = false, length = 100)
     private String title;
 
@@ -37,8 +39,9 @@ public class Job {
 
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false, length = 30)
-    private String jobCategory;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private JobCategory jobCategory;
 
     @Enumerated(EnumType.STRING)
     private WorkPeriod workPeriod;
