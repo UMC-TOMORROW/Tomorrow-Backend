@@ -11,7 +11,7 @@ import com.umc.tomorrow.domain.introduction.dto.response.IntroductionResponseDTO
 public interface CareerCommandService {
 
     CareerCreateResponseDTO saveCareer(Long userId, Long resumeId, CareerCreateRequestDTO dto);
-    //CareerCreateResponseDTO  updateCareer(Long userId, Long resumeId, CareerUpdateRequestDTO dto);
+    CareerCreateResponseDTO  updateCareer(Long userId, Long resumeId, Long careerId, CareerUpdateRequestDTO dto);
     //GetCareerResponseDTO getCareer(Long userId, Long resumeId, Long careerId);
     //deleteCareerResponseDTO deleteCareer(Long userId, Long resumeId, Long careerId);
 }

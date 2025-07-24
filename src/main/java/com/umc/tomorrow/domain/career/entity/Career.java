@@ -35,4 +35,11 @@ public class Career extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id")
     private Resume resume;
+
+    public void update(String company, String description, int workedYear, WorkPeriodType workedPeriod) {
+        this.company = company;
+        this.description = description;
+        this.workedYear = workedYear;
+        this.workedPeriod = workedPeriod;
+    }
 }
