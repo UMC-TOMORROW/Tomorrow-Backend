@@ -6,11 +6,11 @@
  */
 package com.umc.tomorrow.domain.resume.converter;
 
+import com.umc.tomorrow.domain.career.entity.Career;
 import com.umc.tomorrow.domain.introduction.entity.Introduction;
 import com.umc.tomorrow.domain.resume.dto.request.ResumeSaveRequestDTO;
 import com.umc.tomorrow.domain.resume.dto.response.ResumeSummaryResponseDTO;
 import com.umc.tomorrow.domain.resume.entity.Resume;
-import com.umc.tomorrow.domain.resume.entity.Experience;
 import com.umc.tomorrow.domain.resume.entity.Certificate;
 import com.umc.tomorrow.domain.member.entity.User;
 import java.util.stream.Collectors;
@@ -32,19 +32,19 @@ public class ResumeConverter {
         resume.setIntroduction(introduction);
 
 
-        List<Experience> experiences = dto.getExperiences().stream()
-            .map(expDto -> Experience.builder()
-                .place(expDto.getPlace())
-                .task(expDto.getTask())
-                .year(expDto.getYear())
-                .duration(expDto.getDuration())
+        List<Career> career = dto.getCareer().stream()
+            .map(careerDto -> Career.builder()
+                .company(careerDto.getCompany())
+                .description(careerDto.getDescription())
+                .workedYear(careerDto.getWorkedYear())
+                .workedPeriod(careerDto.getWorkedPeriod())
                 .resume(resume)
                 .build())
             .collect(Collectors.toList());
         List<Certificate> certificates = dto.getCertificates().stream()
             .map(name -> Certificate.builder().name(name).resume(resume).build())
             .collect(Collectors.toList());
-        resume.setExperiences(experiences);
+        resume.setCareer(career);
         resume.setCertificates(certificates);
         return resume;
     }
@@ -57,12 +57,12 @@ public class ResumeConverter {
                 .introduction(resume.getIntroduction() != null
                         ? resume.getIntroduction().getContent()
                         : null)
-            .experiences(resume.getExperiences().stream()
-                .map(exp -> ResumeSummaryResponseDTO.ExperienceSummary.builder()
-                    .place(exp.getPlace())
-                    .task(exp.getTask())
-                    .year(exp.getYear())
-                    .duration(exp.getDuration())
+            .career(resume.getCareer().stream()
+                .map(career -> ResumeSummaryResponseDTO.CareerSummary.builder()
+                    .companyName(career.getCompany())
+                    .description(career.getDescription())
+                    .workedYear(career.getWorkedYear())
+                    .workedPeriod(career.getWorkedPeriod())
                     .build())
                 .collect(Collectors.toList()))
             .certificates(resume.getCertificates().stream()
