@@ -1,10 +1,12 @@
 package com.umc.tomorrow.domain.job.entity;
 
+import com.umc.tomorrow.domain.job.enums.JobCategory;
 import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.job.enums.PaymentType;
 import com.umc.tomorrow.domain.job.enums.RegistrantType;
 import com.umc.tomorrow.domain.job.enums.WorkPeriod;
 import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,22 +28,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Job {
+public class Job extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @Column(nullable = false, length = 100)
     private String title;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    @Column(nullable = false, length = 30)
-    private String jobCategory;
+    private JobCategory jobCategory;
 
     @Enumerated(EnumType.STRING)
     private WorkPeriod workPeriod;

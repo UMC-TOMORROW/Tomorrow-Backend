@@ -1,8 +1,6 @@
 package com.umc.tomorrow.domain.job.converter;
 
-import com.umc.tomorrow.domain.job.dto.request.JobRequestDTO;
-import com.umc.tomorrow.domain.job.dto.request.WorkDaysRequestDTO;
-import com.umc.tomorrow.domain.job.dto.request.WorkEnvironmentRequestDTO;
+import com.umc.tomorrow.domain.job.dto.request.*;
 import com.umc.tomorrow.domain.job.entity.*;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +29,6 @@ public class JobConverter {
                 .longitude(dto.getLongitude())
                 .location(dto.getLocation())
                 .alwaysHiring(dto.getAlwaysHiring())
-
                 .workDays(toWorkDays(dto.getWorkDays()))
                 .workEnvironment(toWorkEnvironment(dto.getWorkEnvironment()))
                 .build();
@@ -60,5 +57,24 @@ public class JobConverter {
                 .canCommunicate(dto.getCanCommunicate())
                 .build();
     }
-}
 
+    public BusinessVerification toBusiness(BusinessRequestDTO dto) {
+        return BusinessVerification.builder()
+                .bizNumber(dto.getBizNumber())
+                .companyName(dto.getCompanyName())
+                .ownerName(dto.getOwnerName())
+                .openingDate(dto.getOpeningDate())
+                .build();
+    }
+
+    public PersonalRegistration toPersonal(PersonalRequestDTO dto) {
+        return PersonalRegistration.builder()
+                .name(dto.getName())
+                .latitude(dto.getLatitude())
+                .longitude(dto.getLongitude())
+                .contact(dto.getContact())
+                .registrationPurpose(dto.getRegistrationPurpose())
+                .address(dto.getAddress())
+                .build();
+    }
+}
