@@ -137,6 +137,35 @@ public class CareerCommandServiceImpl implements CareerCommandService{
         return CareerConverter.toGetResponseDTO(career);
     }
 
+    /**
+     * 이력서 경력 삭제 메서드
+     * @param userId 경력을 삭제하는 사용자
+     * @param resumeId 삭제할 이력서 id
+     * @param careerId 삭제할 경력 id
+     */
+    @Override
+    public void deleteCareer(Long userId, Long resumeId, Long careerId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(CareerStatus.CAREER_FORBIDDEN));
+
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() -> new RestApiException(CareerStatus.CAREER_NOT_FOUND));
+
+        if (!resume.getUser().getId().equals(user.getId())) {
+            throw new RestApiException(CareerStatus.CAREER_FORBIDDEN);
+        }
+
+        Career career = careerRepository.findById(careerId)
+                .orElseThrow(() -> new RestApiException(CareerStatus.CAREER_NOT_FOUND));
+
+        if (!career.getResume().getId().equals(resumeId)) {
+            throw new RestApiException(CareerStatus.CAREER_FORBIDDEN);
+        }
+
+        careerRepository.delete(career);
+    }
+
 
 
 }

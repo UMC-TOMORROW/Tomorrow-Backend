@@ -87,4 +87,23 @@ public class CareerCommandController {
 
         return ResponseEntity.ok(BaseResponse.onSuccess(response));
     }
+
+    /**
+     * 이력서 경력 삭제(DELETE)
+     * @param resumeId 이력서 아이디
+     * @param careerId 경력 아이디
+     * @param user 인증된 사용자
+     */
+    @DeleteMapping("/{careerId}")
+    public ResponseEntity<BaseResponse<String>> deleteCareer(
+            @PathVariable Long resumeId,
+            @PathVariable Long careerId,
+            @AuthenticationPrincipal CustomOAuth2User user) {
+
+        Long userId = user.getUserDTO().getId();
+
+        careerCommandService.deleteCareer(userId, resumeId, careerId);
+
+        return ResponseEntity.ok(BaseResponse.onSuccess("경력이 성공적으로 삭제되었습니다."));
+    }
 }

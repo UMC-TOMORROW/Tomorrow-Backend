@@ -14,6 +14,6 @@ public interface CareerCommandService {
     CareerCreateResponseDTO saveCareer(Long userId, Long resumeId, CareerCreateRequestDTO dto);
     CareerCreateResponseDTO  updateCareer(Long userId, Long resumeId, Long careerId, CareerUpdateRequestDTO dto);
     CareerGetResponseDTO getCareer(Long userId, Long resumeId, Long careerId);
+    void deleteCareer(Long userId, Long resumeId, Long careerId);
 
-    //deleteCareerResponseDTO deleteCareer(Long userId, Long resumeId, Long careerId);
 }
