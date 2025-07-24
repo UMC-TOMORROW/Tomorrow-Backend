@@ -7,8 +7,11 @@
 package com.umc.tomorrow.domain.resume.repository;
 
 import com.umc.tomorrow.domain.resume.entity.Resume;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ResumeRepository extends JpaRepository<Resume, Long> {
     Resume findByUserId(Long userId);
+    Optional<Resume> findByIdAndUserId(Long resumeId, Long userId);
+
 } 

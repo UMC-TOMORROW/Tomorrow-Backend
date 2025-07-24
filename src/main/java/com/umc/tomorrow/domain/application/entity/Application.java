@@ -11,6 +11,7 @@ package com.umc.tomorrow.domain.application.entity;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
 import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.review.entity.Review;
 import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
@@ -34,11 +35,11 @@ public class Application extends BaseEntity {
     private String content; // 지원정보 입력란
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private ApplicationStatus status;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id", nullable = false)
+    @JoinColumn(name = "review_id")
     private Review review;
     
     @ManyToOne(fetch = FetchType.LAZY)
@@ -48,6 +49,10 @@ public class Application extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_id")
+    private Resume resume;
 
     @Column(nullable = false)
     private LocalDateTime appliedAt;

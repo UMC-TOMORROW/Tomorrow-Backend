@@ -12,7 +12,7 @@ import com.umc.tomorrow.domain.careertalk.dto.response.GetCareertalkResponseDto;
 import com.umc.tomorrow.domain.careertalk.dto.response.GetCareertalkListResponseDto;
 import com.umc.tomorrow.domain.careertalk.entity.Careertalk;
 import com.umc.tomorrow.domain.careertalk.exception.CareertalkException;
-import com.umc.tomorrow.domain.careertalk.exception.code.CareertalkStatus;
+import com.umc.tomorrow.domain.careertalk.exception.code.CareertalkErrorStatus;
 import com.umc.tomorrow.domain.careertalk.repository.CareertalkRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +72,7 @@ public class CareertalkQueryServiceImpl implements CareertalkQueryService {
     @Override
     public GetCareertalkResponseDto getCareertalk(Long careertalkId) {
         Careertalk careertalk = careertalkRepository.findById(careertalkId)
-                .orElseThrow(() -> new CareertalkException(CareertalkStatus.CAREERTALK_NOT_FOUND));
+                .orElseThrow(() -> new CareertalkException(CareertalkErrorStatus.CAREERTALK_NOT_FOUND));
 
         return GetCareertalkResponseDto.builder()
                 .id(careertalk.getId())
