@@ -5,7 +5,7 @@
  */
 package com.umc.tomorrow.domain.application.enums;
 
-import com.umc.tomorrow.domain.application.exception.ApplicationErrorStatus;
+import com.umc.tomorrow.domain.application.exception.code.ApplicationErrorStatus;
 import com.umc.tomorrow.domain.application.exception.ApplicationException;
 
 public enum ApplicationStatus {
