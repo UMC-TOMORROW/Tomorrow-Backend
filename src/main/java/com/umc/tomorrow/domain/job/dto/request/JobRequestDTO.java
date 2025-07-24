@@ -19,169 +19,111 @@ import java.time.LocalDateTime;
 @Schema(description = "일자리 생성 DTO")
 public class JobRequestDTO {
 
-    //notnull수정 예정
-
-    @Schema(
-            description = "제목",
+    @Schema(description = "제목",
             example = "편의점 알바 구인",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotBlank(message = "제목은 필수입니다.")
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "{job.title.notblank}")
     private String title;
 
-    @Schema(
-            description = "근무기간",
+    @Schema(description = "근무기간",
             example = "OVER_ONE_YEAR",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotNull(message = "근무 기간은 필수입니다.")
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "{job.workPeriod.notnull}")
     private WorkPeriod workPeriod;
 
-    @Schema(
-            description = "근무기간 협의",
-            example = "true",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
+    @Schema(description = "근무기간 협의", example = "true")
     private Boolean isPeriodNegotiable = false;
 
-    @Schema(
-            description = "근무 시작 시간",
-            example = "12:00",
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED
-    )
+    @Schema(description = "근무 시작 시간", example = "12:00")
     private LocalDateTime workStart;
 
-    @Schema(
-            description = "근무 종료 시간",
-            example = "17:00",
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED
-    )
+    @Schema(description = "근무 종료 시간", example = "17:00")
     private LocalDateTime workEnd;
 
-    @Schema(
-            description = "근무 시작 협의",
-            example = "true",
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED
-    )
+    @Schema(description = "근무 시작 협의", example = "true")
     private Boolean isTimeNegotiable = false;
 
-    @Schema(
-            description = "급여 형태",
-            example =  "HOURLY",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotNull(message = "급여 형태는 필수입니다.")
+    @Schema(description = "급여 형태", example = "HOURLY", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "{job.paymentType.notnull}")
     private PaymentType paymentType;
 
-    @Schema(
-            description = "급여",
-            example =  "12000",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotNull(message = "급여는 필수입니다.")
-    @Min(value = 1, message = "급여는 1 이상이어야 합니다.")
+    @Schema(description = "급여",
+            example = "12000",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "{job.salary.notnull}")
+    @Min(value = 1, message = "{job.salary.min}")
     private Integer salary;
 
-    @Schema(
-            description = "근무 설명",
-            example =  "음료 제조 및 서빙",
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED
-    )
+    @Schema(description = "근무 설명", example = "음료 제조 및 서빙")
     private String jobDescription;
 
-    @Schema(
-            description = "시설 이미지",
-            example =  "...",
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED
-    )
+    @Schema(description = "시설 이미지", example = "...")
     private String jobImageUrl;
 
-    @Schema(
-            description = "회사명",
-            example =  "내일",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotNull(message = "회사명은 필수입니다.")
+    @Schema(description = "회사명",
+            example = "내일",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "{job.companyName.notnull}")
     private String companyName;
 
-    @Schema(
-            description = "공고 활성화 여부",
-            example =  "true",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotNull(message = "공고 활성 여부는 필수입니다.")
+    @Schema(description = "공고 활성화 여부",
+            example = "true",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "{job.isActive.notnull}")
     private Boolean isActive;
 
-    @Schema(
-            description = "모집인원",
-            example =  "2",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotNull(message = "모집 인원은 필수입니다.")
-    @Min(value = 1, message = "모집 인원은 1 이상이어야 합니다.")
+    @Schema(description = "모집인원",
+            example = "2",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "{job.recruitmentLimit.notnull}")
+    @Min(value = 1, message = "{job.recruitmentLimit.min}")
     private Integer recruitmentLimit;
 
-    @Schema(
-            description = "등록유형",
-            example =  "BUSINESS",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotNull(message = "등록자 유형은 필수입니다.")
+    @Schema(description = "등록유형",
+            example = "BUSINESS",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "{job.registrantType.notnull}")
     private RegistrantType registrantType;
 
-    @Schema(
-            description = "공고 마감일",
-            example =  "2025-08-01",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotNull(message = "마감일은 필수입니다.")
+    @Schema(description = "공고 마감일",
+            example = "2025-08-01",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "{job.deadline.notnull}")
     private LocalDateTime deadline;
 
-    @Schema(
-            description = "우대사항",
-            example =  "대학생 우대",
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED
-    )
+    @Schema(description = "우대사항",
+            example = "대학생 우대")
     private String preferredQualifications;
 
-    @Schema(
-            description = "위도",
-            example =  "123.566",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotNull(message = "위도는 필수입니다.")
+    @Schema(description = "위도",
+            example = "123.566",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "{job.latitude.notnull}")
     private BigDecimal latitude;
 
-    @Schema(
-            description = "경도",
-            example =  "123.566",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotNull(message = "경도는 필수입니다.")
-    private  BigDecimal longitude;
+    @Schema(description = "경도",
+            example = "123.566",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "{job.longitude.notnull}")
+    private BigDecimal longitude;
 
-    @Schema(
-            description = "주소",
-            example =  "서울특별시 종로구",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotBlank(message = "주소는 필수입니다.")
+    @Schema(description = "주소",
+            example = "서울특별시 종로구",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "{job.location.notblank}")
     private String location;
 
-    @Schema(
-            description = "상시모집 여부",
-            example =  "true",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotNull(message = "상시 모집 여부는 필수입니다.")
+    @Schema(description = "상시모집 여부",
+            example = "true",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "{job.alwaysHiring.notnull}")
     private Boolean alwaysHiring = false;
 
-    //서브 테이블 DTO 포함
     @Valid
-    @NotNull(message = "근무 요일 정보는 필수입니다.")
+    @NotNull(message = "{job.workDays.notnull}")
     private WorkDaysRequestDTO workDays;
 
     @Valid
-    @NotNull(message = "근무 환경 정보는 필수입니다.")
+    @NotNull(message = "{job.workEnvironment.notnull}")
     private WorkEnvironmentRequestDTO workEnvironment;
 }
