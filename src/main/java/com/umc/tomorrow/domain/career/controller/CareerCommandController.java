@@ -4,6 +4,7 @@ import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.career.dto.request.CareerCreateRequestDTO;
 import com.umc.tomorrow.domain.career.dto.request.CareerUpdateRequestDTO;
 import com.umc.tomorrow.domain.career.dto.response.CareerCreateResponseDTO;
+import com.umc.tomorrow.domain.career.dto.response.CareerGetResponseDTO;
 import com.umc.tomorrow.domain.career.service.conmmand.CareerCommandService;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,6 +44,14 @@ public class CareerCommandController {
         return ResponseEntity.ok(BaseResponse.onSuccess(response));
     }
 
+    /**
+     * 이력서 경력 수정(PUT)
+     * @param resumeId 이력서 아이디
+     * @param careerId 경력 아이디
+     * @param user 인증된 사용자
+     * @param requestDTO 경력 추가 요청 DTO
+     * @return 성공 응답
+     */
     @PutMapping("/{careerId}")
     @Operation(summary = "이력서 경력 수정", description = "경력 정보를 수정하는 API입니다.")
     public ResponseEntity<BaseResponse<CareerCreateResponseDTO>> updateCareer(
@@ -54,6 +63,27 @@ public class CareerCommandController {
         Long userId = user.getUserDTO().getId();
 
         CareerCreateResponseDTO response = careerCommandService.updateCareer(userId, resumeId, careerId, requestDTO);
+
+        return ResponseEntity.ok(BaseResponse.onSuccess(response));
+    }
+
+    /**
+     * 이력서 경력 조회(GET)
+     * @param resumeId 이력서 아이디
+     * @param careerId 경력 아이디
+     * @param user 인증된 사용자
+     * @return 성공 응답
+     */
+    @GetMapping("/{careerId}")
+    @Operation(summary = "이력서 경력 조회", description = "경력 정보를 조회하는 API입니다.")
+    public ResponseEntity<BaseResponse<CareerGetResponseDTO>> getCareer(
+            @PathVariable Long resumeId,
+            @PathVariable Long careerId,
+            @AuthenticationPrincipal CustomOAuth2User user) {
+
+        Long userId = user.getUserDTO().getId();
+
+        CareerGetResponseDTO response = careerCommandService.getCareer(userId, resumeId, careerId);
 
         return ResponseEntity.ok(BaseResponse.onSuccess(response));
     }
