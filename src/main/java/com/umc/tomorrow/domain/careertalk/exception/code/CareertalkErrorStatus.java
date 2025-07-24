@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum CareertalkStatus implements BaseCodeInterface {
+public enum CareertalkErrorStatus implements BaseCodeInterface {
 
     CAREERTALK_NOT_FOUND(HttpStatus.NOT_FOUND, "CAREERTALK404", "해당 커리어톡 게시글을 찾을 수 없습니다."),
     CAREERTALK_FORBIDDEN(HttpStatus.FORBIDDEN, "CAREERTALK403", "해당 커리어톡 게시글에 대한 권한이 없습니다.");
