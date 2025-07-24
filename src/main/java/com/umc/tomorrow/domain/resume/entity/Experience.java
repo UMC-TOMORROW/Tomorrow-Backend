@@ -6,6 +6,7 @@
  */
 package com.umc.tomorrow.domain.resume.entity;
 
+import com.umc.tomorrow.domain.resume.enums.ExperienceDuration;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -22,15 +23,15 @@ public class Experience {
 
     private String place;
     private String task;
-    private String duration;
+
+    @Enumerated(EnumType.STRING)
+    private ExperienceDuration duration;
+
     private int year;
+    private String description; // 상세 설명(선택)
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Resume resume;
-
-    public void setYear(int year) {
-        this.year = year;
-    }
 
     public int getYear() {
         return year;
