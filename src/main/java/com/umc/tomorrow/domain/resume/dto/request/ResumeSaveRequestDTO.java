@@ -6,6 +6,8 @@
  */
 package com.umc.tomorrow.domain.resume.dto.request;
 
+import com.umc.tomorrow.domain.career.entity.Career;
+import com.umc.tomorrow.domain.career.enums.WorkPeriodType;
 import lombok.Builder;
 import lombok.Getter;
 import java.util.List;
@@ -16,7 +18,7 @@ public class ResumeSaveRequestDTO {
 
     private final String introduction; // 자기소개서 내용
 
-    private final List<ExperienceSaveRequest> experiences; // 경력 목록
+    private final List<Career> career; // 경력 목록
 
     private final List<String> certificates; // 자격증 목록
 
@@ -25,10 +27,10 @@ public class ResumeSaveRequestDTO {
      */
     @Getter
     @Builder
-    public static class ExperienceSaveRequest {
-        private final String place;
-        private final String task;
-        private final int year;
-        private final String duration;
+    public static class CareerSaveRequest {
+        private final String company;
+        private final String description;
+        private final int workedYear;
+        private WorkPeriodType workedPeriod;
     }
 } 

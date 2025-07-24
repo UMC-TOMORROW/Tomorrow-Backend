@@ -6,10 +6,14 @@
  */
 package com.umc.tomorrow.domain.resume.entity;
 
+import com.umc.tomorrow.domain.career.entity.Career;
 import com.umc.tomorrow.domain.introduction.entity.Introduction;
 import com.umc.tomorrow.domain.member.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -32,17 +36,16 @@ public class Resume {
 
     // 경력 목록
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Experience> experiences;
+    private List<Career> career;
 
     // 자격증 목록
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Certificate> certificates;
 
-    public void setExperiences(List<Experience> experiences) {
-        this.experiences = experiences;
-    }
+    public void setCareer(List<Career> career) { this.career = career; }
 
     public void setCertificates(List<Certificate> certificates) {
         this.certificates = certificates;
     }
+
 }
