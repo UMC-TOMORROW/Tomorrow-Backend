@@ -2,6 +2,7 @@ package com.umc.tomorrow.domain.career.controller;
 
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.career.dto.request.CareerCreateRequestDTO;
+import com.umc.tomorrow.domain.career.dto.request.CareerUpdateRequestDTO;
 import com.umc.tomorrow.domain.career.dto.response.CareerCreateResponseDTO;
 import com.umc.tomorrow.domain.career.service.conmmand.CareerCommandService;
 import com.umc.tomorrow.global.common.base.BaseResponse;
@@ -38,6 +39,21 @@ public class CareerCommandController {
         Long userId = user.getUserDTO().getId();
 
         CareerCreateResponseDTO response = careerCommandService.saveCareer(userId, resumeId, requestDTO);
+
+        return ResponseEntity.ok(BaseResponse.onSuccess(response));
+    }
+
+    @PutMapping("/{careerId}")
+    @Operation(summary = "이력서 경력 수정", description = "경력 정보를 수정하는 API입니다.")
+    public ResponseEntity<BaseResponse<CareerCreateResponseDTO>> updateCareer(
+            @PathVariable Long resumeId,
+            @PathVariable Long careerId,
+            @AuthenticationPrincipal CustomOAuth2User user,
+            @RequestBody @Valid CareerUpdateRequestDTO requestDTO) {
+
+        Long userId = user.getUserDTO().getId();
+
+        CareerCreateResponseDTO response = careerCommandService.updateCareer(userId, resumeId, careerId, requestDTO);
 
         return ResponseEntity.ok(BaseResponse.onSuccess(response));
     }

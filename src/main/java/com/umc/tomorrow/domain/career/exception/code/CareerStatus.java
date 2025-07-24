@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum CareerStatus implements BaseCodeInterface {
     CAREER_NOT_FOUND(HttpStatus.NOT_FOUND, "CAREER404", "해당 경력 페이지를 찾을 수 없습니다."),
-    CAREER_DELETE_NOT_FOUND(HttpStatus.NOT_FOUND, "CAREER405", "삭제할 경력 페이지가 존재하지 않습니다."),
+    CAREER_DELETE_NOT_FOUND(HttpStatus.NOT_FOUND, "CAREER405", "삭제할 경력이 존재하지 않습니다."),
     CAREER_FORBIDDEN(HttpStatus.FORBIDDEN, "CAREER403", "해당 경력 페이지에 대한 권한이 없습니다.");
 
 
