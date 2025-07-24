@@ -52,4 +52,11 @@ public class Careertalk extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    public void update(String title, String content, String category) {
+        this.title = title;
+        this.content = content;
+        this.category = category;
+    }
+
+
 }

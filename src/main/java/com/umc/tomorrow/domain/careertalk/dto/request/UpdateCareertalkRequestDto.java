@@ -1,9 +1,8 @@
 /**
- * 커리어톡 게시글 생성 요청 DTO
- * 커리어톡 게시글 생성 API의 요청 구조 정의
+ * 커리어톡 게시글 수정 요청 DTO
+ * 커리어톡 게시글 수정 API의 요청 구조 정의
  * 작성자: 이승주
- * 생성일: 2025-07-10
- * 수정일: 2025-07-20
+ * 생성일: 2025-07-23
  */
 package com.umc.tomorrow.domain.careertalk.dto.request;
 
@@ -15,8 +14,8 @@ import lombok.Getter;
 
 @Getter
 @Builder
-@Schema(description = "커리어톡 게시글 생성 요청 DTO")
-public class CreateCareertalkRequestDto {
+@Schema(description = "커리어톡 게시글 수정 요청 DTO")
+public class UpdateCareertalkRequestDto {
 
     @Schema(
             description = "게시글 카테고리",

@@ -10,6 +10,9 @@ import com.umc.tomorrow.domain.careertalk.dto.response.GetCareertalkListResponse
 import com.umc.tomorrow.domain.careertalk.dto.response.GetCareertalkResponseDto;
 
 public interface CareertalkQueryService {
-    GetCareertalkListResponseDto getCareertalks(Long cursor, int size);
     GetCareertalkResponseDto getCareertalk(Long id);
+    GetCareertalkListResponseDto getCareertalks(Long cursor, int size);
+    GetCareertalkListResponseDto getCareertalksByTitle(String title, Long cursor, int size);
+    GetCareertalkListResponseDto getCareertalksByCategory(String category, Long cursor, int size);
 }
+
