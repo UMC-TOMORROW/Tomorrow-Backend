@@ -13,6 +13,8 @@ import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.entity.Experience;
 import com.umc.tomorrow.domain.resume.entity.Certificate;
 import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.domain.resume.enums.ExperienceDuration;
+
 import java.util.stream.Collectors;
 import java.util.List;
 
@@ -37,7 +39,7 @@ public class ResumeConverter {
                 .place(expDto.getPlace())
                 .task(expDto.getTask())
                 .year(expDto.getYear())
-                .duration(expDto.getDuration())
+                .duration(ExperienceDuration.valueOf(expDto.getDuration()))
                 .resume(resume)
                 .build())
             .collect(Collectors.toList());
@@ -62,7 +64,7 @@ public class ResumeConverter {
                     .place(exp.getPlace())
                     .task(exp.getTask())
                     .year(exp.getYear())
-                    .duration(exp.getDuration())
+                    .duration(String.valueOf(exp.getDuration()))
                     .build())
                 .collect(Collectors.toList()))
             .certificates(resume.getCertificates().stream()
