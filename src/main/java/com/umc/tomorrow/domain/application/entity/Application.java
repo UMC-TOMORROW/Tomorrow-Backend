@@ -11,6 +11,7 @@ package com.umc.tomorrow.domain.application.entity;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
 import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.review.entity.Review;
 import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
@@ -51,6 +52,10 @@ public class Application extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime appliedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_id") // DB 컬럼명
+    private Resume resume;
 
     /**
      * 합격/불합격 상태 업데이트
