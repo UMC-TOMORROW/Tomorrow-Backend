@@ -48,4 +48,6 @@ public class Resume {
         this.certificates = certificates;
     }
 
+    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Experience> experiences;
 }
