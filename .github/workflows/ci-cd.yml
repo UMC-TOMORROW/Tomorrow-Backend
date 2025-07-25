@@ -32,7 +32,6 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd /home/ubuntu/Tomorrow-Backend
-            git pull origin main
-            ./gradlew clean build -x test
+            git pull origin develop
             docker-compose down
             docker-compose up -d --build
