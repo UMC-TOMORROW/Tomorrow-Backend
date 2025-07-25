@@ -12,6 +12,7 @@ import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsRespon
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
 import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
+import com.umc.tomorrow.domain.career.entity.Career;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.resume.entity.Certificate;
 import com.umc.tomorrow.domain.resume.entity.Experience;
@@ -76,11 +77,12 @@ public class ApplicationConverter {
         // 2. 이력서 상세 정보 DTO 생성
         ApplicationDetailsResponseDTO.ResumeInfoDTO resumeInfo = null;
         if (resume != null) {
-            List<ApplicationDetailsResponseDTO.ExperienceDTO> experienceDTOS = Optional.ofNullable(resume.getExperiences())
-                    .orElse(Collections.emptyList())
-                    .stream()
-                    .map(ApplicationConverter::toExperienceDTO)
-                    .collect(Collectors.toList());
+            List<ApplicationDetailsResponseDTO.ExperienceDTO> experienceDTOS =
+                    Optional.ofNullable(resume.getCareer()) //
+                            .orElse(Collections.emptyList())
+                            .stream()
+                            .map(ApplicationConverter::toExperienceDTO)
+                            .collect(Collectors.toList());
 
             List<ApplicationDetailsResponseDTO.CertificationDTO> certificationDTOS = Optional.ofNullable(resume.getCertificates())
                     .orElse(Collections.emptyList())
@@ -111,14 +113,23 @@ public class ApplicationConverter {
                 .id(experience.getId())
                 .company(experience.getPlace())
                 .position(experience.getTask())
-                .duration(experience.getDuration().getLabel()) // Enum → Label
-                .description(experience.getDescription())
+                .duration(experience.getDuration()) // Enum → Label
+                .description(String.valueOf(experience))
                 .build();
     }
 
     // Certificate 엔티티를 CertificationDTO로 변환
     private static ApplicationDetailsResponseDTO.CertificationDTO toCertificationDTO(Certificate certificate) {
         return ApplicationDetailsResponseDTO.CertificationDTO.builder()
+                .build();
+    }
+
+    private static ApplicationDetailsResponseDTO.ExperienceDTO toExperienceDTO(Career career) {
+        return ApplicationDetailsResponseDTO.ExperienceDTO.builder()
+                .id(career.getId())
+                .company(career.getCompany())
+                .duration(career.getWorkedPeriod().getLabel()) // Enum이므로 label 추출 메서드 필요
+                .description(career.getDescription())
                 .build();
     }
 }
