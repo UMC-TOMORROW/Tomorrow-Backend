@@ -18,8 +18,8 @@
         DB_HOST: mysql8-local
         DB_PORT: 3306
         DB_NAME: tomorrow_db
-        DB_USERNAME: tomorrow_user
-        DB_PASSWORD: tomorrow_user_password
+        DB_USERNAME_DEV: tomorrow_user
+        DB_PASSWORD_DEV: tomorrow_user_password
       restart: always
 
     mysql8-local:
