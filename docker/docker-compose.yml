@@ -1,0 +1,46 @@
+
+  version: '3.8'
+
+  services:
+    app:
+      container_name: tomorrow-backend
+      image: tomorrow-backend:latest
+      build:
+        context: .
+        dockerfile: Dockerfile
+      depends_on:
+        mysql8-local:
+          condition: service_healthy
+      ports:
+        - "8080:8080"
+      environment:
+        SPRING_PROFILES_ACTIVE: prod
+        DB_HOST: mysql8-local
+        DB_PORT: 3306
+        DB_NAME: tomorrow_db
+        DB_USERNAME: tomorrow_user
+        DB_PASSWORD: tomorrow_user_password
+      restart: always
+
+    mysql8-local:
+      image: mysql:8.0
+      container_name: tomorrow-mysql
+      restart: unless-stopped
+      environment:
+        MYSQL_ROOT_PASSWORD: root1234
+        MYSQL_DATABASE: tomorrow_db
+        MYSQL_USER: tomorrow_user
+        MYSQL_PASSWORD: tomorrow_user_password
+        TZ: Asia/Seoul
+      ports:
+        - "3306:3306"
+      volumes:
+        - tomorrow-local-data:/var/lib/mysql
+      healthcheck:
+        test: ["CMD", "mysqladmin", "ping", "--silent"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+
+  volumes:
+    tomorrow-local-data:
