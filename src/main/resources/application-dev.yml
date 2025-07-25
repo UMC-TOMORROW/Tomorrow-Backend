@@ -12,6 +12,19 @@ spring:
       idle-timeout: 300000
       max-lifetime: 1200000
       pool-name: HikariCP-Dev
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            redirect-uri: https://umctomorrow.shop/login/oauth2/code/naver
+
+          google:
+            redirect-uri: https://umctomorrow.shop/login/oauth2/code/google
+
+          kakao:
+            redirect-uri: https://umctomorrow.shop/login/oauth2/code/kakao
+      
 
   jpa:
     hibernate:
