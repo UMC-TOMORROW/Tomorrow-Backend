@@ -9,24 +9,10 @@ spring:
     basename: validation
 
   profiles:
-    active: dev #임시수정
-    # active: ${SPRING_PROFILES_ACTIVE}
+    active: ${SPRING_PROFILES_ACTIVE}
+    
 
-  # 로컬 개발용 데이터베이스 설정
-  datasource:
-    url: jdbc:mysql://localhost:3306/tomorrow_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      connection-timeout: 20000
-      idle-timeout: 300000
-      max-lifetime: 1200000
-      pool-name: HikariCP-Local
-
-  # JPA 설정 (로컬 개발용)
+  # JPA 설정 
   jpa:
     hibernate:
       ddl-auto: create
@@ -53,7 +39,6 @@ spring:
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/login/oauth2/code/naver
             scope: name, email, gender, mobile
 
           google:
@@ -61,14 +46,12 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/login/oauth2/code/google
             scope: profile, email
           
           kakao:
             client-name: kakao
             client-id: ${KAKAO_CLIENT_ID}
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             scope: profile_nickname, profile_image
 
         provider:
