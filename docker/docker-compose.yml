@@ -14,7 +14,7 @@
       ports:
         - "8080:8080"
       environment:
-        SPRING_PROFILES_ACTIVE: develop
+        SPRING_PROFILES_ACTIVE: dev
         DB_HOST: mysql8-local
         DB_PORT: 3306
         DB_NAME: tomorrow_db
