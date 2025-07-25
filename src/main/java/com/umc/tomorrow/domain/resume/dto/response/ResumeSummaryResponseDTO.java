@@ -6,6 +6,7 @@
  */
 package com.umc.tomorrow.domain.resume.dto.response;
 
+import com.umc.tomorrow.domain.career.enums.WorkPeriodType;
 import lombok.Builder;
 import lombok.Getter;
 import java.util.List;
@@ -16,7 +17,7 @@ public class ResumeSummaryResponseDTO {
 
     private final String introduction; // 자기소개서 내용
 
-    private final List<ExperienceSummary> experiences; // 경력 목록
+    private final List<CareerSummary> career; // 경력 목록
 
     private final List<String> certificates; // 자격증 목록
 
@@ -25,10 +26,10 @@ public class ResumeSummaryResponseDTO {
      */
     @Getter
     @Builder
-    public static class ExperienceSummary {
-        private final String place;
-        private final String task;
-        private final int year;
-        private final String duration;
+    public static class CareerSummary {
+        private final String companyName;
+        private final String description;
+        private final int workedYear;
+        private WorkPeriodType workedPeriod;
     }
 } 
