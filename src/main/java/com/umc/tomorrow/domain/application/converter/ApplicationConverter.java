@@ -73,7 +73,8 @@ public class ApplicationConverter {
                     .collect(Collectors.toList());
 
             resumeInfo = ApplicationDetailsResponseDTO.ResumeInfoDTO.builder()
-                    .resumeContent(resume.getIntroduction()) // Resume 엔티티의 introduction 필드사용
+                    //.resumeContent(resume.getIntroduction())// Resume 엔티티의 introduction 필드사용
+                    .resumeContent(resume.getIntroduction().getContent())
                     .experiences(experienceDTOS)
                     .certifications(certificationDTOS)
                     .build();
