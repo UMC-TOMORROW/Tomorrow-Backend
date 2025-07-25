@@ -33,5 +33,6 @@ jobs:
           script: |
             cd /home/ubuntu/Tomorrow-Backend
             git pull origin develop
+            ./gradlew clean build -x test
             docker-compose down
             docker-compose up -d --build
