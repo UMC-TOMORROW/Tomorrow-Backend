@@ -25,14 +25,9 @@ public class Experience {
     private String duration;
     private int year;
 
+    @Column
+    private String description;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Resume resume;
-
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    public int getYear() {
-        return year;
-    }
 } 
