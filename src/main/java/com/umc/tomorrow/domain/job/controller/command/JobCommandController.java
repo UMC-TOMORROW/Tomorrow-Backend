@@ -1,4 +1,4 @@
-package com.umc.tomorrow.domain.job.controller;
+package com.umc.tomorrow.domain.job.controller.command;
 
 import com.umc.tomorrow.domain.job.dto.request.BusinessRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.JobRequestDTO;
@@ -6,7 +6,6 @@ import com.umc.tomorrow.domain.job.dto.request.PersonalRequestDTO;
 import com.umc.tomorrow.domain.job.dto.response.JobStepResponseDTO;
 import com.umc.tomorrow.domain.job.service.command.JobCommandService;
 import com.umc.tomorrow.domain.member.entity.User;
-import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
