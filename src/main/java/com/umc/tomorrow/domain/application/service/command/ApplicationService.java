@@ -9,7 +9,11 @@ package com.umc.tomorrow.domain.application.service.command;
 
 import com.umc.tomorrow.domain.application.converter.ApplicationConverter;
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
+
+import com.umc.tomorrow.domain.application.dto.response.ApplicationStatusListResponseDTO;
+
 import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
+
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
 import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
@@ -24,6 +28,9 @@ import com.umc.tomorrow.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

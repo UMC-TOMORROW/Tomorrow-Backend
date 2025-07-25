@@ -8,6 +8,7 @@
 package com.umc.tomorrow.domain.application.repository;
 
 import com.umc.tomorrow.domain.application.entity.Application;
+import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -40,4 +41,14 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
      */
     @Query("SELECT a FROM Application a WHERE a.job.id = :jobId AND a.status = :status")
     List<Application> findByJobIdAndStatus(@Param("jobId") Long jobId, @Param("status") Boolean status);
-} 
+
+    /**
+     * 사용자의 ID에 따라 공고 조회 (전체)
+     */
+    List<Application> findAllByUserId(Long userId);
+
+    /**
+     * 사용자의 ID, 상태(합격/불합)에 따라 공고 조회
+     */
+    List<Application> findAllByUserIdAndStatus(Long userId, ApplicationStatus status);
+}
