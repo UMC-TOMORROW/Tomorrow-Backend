@@ -9,7 +9,7 @@ spring:
     basename: validation
 
   profiles:
-    active: local #임시수정
+    active: dev #임시수정
     # active: ${SPRING_PROFILES_ACTIVE}
 
   # 로컬 개발용 데이터베이스 설정
