@@ -14,8 +14,8 @@ public class JobStepResponseDTO {
     @Schema(description = "개인 or 회사", example = "BUSINESS")
     private RegistrantType registrantType;
 
-    @Schema(description = "일자리 폼 저장 상태", example = "job_form_saved")
+    @Schema(description = "저장 상태", example = "job_form_saved")
     private String step;
 
-    private User user;
+    private Long jobId;
 }

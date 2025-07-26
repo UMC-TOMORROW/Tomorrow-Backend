@@ -1,5 +1,6 @@
 package com.umc.tomorrow.domain.job.dto.request;
 
+import com.umc.tomorrow.domain.job.enums.JobCategory;
 import com.umc.tomorrow.domain.job.enums.PaymentType;
 import com.umc.tomorrow.domain.job.enums.RegistrantType;
 import com.umc.tomorrow.domain.job.enums.WorkPeriod;
@@ -47,6 +48,10 @@ public class JobRequestDTO {
     @NotNull(message = "{job.paymentType.notnull}")
     private PaymentType paymentType;
 
+    @Schema(description = "일자리 카테고리", example = "TUTORING", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "{job.jobCategory.notnull}")
+    private JobCategory jobCategory;
+
     @Schema(description = "급여",
             example = "12000",
             requiredMode = Schema.RequiredMode.REQUIRED)
@@ -80,7 +85,7 @@ public class JobRequestDTO {
     private Integer recruitmentLimit;
 
     @Schema(description = "등록유형",
-            example = "BUSINESS",
+            example = "PERSONAL",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "{job.registrantType.notnull}")
     private RegistrantType registrantType;
