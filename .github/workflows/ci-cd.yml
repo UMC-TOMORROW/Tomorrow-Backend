@@ -1,50 +1,54 @@
-name: CI/CD Deploy to EC2
+name: Docker CI/CD
 
 on:
   push:
     branches: [ "develop" ]
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      # 1. Checkout source code
+      - name: Checkout
+        uses: actions/checkout@v4
 
+      # 2. Set up JDK 17
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Grant permission to gradlew
+      # 3. Gradle permission
+      - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Build Spring Boot Project
-        run: ./gradlew clean build -x test
+      # 4. Gradle build (cache 사용)
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: clean build -x test
 
-      - name: Copy JAR to EC2
+      # 5. Docker login & build & push
+      - name: Docker build and push to Docker Hub
         run: |
-          echo "${{ secrets.EC2_KEY }}" > ec2_key.pem
-          chmod 600 ec2_key.pem
-          scp -i ec2_key.pem -o StrictHostKeyChecking=no \
-            build/libs/*.jar \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/Tomorrow-Backend/app.jar
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/tomorrow:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/tomorrow:latest
 
-      - name: Deploy via Docker on EC2
-        uses: appleboy/ssh-action@master
+      # 6. SSH to EC2 and deploy with docker-compose
+      - name: Deploy on EC2 with Docker Compose
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
+          port: 22
           script: |
             cd /home/ubuntu/Tomorrow-Backend
-
-            echo "🧼 [1] 기존 컨테이너 종료"
-            docker-compose down || echo "컨테이너 종료 실패, 무시"
-
-            echo "📦 [2] Docker 이미지 재빌드 및 실행"
-            docker-compose up -d --build || { echo "❌ docker-compose up 실패"; exit 1; }
-
-            echo "✅ [3] 배포 완료!"
+            git pull origin develop || true 
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d --build
