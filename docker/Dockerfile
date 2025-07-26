@@ -1,14 +1,11 @@
-# Dockerfile
+# Base 이미지: Java 17
 FROM openjdk:17-jdk-slim
 
-# JAR file name (빌드 결과물)
-ARG JAR_FILE=build/libs/*.jar
+# GitHub Actions에서 복사한 app.jar을 컨테이너에 복사
+COPY app.jar app.jar
 
-# JAR 파일을 app.jar로 복사
-COPY ${JAR_FILE} app.jar
-
-# 실행 포트 명시
+# 컨테이너가 사용하는 포트
 EXPOSE 8080
 
-# 실행 명령어
+# 컨테이너 실행 시 실행할 명령
 ENTRYPOINT ["java", "-jar", "app.jar"]
