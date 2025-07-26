@@ -51,4 +51,9 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
      * 사용자의 ID, 상태(합격/불합)에 따라 공고 조회
      */
     List<Application> findAllByUserIdAndStatus(Long userId, ApplicationStatus status);
+
+    /**
+     * 직업 id에 따라 모든 직업 조회
+     * */
+    List<Application> findAllByJobId(Long jobId);
 }
