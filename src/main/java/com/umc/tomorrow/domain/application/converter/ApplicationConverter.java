@@ -7,6 +7,7 @@
 package com.umc.tomorrow.domain.application.converter;
 
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
+import com.umc.tomorrow.domain.application.dto.response.ApplicantListResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicationStatusListResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
@@ -119,6 +120,16 @@ public class ApplicationConverter {
     // Certificate 엔티티를 CertificationDTO로 변환
     private static ApplicationDetailsResponseDTO.CertificationDTO toCertificationDTO(Certificate certificate) {
         return ApplicationDetailsResponseDTO.CertificationDTO.builder()
+                .build();
+    }
+
+    public static ApplicantListResponseDTO toApplicantListResponseDTO(Application application) {
+        return ApplicantListResponseDTO.builder()
+                .applicantId(application.getUser().getId())
+                .userName(application.getUser().getName())
+                .applicationDate(application.getCreatedAt())
+                .status(application.getStatus().getLabel())
+                .resumeTitle(application.getResume() != null ? application.getResume().toString() : null) // 또는 "없음"
                 .build();
     }
 }
