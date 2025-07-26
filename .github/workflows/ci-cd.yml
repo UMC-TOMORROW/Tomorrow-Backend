@@ -46,7 +46,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: 22
           script: |
-            cd /home/ubuntu/Tomorrow-Backend
+            cd /home/ubuntu/Tomorrow-Backend/docker
             git pull origin develop || true 
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker-compose down
