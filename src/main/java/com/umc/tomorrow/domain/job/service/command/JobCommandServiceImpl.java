@@ -4,9 +4,12 @@ import com.umc.tomorrow.domain.job.converter.JobConverter;
 import com.umc.tomorrow.domain.job.dto.request.BusinessRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.JobRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.PersonalRequestDTO;
+import com.umc.tomorrow.domain.job.dto.response.JobCreateResponseDTO;
 import com.umc.tomorrow.domain.job.dto.response.JobStepResponseDTO;
 import com.umc.tomorrow.domain.job.entity.BusinessVerification;
+import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.job.entity.PersonalRegistration;
+import com.umc.tomorrow.domain.job.repository.JobRepository;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
@@ -22,36 +25,109 @@ public class JobCommandServiceImpl implements JobCommandService {
     private static final String JOB_SESSION_KEY = "job_session";
     private final JobConverter jobConverter;
     private final UserRepository userRepository;
+    private final JobRepository jobRepository;
 
+    //일자리 정보 세션 임시 저장
     @Override
     public JobStepResponseDTO saveInitialJobStep(Long userId, JobRequestDTO requestDTO, HttpSession session) {
         session.setAttribute(JOB_SESSION_KEY, requestDTO);
 
-        User user = userRepository.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
         return JobStepResponseDTO.builder()
                 .registrantType(requestDTO.getRegistrantType())
                 .step("job_form_saved")
-                .user(user)
                 .build();
     }
 
+    //개인 사유 등록을 선택했을 경우
     @Override
-    public void saveBusinessVerification(Long userId, BusinessRequestDTO requestDTO) {
-
+    public JobCreateResponseDTO savePersonalRegistration(Long userId, PersonalRequestDTO requestDTO, HttpSession session) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
-        BusinessVerification businessVerification = jobConverter.toBusiness(requestDTO);
-    }
-
-    @Override
-    public void savePersonalRegistration(Long userId, PersonalRequestDTO requestDTO) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+        JobRequestDTO jobDTO = (JobRequestDTO) session.getAttribute(JOB_SESSION_KEY);
+        if (jobDTO == null) {
+            throw new RestApiException(GlobalErrorStatus._BAD_REQUEST);
+        }
 
         PersonalRegistration personalRegistration = jobConverter.toPersonal(requestDTO);
+        Job job = jobConverter.toJob(jobDTO);
+        job.setUser(user);
+        job.setPersonalRegistration(personalRegistration);
+        personalRegistration.setJob(job);
+
+        Job savedJob = jobRepository.save(job);
+        session.removeAttribute(JOB_SESSION_KEY);
+
+        return JobCreateResponseDTO.builder()
+                .jobId(savedJob.getId())
+                .build();
+    }
+
+    //기존에 사업자 정보가 등록되어 있는 사용자가 일자리를 등록할 경우
+    @Override
+    public JobCreateResponseDTO createJobWithExistingBusiness(Long userId, HttpSession session) {
+        User user = getUser(userId);
+
+        if (user.getBusinessVerification() == null) {
+            throw new RestApiException(GlobalErrorStatus._BAD_REQUEST);
+        }
+
+        JobRequestDTO jobDTO = getJobFromSession(session);
+        Job job = jobConverter.toJob(jobDTO);
+        job.setUser(user);
+
+        Job savedJob = jobRepository.save(job);
+        session.removeAttribute(JOB_SESSION_KEY);
+
+        return JobCreateResponseDTO.builder()
+                .jobId(savedJob.getId())
+                .build();
+    }
+
+    //사업자 등록이 되지 않은 유저가 사업자 정보를 입력하고 동시에 일자리를 등록하는 경우
+    @Override
+    public JobCreateResponseDTO registerBusinessAndCreateJob(Long userId, BusinessRequestDTO requestDTO, HttpSession session) {
+        User user = getUser(userId);
+        JobRequestDTO jobDTO = getJobFromSession(session);
+
+        BusinessVerification businessVerification = jobConverter.toBusiness(requestDTO);
+        user.setBusinessVerification(businessVerification);
+        userRepository.save(user);
+
+        Job job = jobConverter.toJob(jobDTO);
+        job.setUser(user);
+
+        Job savedJob = jobRepository.save(job);
+        session.removeAttribute(JOB_SESSION_KEY);
+
+        return JobCreateResponseDTO.builder()
+                .jobId(savedJob.getId())
+                .build();
+    }
+
+    // 권한 검증
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+    }
+
+    private JobRequestDTO getJobFromSession(HttpSession session) {
+        JobRequestDTO dto = (JobRequestDTO) session.getAttribute(JOB_SESSION_KEY);
+        if (dto == null) {
+            throw new RestApiException(GlobalErrorStatus._BAD_REQUEST);
+        }
+        return dto;
+    }
+
+    //마이페이지에서 사업자 정보만 저장(일자리 등록x)
+    public void saveBusinessVerification(Long userId, BusinessRequestDTO requestDTO) {
+        User user = getUser(userId);
+
+        BusinessVerification businessVerification = jobConverter.toBusiness(requestDTO);
+        user.setBusinessVerification(businessVerification);
+        userRepository.save(user);
     }
 }

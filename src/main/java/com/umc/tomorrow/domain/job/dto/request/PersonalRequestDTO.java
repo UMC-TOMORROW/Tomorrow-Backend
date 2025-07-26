@@ -22,13 +22,13 @@ public class PersonalRequestDTO {
     private String name;
 
     @Schema(description = "위도",
-            example = "122323.3233",
+            example = "123.333",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "{personal.latitude.notnull}") // 지도 api 구현하고 필수로
     private BigDecimal latitude;
 
     @Schema(description = "경도",
-            example = "12.32211",
+            example = "12.321",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "{personal.longitude.notnull}") // 지도 api 구현하고 필수로
     private BigDecimal longitude;
