@@ -10,10 +10,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
-      - DEV_DATABASE_URL
-      - SPRING_DATASOURCE_USERNAME
-      - SPRING_DATASOURCE_PASSWORD
+      - .env
     restart: always
 
   mysql8-local:
