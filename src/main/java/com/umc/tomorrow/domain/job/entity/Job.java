@@ -20,8 +20,7 @@ import java.util.List;
         uniqueConstraints = {
                 @UniqueConstraint(name = "uk_job_work_env", columnNames = "work_environment_id"),
                 @UniqueConstraint(name = "uk_job_personal_reg", columnNames = "personal_registration_id"),
-                @UniqueConstraint(name = "uk_job_work_days", columnNames = "work_days_id"),
-                @UniqueConstraint(name = "uk_job_business_verification", columnNames = "business_verification_id")
+                @UniqueConstraint(name = "uk_job_work_days", columnNames = "work_days_id")
         })
 @Getter
 @Setter
@@ -79,7 +78,7 @@ public class Job extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     //private RegistrantType registrantType;
-    private RegistrantType registrantType = RegistrantType.BUSINESS;//테스트용
+    private RegistrantType registrantType = RegistrantType.PERSONAL;//테스트용
 
     @Column(nullable = false)
     private LocalDateTime deadline;
@@ -99,15 +98,9 @@ public class Job extends BaseEntity {
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private Boolean alwaysHiring;
 
-    //businessVerification와 1:1관계
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "business_verification_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_job_business_verification"))
-    private BusinessVerification businessVerification;
-
     //personalRegistration와 1:1관계
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "personal_registration_id", nullable = false,
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name = "personal_registration_id", nullable = true,
             foreignKey = @ForeignKey(name = "fk_job_personal_registration"))
     private PersonalRegistration personalRegistration;
 

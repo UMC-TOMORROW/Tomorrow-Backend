@@ -40,6 +40,7 @@ spring:
             client-secret: ${NAVER_CLIENT_SECRET}
             authorization-grant-type: authorization_code
             scope: name, email, gender, mobile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
           google:
             client-name: google
@@ -47,12 +48,14 @@ spring:
             client-secret: ${GOOGLE_CLIENT_SECRET}
             authorization-grant-type: authorization_code
             scope: profile, email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
           
           kakao:
             client-name: kakao
             client-id: ${KAKAO_CLIENT_ID}
             authorization-grant-type: authorization_code
             scope: profile_nickname, profile_image
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
         provider:
           naver:
