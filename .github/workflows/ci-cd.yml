@@ -24,30 +24,25 @@ jobs:
       - name: Build Spring Boot Project
         run: ./gradlew clean build -x test
 
-      - name: Deploy to EC2
+      - name: Copy JAR to EC2
+        run: |
+          scp -i ${{ secrets.EC2_KEY }} -o StrictHostKeyChecking=no \
+            build/libs/*.jar \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/Tomorrow-Backend/app.jar
+
+      - name: Deploy via Docker on EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            echo " [1] SSH 접속 성공"
-            echo " 현재 경로: $(pwd)"
-            echo "현재 시간: $(date)"
+            cd /home/ubuntu/Tomorrow-Backend
 
-            echo "[2] 프로젝트 디렉토리 이동"
-            cd /home/ubuntu/Tomorrow-Backend || { echo "❌ 디렉토리 이동 실패"; exit 1; }
+            echo "🧼 [1] 기존 컨테이너 종료"
+            docker-compose down || echo "컨테이너 종료 실패, 무시"
 
-            echo "[3] Git Pull from develop"
-            git pull --rebase origin develop || { echo "❌ Git Pull 실패"; exit 1; }
-
-            echo "⚙ [4] Gradle Build (no test)"
-            ./gradlew clean build -x test || { echo "❌ Gradle 빌드 실패"; exit 1; }
-
-            echo " [5] 기존 컨테이너 종료"
-            docker-compose down || echo "⚠️ docker-compose down 실패했지만 무시함"
-
-            echo " [6] docker-compose up -d --build"
+            echo "📦 [2] Docker 이미지 재빌드 및 실행"
             docker-compose up -d --build || { echo "❌ docker-compose up 실패"; exit 1; }
 
-            echo " [7] 배포 완료!"
+            echo "✅ [3] 배포 완료!"
