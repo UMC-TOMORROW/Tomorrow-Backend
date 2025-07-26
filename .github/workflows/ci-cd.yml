@@ -39,7 +39,7 @@ jobs:
             cd /home/ubuntu/Tomorrow-Backend || { echo "❌ 디렉토리 이동 실패"; exit 1; }
 
             echo "[3] Git Pull from develop"
-            git pull --rebase origin developorigin develop || { echo "❌ Git Pull 실패"; exit 1; }
+            git pull --rebase origin develop || { echo "❌ Git Pull 실패"; exit 1; }
 
             echo "⚙ [4] Gradle Build (no test)"
             ./gradlew clean build -x test || { echo "❌ Gradle 빌드 실패"; exit 1; }
