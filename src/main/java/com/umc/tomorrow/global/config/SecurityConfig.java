@@ -91,6 +91,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/", "/ping").permitAll()  //경로별 인가작업
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/api/swagger-ui/**"
+                        ).permitAll()
                         .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated());
         http
