@@ -90,9 +90,10 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/", "/ping").permitAll()  //경로별 인가작업
+                        .requestMatchers("/", "api/ping").permitAll()  //경로별 인가작업
                         .requestMatchers(
                                 "/swagger-ui/**",
+                                "/api/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/api/swagger-ui/**"
                         ).permitAll()
