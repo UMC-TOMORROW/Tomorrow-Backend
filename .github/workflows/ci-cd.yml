@@ -46,8 +46,10 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: 22
           script: |
-            cd /home/ubuntu/Tomorrow-Backend/docker
-            git pull origin develop || true
+            cd /home/***/Tomorrow-Backend
+            git pull origin develop || { echo "Git pull failed"; exit 1; }
+
+            cd docker
             
             echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
             echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
