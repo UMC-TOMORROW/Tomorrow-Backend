@@ -10,6 +10,8 @@ package com.umc.tomorrow.domain.application.controller;
 import com.umc.tomorrow.domain.application.dto.request.CreateApplicationRequestDTO;
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
 import com.umc.tomorrow.domain.application.dto.response.CreateApplicationResponseDTO;
+import com.umc.tomorrow.domain.application.dto.response.ApplicationStatusListResponseDTO;
+import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
 import com.umc.tomorrow.domain.application.service.command.ApplicationService;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
@@ -26,6 +28,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Validated
 @Tag(name = "Application", description = "지원서 관련 API")
@@ -76,4 +80,23 @@ public class ApplicationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.onSuccessCreate(result));
     }
 
+    @Operation(
+            summary = "개별 지원자 이력서 조회",
+            description = "특정 공고에 지원한 개별 지원자의 이력서 정보를 조회합니다."
+    )
+    @GetMapping("/{postId}/applicants/{applicantId}/resume")
+    public ResponseEntity<BaseResponse<ApplicationDetailsResponseDTO>> getApplicantResume(
+            @Parameter(description = "공고 ID", example = "301")
+            @PathVariable @Min(1) Long postId,
+
+            @Parameter(description = "지원자 ID", example = "101")
+            @PathVariable @Min(1) Long applicantId
+    ) {
+        // 여기서는 Path Variable만 사용하여 조회하도록 구현
+        ApplicationDetailsResponseDTO result = applicationService.getApplicantResume(
+                postId,
+                applicantId
+        );
+        return ResponseEntity.ok(BaseResponse.onSuccess(result));
+    }
 } 

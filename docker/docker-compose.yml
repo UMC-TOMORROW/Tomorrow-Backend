@@ -1,10 +1,27 @@
+version: '3.8'
+
 services:
+  app:
+    container_name: tomorrow-backend
+    image: eun07213/tomorrow:latest   # Docker Hub에서 pull
+    depends_on:
+      mysql8-local:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      DEV_DATABASE_URL: ${DEV_DATABASE_URL}
+    restart: always
+
   mysql8-local:
     image: mysql:8.0
     container_name: tomorrow-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root1234}
+      MYSQL_ROOT_PASSWORD: root1234
       MYSQL_DATABASE: tomorrow_db
       MYSQL_USER: tomorrow_user
       MYSQL_PASSWORD: tomorrow_user_password
