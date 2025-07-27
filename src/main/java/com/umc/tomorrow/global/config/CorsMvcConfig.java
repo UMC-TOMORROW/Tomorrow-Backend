@@ -11,7 +11,8 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry corsRegistry) {
 
         corsRegistry.addMapping("/**")
-                .allowedOrigins("https://umctomorrow.shop","http://localhost:5173", "http://localhost:3000", "http://localhost:8080")
+                .allowedOrigins("https://umctomorrow.shop","http://localhost:5173", "http://localhost:3000", "http://localhost:8080",
+                        "https://tomorrow-frontend.vercel.app")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .exposedHeaders("Set-Cookie", "Authorization")
