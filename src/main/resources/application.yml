@@ -82,7 +82,7 @@ logging:
 # Swagger 설정 (공통)
 springdoc:
   swagger-ui:
-    path: /swagger-ui.html
+    path: /swagger-ui/index.html
     groups-order: DESC
     operationsSorter: method
     disable-swagger-default-url: true
