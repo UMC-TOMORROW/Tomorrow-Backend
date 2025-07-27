@@ -86,7 +86,8 @@ public class ApplicationService {
 
     /**
      * 일자리에 지원하기
-     * @param userId 일자리에 지원하는 userId
+     *
+     * @param userId     일자리에 지원하는 userId
      * @param requestDTO 일자리 지원 요청 DTO
      * @return 일자리 응답 DTO
      */
@@ -131,8 +132,8 @@ public class ApplicationService {
                 .id(application.getId())
                 .build();
     }
-}
 
+    /*
      * 개별 지원자 이력서 조회
      */
     public ApplicationDetailsResponseDTO getApplicantResume(Long postId, Long applicantId) {
@@ -153,5 +154,5 @@ public class ApplicationService {
                 resume
         );
     }
+}
 
-} 
