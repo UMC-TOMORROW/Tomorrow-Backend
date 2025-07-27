@@ -57,6 +57,10 @@ public class Application extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime appliedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_id") // DB 컬럼명
+    private Resume resume;
+
     /**
      * 합격/불합격 상태 업데이트
      */

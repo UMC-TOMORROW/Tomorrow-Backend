@@ -11,6 +11,10 @@ import com.umc.tomorrow.domain.application.converter.ApplicationConverter;
 import com.umc.tomorrow.domain.application.dto.request.CreateApplicationRequestDTO;
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
 import com.umc.tomorrow.domain.application.dto.response.CreateApplicationResponseDTO;
+import com.umc.tomorrow.domain.application.dto.response.ApplicationStatusListResponseDTO;
+import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
+
+
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
 import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
@@ -26,6 +30,7 @@ import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.exception.ResumeException;
 import com.umc.tomorrow.domain.resume.exception.code.ResumeErrorStatus;
 import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
+import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import java.time.LocalDateTime;
@@ -33,6 +38,9 @@ import jdk.jshell.spi.ExecutionControl.UserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -124,3 +132,26 @@ public class ApplicationService {
                 .build();
     }
 }
+
+     * 개별 지원자 이력서 조회
+     */
+    public ApplicationDetailsResponseDTO getApplicantResume(Long postId, Long applicantId) {
+        // 1. 공고 ID와 지원자 ID로 지원서(Application)를 조회
+        Application application = applicationRepository.findByJobIdAndUserId(postId, applicantId)
+                .orElseThrow(() -> new RestApiException(ApplicationErrorStatus.APPLICATION_NOT_FOUND));
+
+        // 2. 연관된 엔티티들 조회
+        User user = application.getUser();
+
+        // Application 엔티티에 추가된 `resume` 필드를 사용하여 조회
+        Resume resume = application.getResume();
+
+        // 3. Converter를 사용하여 엔티티를 DTO로 변환
+        return ApplicationConverter.toApplicantResumeResponseDTO(
+                application,
+                user,
+                resume
+        );
+    }
+
+} 
