@@ -50,7 +50,11 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+
+                        configuration.setAllowedOrigins(Arrays.asList(
+                                "http://localhost:3000",           // 개발용
+                                "https://umctomorrow.shop"         // 배포용
+                        ));
                         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -86,7 +90,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/").permitAll() //경로별 인가작업
+                        .requestMatchers("/", "/ping").permitAll()  //경로별 인가작업
                         .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated());
         http
