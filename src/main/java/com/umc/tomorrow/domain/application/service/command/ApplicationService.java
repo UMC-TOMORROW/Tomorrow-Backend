@@ -12,7 +12,7 @@ import com.umc.tomorrow.domain.application.dto.request.CreateApplicationRequestD
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicantListResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.CreateApplicationResponseDTO;
-import com.umc.tomorrow.domain.application.dto.response.ApplicationStatusListResponseDTO;
+
 import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
 
 
@@ -156,7 +156,7 @@ public class ApplicationService {
                 resume
         );
     }
-}
+
 
     /**
      * 공고 기준 지원자 목록 조회
