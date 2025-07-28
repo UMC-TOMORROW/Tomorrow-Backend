@@ -53,7 +53,9 @@ public class SecurityConfig {
 
                         configuration.setAllowedOrigins(Arrays.asList(
                                 "http://localhost:3000",           // 개발용
-                                "https://umctomorrow.shop"         // 배포용
+                                "https://umctomorrow.shop",         // 배포용
+                                "http://localhost:3000",
+                                "https://tomorrow-frontend.vercel.app"
                         ));
                         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                         configuration.setAllowCredentials(true);
@@ -90,7 +92,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/", "api/ping").permitAll()  //경로별 인가작업
+                        .requestMatchers("/", "/api/ping").permitAll()  //경로별 인가작업
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/api/swagger-ui/**",
