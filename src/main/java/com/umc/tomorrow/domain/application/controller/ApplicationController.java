@@ -9,6 +9,7 @@ package com.umc.tomorrow.domain.application.controller;
 
 import com.umc.tomorrow.domain.application.dto.request.CreateApplicationRequestDTO;
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
+import com.umc.tomorrow.domain.application.dto.response.ApplicantListResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.CreateApplicationResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicationStatusListResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
@@ -97,6 +98,22 @@ public class ApplicationController {
                 postId,
                 applicantId
         );
+        return ResponseEntity.ok(BaseResponse.onSuccess(result));
+    }
+
+    @Operation(
+            summary = "지원자 목록 조회 (공고 기준)",
+            description = "`status`가 없으면 전체, `status=open` 또는 `status=closed`로 필터링합니다."
+    )
+    @GetMapping("/{postId}/applicants")
+    public ResponseEntity<BaseResponse<List<ApplicantListResponseDTO>>> getApplicantsByPost(
+            @Parameter(description = "공고 ID", example = "301")
+            @PathVariable @Min(1) Long postId,
+
+            @Parameter(description = "지원 상태 필터 (생략 시 전체 조회)", example = "closed")
+            @RequestParam(required = false) String status
+    ) {
+        List<ApplicantListResponseDTO> result = applicationService.getApplicantsByPostAndStatus(postId, status);
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
 } 
