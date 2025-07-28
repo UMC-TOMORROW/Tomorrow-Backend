@@ -54,7 +54,6 @@ public class SecurityConfig {
                         configuration.setAllowedOrigins(Arrays.asList(
                                 "http://localhost:3000",           // 개발용
                                 "https://umctomorrow.shop",         // 배포용
-                                "http://localhost:3000",
                                 "https://tomorrow-frontend.vercel.app"
                         ));
                         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
