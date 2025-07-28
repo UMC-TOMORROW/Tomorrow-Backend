@@ -7,12 +7,15 @@
  */
 package com.umc.tomorrow.domain.application.controller;
 
+import com.umc.tomorrow.domain.application.dto.request.CreateApplicationRequestDTO;
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicantListResponseDTO;
+import com.umc.tomorrow.domain.application.dto.response.CreateApplicationResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicationStatusListResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
 import com.umc.tomorrow.domain.application.service.command.ApplicationService;
+import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,7 +24,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,6 +60,25 @@ public class ApplicationController {
         );
         
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
+    }
+
+    /**
+     * 일자리 지원하기 API(POST)
+     * @param postId 지원하고자 하는 일자리ID
+     * @param user 지원하는 유저
+     * @param requestDto 일자리 지원 요청 DTO
+     * @return 일자리 지원 응답 DTO
+     */
+    @Operation(summary = "일자리 지원하기", description = "로그인한 사용자가 해당 일자리에 지원합니다.")
+    @ApiResponse(responseCode = "201", description = "일자리 지원 성공")
+    @PostMapping("/{postId}/applications")
+    public ResponseEntity<BaseResponse<CreateApplicationResponseDTO>> createApplication(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal CustomOAuth2User user,
+            @Valid @RequestBody CreateApplicationRequestDTO requestDto
+    ) {
+        CreateApplicationResponseDTO result = applicationService.createApplication(user.getUserDTO().getId(), requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.onSuccessCreate(result));
     }
 
     @Operation(
