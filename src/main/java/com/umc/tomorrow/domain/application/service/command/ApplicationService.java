@@ -156,7 +156,7 @@ public class ApplicationService {
                 resume
         );
     }
-}
+
 
     /**
      * 공고 기준 지원자 목록 조회
