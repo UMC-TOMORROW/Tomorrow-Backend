@@ -97,7 +97,7 @@ public class SecurityConfig {
                             "/v3/api-docs/**",
                             "/swagger-resources/**",
                             "/webjars/**",
-                            "/swagger-ui.html",
+                            "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated());
