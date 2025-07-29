@@ -86,15 +86,16 @@ logging:
 # Swagger 설정 (공통)
 springdoc:
   swagger-ui:
-    path: /swagger-ui/index.html
-    url: /v3/api-docs 
+    path: /swagger-ui.html
     groups-order: DESC
     operationsSorter: method
     disable-swagger-default-url: true
     display-request-duration: true
-    try-it-out-enabled: true
+  api-docs:
+    path: /v3/api-docs
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
+  override-with-generic-response: false
 
 # 액추에이터 기본 설정
 management:
