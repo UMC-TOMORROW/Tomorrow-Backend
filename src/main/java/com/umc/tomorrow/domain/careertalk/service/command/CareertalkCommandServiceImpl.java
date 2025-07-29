@@ -13,7 +13,7 @@ import com.umc.tomorrow.domain.careertalk.dto.request.UpdateCareertalkRequestDto
 import com.umc.tomorrow.domain.careertalk.dto.response.CareertalkResponseDto;
 import com.umc.tomorrow.domain.careertalk.entity.Careertalk;
 import com.umc.tomorrow.domain.careertalk.exception.CareertalkException;
-import com.umc.tomorrow.domain.careertalk.exception.code.CareertalkStatus;
+import com.umc.tomorrow.domain.careertalk.exception.code.CareertalkErrorStatus;
 import com.umc.tomorrow.domain.careertalk.repository.CareertalkRepository;
 
 import com.umc.tomorrow.domain.member.entity.User;
@@ -72,10 +72,10 @@ public class CareertalkCommandServiceImpl implements CareertalkCommandService {
                 .orElseThrow(()  -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
         Careertalk careertalk = careertalkRepository.findById(careertalkId)
-                .orElseThrow(() -> new CareertalkException(CareertalkStatus.CAREERTALK_NOT_FOUND));
+                .orElseThrow(() -> new CareertalkException(CareertalkErrorStatus.CAREERTALK_NOT_FOUND));
 
         if (!careertalk.getUser().getId().equals(userId)){ //권한 유효성 검사
-            throw new CareertalkException(CareertalkStatus.CAREERTALK_FORBIDDEN);
+            throw new CareertalkException(CareertalkErrorStatus.CAREERTALK_FORBIDDEN);
         }
 
         careertalk.update(requestDto.getTitle(), requestDto.getContent(), requestDto.getCategory());
@@ -94,10 +94,10 @@ public class CareertalkCommandServiceImpl implements CareertalkCommandService {
                 .orElseThrow(()  -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
         Careertalk careertalk = careertalkRepository.findById(careertalkId)
-                .orElseThrow(() -> new CareertalkException(CareertalkStatus.CAREERTALK_NOT_FOUND));
+                .orElseThrow(() -> new CareertalkException(CareertalkErrorStatus.CAREERTALK_NOT_FOUND));
 
         if (!careertalk.getUser().getId().equals(userId)){ //권한 유효성 검사
-            throw new CareertalkException(CareertalkStatus.CAREERTALK_FORBIDDEN);
+            throw new CareertalkException(CareertalkErrorStatus.CAREERTALK_FORBIDDEN);
         }
 
         CareertalkResponseDto responseDto = CareertalkConverter.toCareertalkResponseDto(careertalk); // 삭제 전 DTO 생성

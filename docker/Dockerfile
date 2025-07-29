@@ -2,7 +2,7 @@
 FROM openjdk:17-jdk-slim
 
 # GitHub Actions에서 복사한 app.jar을 컨테이너에 복사
-COPY app.jar app.jar
+COPY build/libs/*.jar app.jar
 
 # 컨테이너가 사용하는 포트
 EXPOSE 8080
