@@ -36,10 +36,10 @@ public class JobRequestDTO {
     private Boolean isPeriodNegotiable = false;
 
     @Schema(description = "근무 시작 시간", example = "12:00")
-    private LocalDateTime workStart;
+    private String workStart;
 
     @Schema(description = "근무 종료 시간", example = "17:00")
-    private LocalDateTime workEnd;
+    private String workEnd;
 
     @Schema(description = "근무 시작 협의", example = "true")
     private Boolean isTimeNegotiable = false;

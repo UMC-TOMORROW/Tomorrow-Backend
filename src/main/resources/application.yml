@@ -43,7 +43,6 @@ spring:
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/naver
             scope: name, email, gender, mobile
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
           google:
             client-name: google
@@ -52,7 +51,6 @@ spring:
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/google
             scope: profile, email
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
           
           kakao:
             client-name: kakao
@@ -60,7 +58,6 @@ spring:
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             scope: profile_nickname, profile_image
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
         provider:
           naver:

@@ -46,9 +46,9 @@ public class Job extends BaseEntity {
     @Column(columnDefinition = "BOOLEAN DEFAULT false", nullable = false) //false라면 workPeriod를 필수로 입력 받아야함
     private Boolean isPeriodNegotiable;
 
-    private LocalDateTime workStart;
+    private String workStart; //string으로 변경
 
-    private LocalDateTime workEnd;
+    private String workEnd;
 
     @Column(columnDefinition = "BOOLEAN DEFAULT false") //false라면 workStart, workEnd를 필수로 입력 받아야함
     private Boolean isTimeNegotiable;
