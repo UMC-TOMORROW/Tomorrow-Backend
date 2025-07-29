@@ -93,10 +93,11 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/", "/api/ping").permitAll()  //경로별 인가작업
                         .requestMatchers(
-                                "/swagger-ui/**",
-                                "/api/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/api/v3/api-docs/**"
+                             "/swagger-ui/**",
+                            "/v3/api-docs/**",
+                            "/swagger-resources/**",
+                            "/webjars/**",
+                            "/swagger-ui.html",
                         ).permitAll()
                         .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated());
