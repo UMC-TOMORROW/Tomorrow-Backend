@@ -37,6 +37,7 @@ public class IntroductionCommandServiceImpl implements IntroductionCommandServic
      * @param dto 자기소개 추가 요청 DTO
      * @return converter로 이동
      */
+    @Override
     public IntroductionResponseDTO saveIntroduction(Long userId, Long resumeId, IntroductionCreateRequestDTO dto) {
 
         User user = userRepository.findById(userId)
@@ -70,6 +71,7 @@ public class IntroductionCommandServiceImpl implements IntroductionCommandServic
      * @param resumeId 작설한 이력서 id
      * @return converter로 이동
      */
+    @Override
     public GetIntroductionResponseDTO getIntroduction(Long userId, Long resumeId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(IntroductionStatus.INTRODUCTION_FORBIDDEN));
