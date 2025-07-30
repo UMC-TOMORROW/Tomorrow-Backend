@@ -106,9 +106,6 @@ management:
   endpoint:
     health:
       show-details: never
-  metrics:
-    enable:
-      system: false
 
 cloud:
   aws:
