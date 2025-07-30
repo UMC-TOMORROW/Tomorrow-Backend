@@ -12,7 +12,7 @@ import com.umc.tomorrow.domain.application.dto.request.CreateApplicationRequestD
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicantListResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.CreateApplicationResponseDTO;
-import com.umc.tomorrow.domain.application.dto.response.ApplicationStatusListResponseDTO;
+
 import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
 import com.umc.tomorrow.domain.application.entity.Application;
