@@ -17,10 +17,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.Collections;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -38,7 +37,6 @@ public class SecurityConfig {
         this.userRepository = userRepository;
     }
 
-    // 전역 CORS 설정을 Bean으로 등록
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -74,9 +72,13 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/", "/api/ping",
-                                "api/swagger-ui/**", "api/swagger-ui.html", "api/swagger-ui/index.html",
-                                "api/v3/api-docs/**", "/login"
+                        .requestMatchers(
+                                "/", "/api/ping",
+                                "/api/swagger-ui/**",        // ✅ 수정됨
+                                "/api/swagger-ui.html",      // ✅ 수정됨
+                                "/api/swagger-ui/index.html",// ✅ 수정됨
+                                "/api/v3/api-docs/**",       // ✅ 수정됨
+                                "/login"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -85,4 +87,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
