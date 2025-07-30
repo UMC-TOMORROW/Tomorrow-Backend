@@ -51,7 +51,7 @@ spring:
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/google
             scope: profile, email
-          
+
           
           kakao:
             client-name: kakao
@@ -59,7 +59,7 @@ spring:
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             scope: profile_nickname, profile_image
-            
+
 
         provider:
           naver:
@@ -106,4 +106,18 @@ management:
   endpoint:
     health:
       show-details: never
+  metrics:
+    enable:
+      system: false
 
+cloud:
+  aws:
+    s3:
+      bucket: umc8-tomorrow-bucket
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
