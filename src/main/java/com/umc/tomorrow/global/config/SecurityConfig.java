@@ -74,10 +74,10 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/", "/api/ping",
-                                "/api/swagger-ui/**",        // ✅ 수정됨
-                                "/api/swagger-ui.html",      // ✅ 수정됨
-                                "/api/swagger-ui/index.html",// ✅ 수정됨
-                                "/api/v3/api-docs/**",       // ✅ 수정됨
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/index.html",
+                                "/v3/api-docs/**",
                                 "/login"
                         ).permitAll()
                         .anyRequest().authenticated()
