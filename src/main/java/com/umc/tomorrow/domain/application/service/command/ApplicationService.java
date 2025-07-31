@@ -192,5 +192,3 @@ public class ApplicationService {
                 .map(ApplicationConverter::toApplicantListResponseDTO)
                 .collect(Collectors.toList());
     }
-
-}
