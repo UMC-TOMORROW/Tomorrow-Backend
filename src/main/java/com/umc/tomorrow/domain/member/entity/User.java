@@ -9,6 +9,8 @@ import com.umc.tomorrow.domain.member.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "user")
+@EntityListeners(org.springframework.data.jpa.domain.support.AuditingEntityListener.class) // auditing 활성화
 @Getter
 @Setter
 public class User {
@@ -55,9 +58,11 @@ public class User {
     @Column(length = 255, nullable = false)
     private String providerUserId;
 
+    @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
