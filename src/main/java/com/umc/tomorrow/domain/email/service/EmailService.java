@@ -7,6 +7,8 @@
 package com.umc.tomorrow.domain.email.service;
 
 import com.umc.tomorrow.domain.email.dto.request.EmailRequestDTO;
+import com.umc.tomorrow.domain.email.enums.EmailContentProvider;
+import com.umc.tomorrow.domain.email.enums.EmailContentType;
 import com.umc.tomorrow.domain.email.enums.EmailType;
 import com.umc.tomorrow.domain.email.dto.response.EmailResponseDTO;
 import com.umc.tomorrow.domain.email.exception.EmailException;
@@ -49,15 +51,10 @@ public class EmailService {
         Job job = jobRepository.findById(dto.getJobId())
                 .orElseThrow(() -> new JobException(JobErrorStatus.JOB_NOT_FOUND));
 
-        String subject;
-        String content;
+        EmailContentProvider contentProvider = EmailContentType.valueOf(dto.getType().name());
 
-        if (dto.getType() == EmailType.JOB_APPLY) {
-            subject = "[지원 완료] " + user.getName() + "님이 " + job.getTitle() + "에 지원했습니다.";
-            content = "정상적으로 지원이 완료되었습니다.";
-        } else {
-            throw new EmailException(EmailErrorStatus.INVALID_EMAIL_TYPE);
-        }
+        String subject = contentProvider.getSubject(user, job);
+        String content = contentProvider.getContent(user, job);
 
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
