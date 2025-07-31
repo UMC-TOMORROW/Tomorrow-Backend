@@ -32,8 +32,13 @@ public class JWTUtil {
     }
 
     public Boolean isExpired(String token) {
-
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        try {
+            return Jwts.parser().verifyWith(secretKey).build()
+                    .parseSignedClaims(token)
+                    .getPayload().getExpiration().before(new Date());
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            return true; // 만료된 경우 true 반환하도록 수정
+        }
     }
 
     public String createJwt(Long id, String name, String username, String role, Long expiredMs) {
@@ -56,6 +61,8 @@ public class JWTUtil {
     // Refresh Token 생성 (username만 claim, 만료시간은 더 길게)
     public String createRefreshToken(Long id, String username, Long expiredMs) {
         return Jwts.builder()
+                .setSubject("refresh")
+                .claim("id", id)
                 .claim("username", username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))

@@ -33,6 +33,7 @@ public class JobConverter {
                 .alwaysHiring(dto.getAlwaysHiring())
                 .workDays(toWorkDays(dto.getWorkDays()))
                 .workEnvironment(toWorkEnvironment(dto.getWorkEnvironment()))
+                .jobCategory(dto.getJobCategory())
                 .build();
     }
 

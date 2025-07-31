@@ -20,3 +20,4 @@ public class ApplicantListResponseDTO {
     private String status;
     private String resumeTitle;
 }
+

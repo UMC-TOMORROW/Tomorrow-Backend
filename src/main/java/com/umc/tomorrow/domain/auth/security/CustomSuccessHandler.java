@@ -35,8 +35,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
-
-        String username = customUserDetails.getUsername();
+        String usernameToUseForTokens;
+        // String username = customUserDetails.getUsername();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
@@ -51,59 +51,78 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (user == null) {
             // 소셜 로그인 정보로 새 회원 생성
             user = new User();
-            user.setName(customUserDetails.getName()); // 필요시
+            user.setName(customUserDetails.getName());
             // 필수값 세팅
             user.setCreatedAt(java.time.LocalDateTime.now());
             user.setUpdatedAt(java.time.LocalDateTime.now());
             // provider, providerUserId, username, email 세팅
-            providerStr = customUserDetails.getUserDTO().getProvider();
-            providerUserId = customUserDetails.getUserDTO().getProviderUserId();
-            if (providerStr != null) {
-                user.setProvider(Provider.valueOf(providerStr.toUpperCase()));
-            }
+            user.setProvider(Provider.valueOf(providerStr.toUpperCase()));
             user.setProviderUserId(providerUserId);
-            // username은 provider + '_' + providerUserId로 생성
-            String usernameValue = (providerStr != null && providerUserId != null) ? providerStr + "_" + providerUserId : null;
-            user.setUsername(usernameValue);
+
+            // DB에 저장할 username 형식과 토큰에 담을 username 형식을 일치시킴
+            usernameToUseForTokens = (providerStr != null && providerUserId != null) ? providerStr + "_" + providerUserId : null;
+            user.setUsername(usernameToUseForTokens); // DB에 저장
             user.setEmail(customUserDetails.getUserDTO().getEmail());
             userRepository.save(user);
+        }else {
+            // 기존 사용자일 경우 db에 저장된 username 사용
+            usernameToUseForTokens = user.getUsername();
+            // null 체크 추가 (혹시 기존 유저의 username이 null일 경우 대비)
+            if (usernameToUseForTokens == null) {
+                // DB에 username이 없었던 경우, 새로 생성하여 업데이트
+                usernameToUseForTokens = (providerStr != null && providerUserId != null) ? providerStr + "_" + providerUserId : null;
+                user.setUsername(usernameToUseForTokens);
+                userRepository.save(user);
+            }
         }
-        String token = jwtUtil.createJwt(
+
+        // Access Token 유효기간 (60시간)
+        long accessTokenExpiredMs = 60L * 60 * 60 * 1000; // 밀리초
+        long accessTokenExpiredSeconds = 60L * 60 * 60; // 초
+
+        // access token 생
+        String accessToken = jwtUtil.createJwt(
             user.getId(),
             user.getName(),
             user.getUsername(),
             (user.getStatus() != null ? user.getStatus().name() : null),
-            60*60*60L
+                accessTokenExpiredMs
         );
 
+        // Refresh Token 유효기간 (2주)
+        long refreshTokenExpiredMs = 60L * 60 * 24 * 14 * 1000; // 밀리초
+        long refreshTokenExpiredSeconds = 60L * 60 * 24 * 14; // 초
+
         // Refresh Token 생성 (2주)
-        String refreshToken = jwtUtil.createRefreshToken(user.getId(), username, 60L * 60 * 24 * 14 * 1000); // 2주
+
+        String refreshToken = jwtUtil.createRefreshToken(user.getId(), usernameToUseForTokens, refreshTokenExpiredMs); // 2주
+
 
         // DB에 저장
         if (user != null) {
             user.setRefreshToken(refreshToken);
+            System.out.println("[DEBUG] refresh Token 확인 : " + refreshToken);
             userRepository.save(user);
         }
 
         // 클라이언트에 전달 (쿠키/헤더)
-        response.addCookie(createCookie("Authorization", token));
-        response.addHeader("Authorization", "Bearer " + token);
-        response.addCookie(createCookie("RefreshToken", refreshToken));
+        response.addCookie(createCookie("Authorization", accessToken, (int)accessTokenExpiredSeconds));
+        response.addHeader("Authorization", "Bearer " + accessToken);
+
+        response.addCookie(createCookie("RefreshToken", refreshToken, (int)refreshTokenExpiredSeconds));
         response.addHeader("RefreshToken", refreshToken);
         //response.sendRedirect("http://localhost:3000/");
         //response.sendRedirect("/success");//로컬 테스트 확인용
     }
 
-    private Cookie createCookie(String key, String value) {
+    private Cookie createCookie(String key, String value, int maxAge) {
 
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60*60*60);
+        cookie.setMaxAge(maxAge);
         //cookie.setSecure(true);
         cookie.setSecure(false); // 로컬 테스트용
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-
-
 
         return cookie;
     }

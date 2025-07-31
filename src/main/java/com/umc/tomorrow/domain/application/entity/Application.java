@@ -35,11 +35,11 @@ public class Application extends BaseEntity {
     private String content; // 지원정보 입력란
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private ApplicationStatus status;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id", nullable = false)
+    @JoinColumn(name = "review_id")
     private Review review;
     
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,12 +50,12 @@ public class Application extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_id")
+    private Resume resume;
+
     @Column(nullable = false)
     private LocalDateTime appliedAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_id") // DB 컬럼명
-    private Resume resume;
 
     /**
      * 합격/불합격 상태 업데이트

@@ -10,11 +10,16 @@ package com.umc.tomorrow.domain.application.service.command;
 import com.umc.tomorrow.domain.application.converter.ApplicationConverter;
 import com.umc.tomorrow.domain.application.dto.request.CreateApplicationRequestDTO;
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
-import com.umc.tomorrow.domain.application.dto.response.*;
+import com.umc.tomorrow.domain.application.dto.response.ApplicantListResponseDTO;
+import com.umc.tomorrow.domain.application.dto.response.CreateApplicationResponseDTO;
+
+import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
+
+
+import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
 import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
-
-import com.umc.tomorrow.domain.application.exception.ApplicationErrorStatus;
+import com.umc.tomorrow.domain.application.exception.code.ApplicationErrorStatus;
 import com.umc.tomorrow.domain.application.repository.ApplicationRepository;
 import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.job.exception.JobException;
@@ -64,17 +69,17 @@ public class ApplicationService {
         // 공고 조회 및 검증
         Job job = jobRepository.findById(postId)
                 .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
-
+        
         // 지원서가 해당 공고에 대한 것인지 검증
         if (!application.getJob().getId().equals(postId)) {
             throw new RestApiException(ApplicationErrorStatus.APPLICATION_JOB_MISMATCH);
         }
 
-        ApplicationStatus status = ApplicationConverter.toEnum(requestDTO);
+        ApplicationStatus status =  ApplicationConverter.toEnum(requestDTO);
 
         application.updateStatus(status);
         applicationRepository.save(application);
-
+        
         return UpdateApplicationStatusResponseDTO.builder()
                 .applicationId(applicationId)
                 .status(requestDTO.getStatus())
@@ -88,8 +93,6 @@ public class ApplicationService {
      * @param requestDTO 일자리 지원 요청 DTO
      * @return 일자리 응답 DTO
      */
-
-
     @Transactional
     public CreateApplicationResponseDTO createApplication(Long userId, CreateApplicationRequestDTO requestDTO) {
         Job job = jobRepository.findById(requestDTO.getJobId())
@@ -189,5 +192,5 @@ public class ApplicationService {
                 .map(ApplicationConverter::toApplicantListResponseDTO)
                 .collect(Collectors.toList());
     }
-} 
 
+}
