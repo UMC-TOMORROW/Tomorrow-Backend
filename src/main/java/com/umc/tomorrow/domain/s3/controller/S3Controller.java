@@ -3,9 +3,9 @@
  * 작성자: 이승주
  * 작성일: 2025-07-28
  */
-package com.umc.tomorrow.domain.Image.controller;
+package com.umc.tomorrow.domain.s3.controller;
 
-import com.umc.tomorrow.domain.Image.s3.S3Uploader;
+import com.umc.tomorrow.domain.s3.s3.S3Uploader;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
