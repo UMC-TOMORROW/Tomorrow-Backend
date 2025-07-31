@@ -3,7 +3,7 @@
  * 작성자: 이승주
  * 작성일: 2025-07-28
  */
-package com.umc.tomorrow.domain.Image.s3;
+package com.umc.tomorrow.domain.s3.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;

@@ -8,12 +8,10 @@ package com.umc.tomorrow.domain.resume.service;
 
 import com.umc.tomorrow.domain.resume.dto.response.ResumeSummaryResponseDTO;
 import com.umc.tomorrow.domain.resume.entity.Resume;
-import com.umc.tomorrow.domain.resume.entity.Certificate;
 import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
 import com.umc.tomorrow.domain.resume.converter.ResumeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.stream.Collectors;
 
 @Service
 public class ResumeSummaryService {
