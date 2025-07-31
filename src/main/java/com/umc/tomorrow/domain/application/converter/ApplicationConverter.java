@@ -7,6 +7,7 @@
 package com.umc.tomorrow.domain.application.converter;
 
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
+import com.umc.tomorrow.domain.application.dto.response.ApplicantListResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicationStatusListResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
@@ -77,12 +78,11 @@ public class ApplicationConverter {
         // 2. 이력서 상세 정보 DTO 생성
         ApplicationDetailsResponseDTO.ResumeInfoDTO resumeInfo = null;
         if (resume != null) {
-            List<ApplicationDetailsResponseDTO.ExperienceDTO> experienceDTOS =
-                    Optional.ofNullable(resume.getCareer()) //
-                            .orElse(Collections.emptyList())
-                            .stream()
-                            .map(ApplicationConverter::toExperienceDTO)
-                            .collect(Collectors.toList());
+            List<ApplicationDetailsResponseDTO.ExperienceDTO> experienceDTOS = Optional.ofNullable(resume.getExperiences())
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(ApplicationConverter::toExperienceDTO)
+                    .collect(Collectors.toList());
 
             List<ApplicationDetailsResponseDTO.CertificationDTO> certificationDTOS = Optional.ofNullable(resume.getCertificates())
                     .orElse(Collections.emptyList())
@@ -124,12 +124,13 @@ public class ApplicationConverter {
                 .build();
     }
 
-    private static ApplicationDetailsResponseDTO.ExperienceDTO toExperienceDTO(Career career) {
-        return ApplicationDetailsResponseDTO.ExperienceDTO.builder()
-                .id(career.getId())
-                .company(career.getCompany())
-                .duration(career.getWorkedPeriod().getLabel()) // Enum이므로 label 추출 메서드 필요
-                .description(career.getDescription())
+    public static ApplicantListResponseDTO toApplicantListResponseDTO(Application application) {
+        return ApplicantListResponseDTO.builder()
+                .applicantId(application.getUser().getId())
+                .userName(application.getUser().getName())
+                .applicationDate(application.getCreatedAt())
+                .status(application.getStatus().getLabel())
+                .resumeTitle(application.getResume() != null ? application.getResume().toString() : null) // 또는 "없음"
                 .build();
     }
 }
