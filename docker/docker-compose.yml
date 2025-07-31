@@ -21,6 +21,8 @@ services:
       KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
       NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
       NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+      MAILNAME: ${MAILNAME}
+      MAILPASSWORD: ${MAILPASSWORD}
     restart: always
 
   mysql8-local:
