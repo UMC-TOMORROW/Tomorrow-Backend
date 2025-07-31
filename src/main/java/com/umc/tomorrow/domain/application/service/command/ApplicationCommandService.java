@@ -70,17 +70,17 @@ public class ApplicationCommandService {
         // 공고 조회 및 검증
         Job job = jobRepository.findById(postId)
                 .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
-
+        
         // 지원서가 해당 공고에 대한 것인지 검증
         if (!application.getJob().getId().equals(postId)) {
             throw new RestApiException(ApplicationErrorStatus.APPLICATION_JOB_MISMATCH);
         }
 
-        ApplicationStatus status = ApplicationConverter.toEnum(requestDTO);
+        ApplicationStatus status =  ApplicationConverter.toEnum(requestDTO);
 
         application.updateStatus(status);
         applicationRepository.save(application);
-
+        
         return UpdateApplicationStatusResponseDTO.builder()
                 .applicationId(applicationId)
                 .status(requestDTO.getStatus())
@@ -196,4 +196,4 @@ public class ApplicationCommandService {
                 .collect(Collectors.toList());
     }
 
-} 
+}

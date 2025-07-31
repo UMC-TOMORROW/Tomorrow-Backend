@@ -13,6 +13,7 @@ import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsRespon
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
 import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
+import com.umc.tomorrow.domain.career.entity.Career;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.resume.entity.Certificate;
 import com.umc.tomorrow.domain.resume.entity.Experience;
@@ -112,8 +113,11 @@ public class ApplicationConverter {
                 .id(experience.getId())
                 .company(experience.getPlace())
                 .position(experience.getTask())
+
                 .duration(experience.getDuration())
+                .description(String.valueOf(experience))
                 .description(experience.getDescription())
+
                 .build();
     }
 
