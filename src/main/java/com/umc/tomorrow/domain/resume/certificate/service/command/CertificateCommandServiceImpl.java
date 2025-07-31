@@ -14,7 +14,7 @@ import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.exception.ResumeException;
 import com.umc.tomorrow.domain.resume.exception.code.ResumeErrorStatus;
 import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
-import com.umc.tomorrow.domain.s3.s3.S3Uploader;
+import com.umc.tomorrow.global.infrastructure.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
