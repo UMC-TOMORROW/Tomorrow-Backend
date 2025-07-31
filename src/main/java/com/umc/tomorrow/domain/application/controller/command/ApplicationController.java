@@ -5,16 +5,15 @@
  * 작성자: 정여진
  * 생성일: 2025-07-16
  */
-package com.umc.tomorrow.domain.application.controller;
+package com.umc.tomorrow.domain.application.controller.command;
 
 import com.umc.tomorrow.domain.application.dto.request.CreateApplicationRequestDTO;
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicantListResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.CreateApplicationResponseDTO;
-import com.umc.tomorrow.domain.application.dto.response.ApplicationStatusListResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
-import com.umc.tomorrow.domain.application.service.command.ApplicationService;
+import com.umc.tomorrow.domain.application.service.command.ApplicationCommandService;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +38,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicationController {
     
-    private final ApplicationService applicationService;
+    private final ApplicationCommandService applicationCommandService;
     
     @Operation(
         summary = "지원서 상태 업데이트", 
@@ -55,7 +54,7 @@ public class ApplicationController {
             
             @Valid @RequestBody UpdateApplicationStatusRequestDTO requestDTO
     ) {
-        UpdateApplicationStatusResponseDTO result = applicationService.updateApplicationStatus(
+        UpdateApplicationStatusResponseDTO result = applicationCommandService.updateApplicationStatus(
                 postId, applicationId, requestDTO
         );
         
@@ -77,7 +76,7 @@ public class ApplicationController {
             @AuthenticationPrincipal CustomOAuth2User user,
             @Valid @RequestBody CreateApplicationRequestDTO requestDto
     ) {
-        CreateApplicationResponseDTO result = applicationService.createApplication(user.getUserDTO().getId(), requestDto);
+        CreateApplicationResponseDTO result = applicationCommandService.createApplication(user.getUserDTO().getId(), requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.onSuccessCreate(result));
     }
 
@@ -94,7 +93,7 @@ public class ApplicationController {
             @PathVariable @Min(1) Long applicantId
     ) {
         // 여기서는 Path Variable만 사용하여 조회하도록 구현
-        ApplicationDetailsResponseDTO result = applicationService.getApplicantResume(
+        ApplicationDetailsResponseDTO result = applicationCommandService.getApplicantResume(
                 postId,
                 applicantId
         );
@@ -113,7 +112,7 @@ public class ApplicationController {
             @Parameter(description = "지원 상태 필터 (생략 시 전체 조회)", example = "closed")
             @RequestParam(required = false) String status
     ) {
-        List<ApplicantListResponseDTO> result = applicationService.getApplicantsByPostAndStatus(postId, status);
+        List<ApplicantListResponseDTO> result = applicationCommandService.getApplicantsByPostAndStatus(postId, status);
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
 } 
