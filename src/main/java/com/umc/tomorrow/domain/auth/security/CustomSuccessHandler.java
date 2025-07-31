@@ -77,7 +77,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         );
 
         // Refresh Token 생성 (2주)
-        String refreshToken = jwtUtil.createRefreshToken(username, 60L * 60 * 24 * 14 * 1000); // 2주
+        String refreshToken = jwtUtil.createRefreshToken(user.getId(), username, 60L * 60 * 24 * 14 * 1000); // 2주
 
         // DB에 저장
         if (user != null) {
