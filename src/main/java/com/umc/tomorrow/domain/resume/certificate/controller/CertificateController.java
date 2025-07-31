@@ -31,7 +31,7 @@ public class CertificateController {
 
     private final CertificateCommandService certificateCommandService;
 
-    @PostMapping("{resumeId}/certificates")
+    @PostMapping(value = "{resumeId}/certificates", consumes = "multipart/form-data")
     @Operation(summary = "이력서 자격증 업로드", description = "이력서에 자격증을 업로드합니다.")
     @ApiResponse(responseCode = "201", description = "자격증 업로드 성공")
     public ResponseEntity<BaseResponse<CertificateResponse>> uploadCertificate(
@@ -39,7 +39,7 @@ public class CertificateController {
             @RequestParam("file") MultipartFile file
     ){
         CertificateResponse response = certificateCommandService.uploadCertificate(resumeId, file);
-        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.onSuccess(response));
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.onSuccessCreate(response));
     }
 
     @DeleteMapping("{resumeId}/certificates/{certificateId}")
@@ -50,6 +50,6 @@ public class CertificateController {
             @PathVariable Long certificateId
     ) {
         CertificateResponse response = certificateCommandService.deleteCertificate(certificateId);
-        return ResponseEntity.ok(BaseResponse.onSuccess(response));
+        return ResponseEntity.ok(BaseResponse.onSuccessDelete(response));
     }
 }
