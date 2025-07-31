@@ -29,7 +29,8 @@ public class JWTFilter extends OncePerRequestFilter {
         System.out.println("JWTFilter: Request URI = " + path); // 요청 URI 로그 추가
 
         // /login, /oauth2 경로는 필터를 건너뜀
-        if (path.startsWith("/login") || path.startsWith("/oauth2")) {
+        if (path.startsWith("/login") || path.startsWith("/oauth2") || path.startsWith("/swagger-ui") ||
+                        path.startsWith("/v3/api-docs")) {
             System.out.println("JWTFilter: Skipping filter for path: " + path);
             filterChain.doFilter(request, response);
             return;
