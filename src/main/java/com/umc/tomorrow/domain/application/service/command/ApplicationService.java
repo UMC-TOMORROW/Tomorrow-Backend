@@ -10,8 +10,9 @@ package com.umc.tomorrow.domain.application.service.command;
 import com.umc.tomorrow.domain.application.converter.ApplicationConverter;
 import com.umc.tomorrow.domain.application.dto.request.CreateApplicationRequestDTO;
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
+import com.umc.tomorrow.domain.application.dto.response.ApplicantListResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.CreateApplicationResponseDTO;
-import com.umc.tomorrow.domain.application.dto.response.ApplicationStatusListResponseDTO;
+
 import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
 
 
@@ -39,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -154,5 +156,42 @@ public class ApplicationService {
                 resume
         );
     }
-}
+
+
+    /**
+     * 공고 기준 지원자 목록 조회
+     * status : null이면 전체, open이면 모집중, closed면 모집완료
+     * */
+    private boolean isJobClosed(Job job) {
+        LocalDateTime now = LocalDateTime.now();
+        boolean deadlinePassed = job.getDeadline().isBefore(now);
+        boolean manuallyClosed = Boolean.FALSE.equals(job.getIsActive());
+        return deadlinePassed || manuallyClosed;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ApplicantListResponseDTO> getApplicantsByPostAndStatus(Long postId, String status) {
+        Job job = jobRepository.findById(postId)
+                .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
+
+        boolean isClosed = isJobClosed(job);
+
+        List<Application> applications;
+        if (status == null || status.isBlank()) {
+            // 전체
+            applications = applicationRepository.findAllByJobId(postId);
+        } else if (status.equalsIgnoreCase("open")) {
+            applications = isClosed ? List.of() : applicationRepository.findAllByJobId(postId);
+        } else if (status.equalsIgnoreCase("closed")) {
+            applications = isClosed ? applicationRepository.findAllByJobId(postId) : List.of();
+        } else {
+            throw new RestApiException(ApplicationErrorStatus.INVALID_STATUS);
+        }
+
+        return applications.stream()
+                .map(ApplicationConverter::toApplicantListResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+} 
 

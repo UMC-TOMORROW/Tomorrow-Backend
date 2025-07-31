@@ -1,12 +1,12 @@
 package com.umc.tomorrow.domain.auth.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
@@ -32,8 +32,13 @@ public class JWTUtil {
     }
 
     public Boolean isExpired(String token) {
-
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        try {
+            return Jwts.parser().verifyWith(secretKey).build()
+                    .parseSignedClaims(token)
+                    .getPayload().getExpiration().before(new Date());
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            return true; // 만료된 경우 true 반환하도록 수정
+        }
     }
 
     public String createJwt(Long id, String name, String username, String role, Long expiredMs) {
@@ -54,8 +59,10 @@ public class JWTUtil {
     }
 
     // Refresh Token 생성 (username만 claim, 만료시간은 더 길게)
-    public String createRefreshToken(String username, Long expiredMs) {
+    public String createRefreshToken(Long id, String username, Long expiredMs) {
         return Jwts.builder()
+                .setSubject("refresh")
+                .claim("id", id)
                 .claim("username", username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
@@ -69,5 +76,17 @@ public class JWTUtil {
 
     public String getName(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("name", String.class);
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public Long getUserId(String token) {
+        return Long.valueOf(getClaims(token).get("id").toString());
     }
 }
