@@ -91,11 +91,11 @@ springdoc:
     operationsSorter: method
     disable-swagger-default-url: true
     display-request-duration: true
+    try-it-out-enabled: true
   api-docs:
     path: /v3/api-docs
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
-  override-with-generic-response: false
 
 # 액추에이터 기본 설정
 management:
@@ -106,6 +106,22 @@ management:
   endpoint:
     health:
       show-details: never
+  metrics:
+    enable:
+      processors: false
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  # 프록시 헤더 전략
+  forward-headers-strategy: native
+  error:
+    include-stacktrace: never
+    include-message: always
 
 cloud:
   aws:
@@ -118,3 +134,4 @@ cloud:
     credentials:
       accessKey: ${AWS_ACCESS_KEY_ID}
       secretKey: ${AWS_SECRET_ACCESS_KEY}
+
