@@ -68,7 +68,7 @@ public class User {
 
     private Long resumeId;
 
-    @Column(length = 255)
+    @Column(length = 512)
     private String refreshToken;
 
     /** 사용자명(로그인 ID 또는 소셜 ID) */
