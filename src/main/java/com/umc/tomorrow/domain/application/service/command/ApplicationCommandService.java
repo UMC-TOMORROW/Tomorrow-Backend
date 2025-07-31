@@ -12,13 +12,18 @@ import com.umc.tomorrow.domain.application.dto.request.CreateApplicationRequestD
 import com.umc.tomorrow.domain.application.dto.request.UpdateApplicationStatusRequestDTO;
 import com.umc.tomorrow.domain.application.dto.response.ApplicantListResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.CreateApplicationResponseDTO;
-import com.umc.tomorrow.domain.application.dto.response.ApplicationStatusListResponseDTO;
+
 import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
+
+
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
 import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
 import com.umc.tomorrow.domain.application.exception.code.ApplicationErrorStatus;
 import com.umc.tomorrow.domain.application.repository.ApplicationRepository;
+import com.umc.tomorrow.domain.email.dto.request.EmailRequestDTO;
+import com.umc.tomorrow.domain.email.enums.EmailType;
+import com.umc.tomorrow.domain.email.service.EmailService;
 import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.job.exception.JobException;
 import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
@@ -31,18 +36,19 @@ import com.umc.tomorrow.domain.resume.exception.code.ResumeErrorStatus;
 import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ApplicationService {
+public class ApplicationCommandService {
 
+    private final EmailService emailService;
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
     private final ResumeRepository resumeRepository;
@@ -57,17 +63,21 @@ public class ApplicationService {
             Long applicationId,
             UpdateApplicationStatusRequestDTO requestDTO
     ) {
+        // 지원서 조회
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RestApiException(ApplicationErrorStatus.APPLICATION_NOT_FOUND));
 
+        // 공고 조회 및 검증
         Job job = jobRepository.findById(postId)
                 .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
 
+        // 지원서가 해당 공고에 대한 것인지 검증
         if (!application.getJob().getId().equals(postId)) {
             throw new RestApiException(ApplicationErrorStatus.APPLICATION_JOB_MISMATCH);
         }
 
-        ApplicationStatus status = ApplicationConverter.toEnum(requestDTO);
+        ApplicationStatus status =  ApplicationConverter.toEnum(requestDTO);
+
         application.updateStatus(status);
         applicationRepository.save(application);
 
@@ -79,6 +89,10 @@ public class ApplicationService {
 
     /**
      * 일자리에 지원하기
+     *
+     * @param userId     일자리에 지원하는 userId
+     * @param requestDTO 일자리 지원 요청 DTO
+     * @return 일자리 응답 DTO
      */
     @Transactional
     public CreateApplicationResponseDTO createApplication(Long userId, CreateApplicationRequestDTO requestDTO) {
@@ -112,10 +126,12 @@ public class ApplicationService {
 
         applicationRepository.save(application);
 
-        User jobOwner = job.getUser();
-        String ownerEmail = jobOwner.getEmail();
+        EmailRequestDTO emailRequestDTO = EmailRequestDTO.builder()
+                .jobId(job.getId())
+                .type(EmailType.JOB_APPLY)
+                .build();
 
-        // 이메일 보내는 서비스 로직 추가해야함
+        emailService.sendEmail(userId, emailRequestDTO);
 
         return CreateApplicationResponseDTO.builder()
                 .id(application.getId())
@@ -126,12 +142,17 @@ public class ApplicationService {
      * 개별 지원자 이력서 조회
      */
     public ApplicationDetailsResponseDTO getApplicantResume(Long postId, Long applicantId) {
+        // 1. 공고 ID와 지원자 ID로 지원서(Application)를 조회
         Application application = applicationRepository.findByJobIdAndUserId(postId, applicantId)
                 .orElseThrow(() -> new RestApiException(ApplicationErrorStatus.APPLICATION_NOT_FOUND));
 
+        // 2. 연관된 엔티티들 조회
         User user = application.getUser();
+
+        // Application 엔티티에 추가된 `resume` 필드를 사용하여 조회
         Resume resume = application.getResume();
 
+        // 3. Converter를 사용하여 엔티티를 DTO로 변환
         return ApplicationConverter.toApplicantResumeResponseDTO(
                 application,
                 user,
@@ -139,10 +160,11 @@ public class ApplicationService {
         );
     }
 
+
     /**
      * 공고 기준 지원자 목록 조회
      * status : null이면 전체, open이면 모집중, closed면 모집완료
-     */
+     * */
     private boolean isJobClosed(Job job) {
         LocalDateTime now = LocalDateTime.now();
         boolean deadlinePassed = job.getDeadline().isBefore(now);
@@ -159,6 +181,7 @@ public class ApplicationService {
 
         List<Application> applications;
         if (status == null || status.isBlank()) {
+            // 전체
             applications = applicationRepository.findAllByJobId(postId);
         } else if (status.equalsIgnoreCase("open")) {
             applications = isClosed ? List.of() : applicationRepository.findAllByJobId(postId);

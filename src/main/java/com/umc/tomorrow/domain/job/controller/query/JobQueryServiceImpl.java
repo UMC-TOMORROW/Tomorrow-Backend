@@ -1,0 +1,45 @@
+/**
+ * 내 공고 조회 서비스 구현체
+ * 작성자: 정인도
+ * 생성일: 2025-07-25
+ */
+package com.umc.tomorrow.domain.job.controller.query;
+
+import com.umc.tomorrow.domain.job.converter.JobConverter;
+import com.umc.tomorrow.domain.job.dto.request.MyPostResponseDTO;
+import com.umc.tomorrow.domain.job.entity.Job;
+import com.umc.tomorrow.domain.job.enums.PostStatus;
+import com.umc.tomorrow.domain.job.exception.JobException;
+import com.umc.tomorrow.domain.job.repository.JobRepository;
+import com.umc.tomorrow.domain.job.service.query.JobQueryService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class JobQueryServiceImpl implements JobQueryService {
+
+    private final JobRepository jobRepository;
+    private final JobConverter jobConverter;
+
+    @Override
+    public List<MyPostResponseDTO> getMyPosts(Long userId, String status) {
+        PostStatus postStatus;
+
+        try {
+            postStatus = PostStatus.from(status);
+        } catch (IllegalArgumentException e) {
+            throw new JobException(JobErrorStatus.POST_STATUS_INVALID);
+        }
+        Boolean isActive = (postStatus == PostStatus.OPEN);
+        List<Job> jobs = jobRepository.findByUserIdAndIsActive(userId, isActive);
+
+        return jobs.stream()
+                .map(jobConverter::toMyPostResponseDto)
+                .collect(Collectors.toList());
+    }
+}
