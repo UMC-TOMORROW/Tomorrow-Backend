@@ -21,6 +21,9 @@ import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
 import com.umc.tomorrow.domain.application.exception.code.ApplicationErrorStatus;
 import com.umc.tomorrow.domain.application.repository.ApplicationRepository;
+import com.umc.tomorrow.domain.email.dto.request.EmailRequestDTO;
+import com.umc.tomorrow.domain.email.enums.EmailType;
+import com.umc.tomorrow.domain.email.service.EmailService;
 import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.job.exception.JobException;
 import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
@@ -31,23 +34,21 @@ import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.exception.ResumeException;
 import com.umc.tomorrow.domain.resume.exception.code.ResumeErrorStatus;
 import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
-import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import java.time.LocalDateTime;
-import jdk.jshell.spi.ExecutionControl.UserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ApplicationService {
+public class ApplicationCommandService {
 
+    private final EmailService emailService;
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
     private final ResumeRepository resumeRepository;
@@ -125,10 +126,12 @@ public class ApplicationService {
 
         applicationRepository.save(application);
 
-        User jobOwner = job.getUser();
-        String ownerEmail = jobOwner.getEmail();
+        EmailRequestDTO emailRequestDTO = EmailRequestDTO.builder()
+                .jobId(job.getId())
+                .type(EmailType.JOB_APPLY)
+                .build();
 
-        //이메일 보내는 서비스 로직 추가해야함
+        emailService.sendEmail(userId, emailRequestDTO);
 
         return CreateApplicationResponseDTO.builder()
                 .id(application.getId())
