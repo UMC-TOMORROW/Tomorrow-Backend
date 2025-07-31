@@ -8,6 +8,7 @@
  */
 package com.umc.tomorrow.domain.member.dto;
 
+import jakarta.persistence.EntityListeners;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +18,10 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import com.umc.tomorrow.domain.member.enums.Gender;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Builder
 public class UserDTO {
@@ -47,7 +51,8 @@ public class UserDTO {
     @NotNull(message = "{user.status.notnull}")
     private final String status; // 상태 (ACTIVE, INACTIVE)
 
-    private final LocalDateTime inactiveAt; // 비활성화 일시
+    @LastModifiedDate
+    private LocalDateTime inactiveAt; // 비활성화 일시
 
     @NotNull(message = "{user.isOnboarded.notnull}")
     private final Boolean isOnboarded; // 온보딩 여부
@@ -59,8 +64,10 @@ public class UserDTO {
     @Size(max = 10, message = "{user.providerUserId.size}")
     private final String providerUserId; // 소셜 제공자 ID
 
-    private final LocalDateTime createdAt; // 생성일시
-    private final LocalDateTime updatedAt; // 수정일시
+    @LastModifiedDate
+    private LocalDateTime createdAt; // 생성일시
+    @LastModifiedDate
+    private LocalDateTime updatedAt; // 수정일시
 
     @NotNull(message = "{user.resumeId.notnull}")
     private final Long resumeId; // 이력서 ID
