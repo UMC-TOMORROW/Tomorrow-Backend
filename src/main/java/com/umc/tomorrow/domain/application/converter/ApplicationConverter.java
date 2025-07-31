@@ -113,8 +113,11 @@ public class ApplicationConverter {
                 .id(experience.getId())
                 .company(experience.getPlace())
                 .position(experience.getTask())
-                .duration(experience.getDuration()) // Enum → Label
+
+                .duration(experience.getDuration())
                 .description(String.valueOf(experience))
+                .description(experience.getDescription())
+
                 .build();
     }
 

@@ -28,6 +28,7 @@ public class CareertalkConverter {
                 .id(careertalk.getId())
                 .category(careertalk.getCategory())
                 .title(careertalk.getTitle())
+                .content(careertalk.getContent())
                 .createdAt(careertalk.getCreatedAt())
                 .build();
 }
