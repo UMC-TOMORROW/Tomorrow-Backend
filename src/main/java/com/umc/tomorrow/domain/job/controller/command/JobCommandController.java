@@ -1,4 +1,4 @@
-package com.umc.tomorrow.domain.job.controller;
+package com.umc.tomorrow.domain.job.controller.command;
 
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.job.dto.request.BusinessRequestDTO;
@@ -30,7 +30,6 @@ public class JobCommandController {
 
     private final JobCommandService jobCommandService;
     private final UserRepository userRepository;
-
 
     /**
      * 일자리 정보 세션에 저장(POST)
