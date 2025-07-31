@@ -67,7 +67,7 @@ public class User {
     private String refreshToken;
 
     /** 사용자명(로그인 ID 또는 소셜 ID) */
-    @Column(length = 30, unique = true, nullable = false)
+    @Column(length = 50, unique = true, nullable = false)
     private String username;
 
     //연관관계
