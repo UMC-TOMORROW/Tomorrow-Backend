@@ -4,6 +4,8 @@ import com.umc.tomorrow.domain.job.dto.request.*;
 import com.umc.tomorrow.domain.job.entity.*;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class JobConverter {
 
@@ -76,6 +78,20 @@ public class JobConverter {
                 .contact(dto.getContact())
                 .registrationPurpose(dto.getRegistrationPurpose())
                 .address(dto.getAddress())
+                .build();
+    }
+
+    public MyPostResponseDTO toMyPostResponseDto(Job job) {
+        return MyPostResponseDTO.builder()
+                .postId(job.getId())
+                .title(job.getTitle())
+                .status(job.getIsActive() ? "모집중" : "모집완료")
+                .date(job.getDeadline().toLocalDate())
+                .location(job.getLocation())
+                .tags(List.of(
+                        job.getJobCategory().getDescription()
+                        // 추후 WorkEnvironment 등에서 태그 추가 가능
+                ))
                 .build();
     }
 }
