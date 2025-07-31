@@ -1,11 +1,12 @@
 package com.umc.tomorrow.domain.searchAndFilter.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.umc.tomorrow.domain.job.enums.JobCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-
 import java.time.LocalTime;
+
 import java.util.List;
 
 @Getter
@@ -33,12 +34,14 @@ public class JobSearchRequestDTO {
     @Schema(description = "근무 시작 시간",
             example = "09:00",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private String timeStart;
+    @JsonFormat(pattern = "HH:mm")
+    private LocalTime timeStart;
 
     @Schema(description = "근무 종류 시간",
             example = "20:00",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private String timeEnd;
+    @JsonFormat(pattern = "HH:mm")
+    private LocalTime timeEnd;
 
     @Schema(description = "근무 요일",
             example = "mon",

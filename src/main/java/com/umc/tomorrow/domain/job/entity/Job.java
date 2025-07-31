@@ -9,9 +9,9 @@ import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,9 +46,9 @@ public class Job extends BaseEntity {
     @Column(columnDefinition = "BOOLEAN DEFAULT false", nullable = false) //false라면 workPeriod를 필수로 입력 받아야함
     private Boolean isPeriodNegotiable;
 
-    private String workStart; //string으로 변경
+    private LocalTime workStart;
 
-    private String workEnd;
+    private LocalTime workEnd;
 
     @Column(columnDefinition = "BOOLEAN DEFAULT false") //false라면 workStart, workEnd를 필수로 입력 받아야함
     private Boolean isTimeNegotiable;

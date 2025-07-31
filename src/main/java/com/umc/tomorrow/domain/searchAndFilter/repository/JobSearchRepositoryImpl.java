@@ -23,7 +23,6 @@ public class JobSearchRepositoryImpl implements JobSearchRepository {
 
     /**
      * 검색 조건에 맞는 Job 리스트를 조회
-     *
      * @param dto 검색 조건이 담긴 DTO
      * @return 조건에 맞는 Job 리스트
      */
@@ -42,11 +41,10 @@ public class JobSearchRepositoryImpl implements JobSearchRepository {
             jpql.append(" AND j.location LIKE :locationKeyword");
         }
 
-        //시작, 종료 시간
-        if (dto.getTimeStart() != null && !dto.getTimeStart().isBlank() &&
-                dto.getTimeEnd() != null && !dto.getTimeEnd().isBlank()) {
-            jpql.append(" AND FUNCTION('TIME', j.workStart) <= :timeEnd");
-            jpql.append(" AND FUNCTION('TIME', j.workEnd) >= :timeStart");
+        // 시작, 종료 시간
+        if (dto.getTimeStart() != null && dto.getTimeEnd() != null) {
+            jpql.append(" AND j.workStart >= :timeStart");
+            jpql.append(" AND j.workEnd <= :timeEnd");
         }
 
         // 직무 카테고리 조건
@@ -64,11 +62,11 @@ public class JobSearchRepositoryImpl implements JobSearchRepository {
         if (dto.getLocationKeyword() != null && !dto.getLocationKeyword().isBlank()) {
             query.setParameter("locationKeyword", "%" + dto.getLocationKeyword() + "%");
         }
-        if (dto.getTimeStart() != null && !dto.getTimeStart().isBlank()) {
-            query.setParameter("timeStart", LocalTime.parse(dto.getTimeStart()));
+        if (dto.getTimeStart() != null) {
+            query.setParameter("timeStart", dto.getTimeStart());
         }
-        if (dto.getTimeEnd() != null && !dto.getTimeEnd().isBlank()) {
-            query.setParameter("timeEnd", LocalTime.parse(dto.getTimeEnd()));
+        if (dto.getTimeEnd() != null) {
+            query.setParameter("timeEnd", dto.getTimeEnd());
         }
         if (dto.getJobCategories() != null && !dto.getJobCategories().isEmpty()) {
             query.setParameter("categories", dto.getJobCategories());

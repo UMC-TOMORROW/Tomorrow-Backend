@@ -1,5 +1,6 @@
 package com.umc.tomorrow.domain.job.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.umc.tomorrow.domain.job.enums.JobCategory;
 import com.umc.tomorrow.domain.job.enums.PaymentType;
 import com.umc.tomorrow.domain.job.enums.RegistrantType;
@@ -8,7 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
-
+import java.time.LocalTime;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -35,11 +36,13 @@ public class JobRequestDTO {
     @Schema(description = "근무기간 협의", example = "true")
     private Boolean isPeriodNegotiable = false;
 
+    @JsonFormat(pattern = "HH:mm")
     @Schema(description = "근무 시작 시간", example = "12:00")
-    private String workStart;
+    private LocalTime workStart;
 
+    @JsonFormat(pattern = "HH:mm")
     @Schema(description = "근무 종료 시간", example = "17:00")
-    private String workEnd;
+    private LocalTime workEnd;
 
     @Schema(description = "근무 시작 협의", example = "true")
     private Boolean isTimeNegotiable = false;

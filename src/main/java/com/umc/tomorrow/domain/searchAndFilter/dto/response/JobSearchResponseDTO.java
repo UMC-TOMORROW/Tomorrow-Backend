@@ -5,8 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Builder
@@ -30,10 +29,10 @@ public class JobSearchResponseDTO {
     private Integer salary;
 
     @Schema(description = "근무 시작 시간", example = "09:00")
-    private String workStart;
+    private LocalTime workStart;
 
     @Schema(description = "근무 종료 시감", example = "20:00")
-    private String workEnd;
+    private LocalTime workEnd;
 
     @Schema(description = "업무유형", example = "SERVING")
     private JobCategory jobCategory;
