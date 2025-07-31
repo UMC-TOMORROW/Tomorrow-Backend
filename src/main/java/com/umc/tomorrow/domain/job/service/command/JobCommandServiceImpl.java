@@ -10,6 +10,7 @@ import com.umc.tomorrow.domain.job.entity.BusinessVerification;
 import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.job.entity.PersonalRegistration;
 import com.umc.tomorrow.domain.job.repository.JobRepository;
+import com.umc.tomorrow.domain.kakaoMap.service.KakaoMapService;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
@@ -17,6 +18,8 @@ import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -26,10 +29,14 @@ public class JobCommandServiceImpl implements JobCommandService {
     private final JobConverter jobConverter;
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
+    private final KakaoMapService kakaoMapService;
 
     //일자리 정보 세션 임시 저장
     @Override
     public JobStepResponseDTO saveInitialJobStep(Long userId, JobRequestDTO requestDTO, HttpSession session) {
+        String jobAddress = kakaoMapService.getAddressFromCoord(requestDTO.getLatitude(), requestDTO.getLongitude());
+        requestDTO.setLocation(jobAddress);
+
         session.setAttribute(JOB_SESSION_KEY, requestDTO);
 
         userRepository.findById(userId)
@@ -51,6 +58,10 @@ public class JobCommandServiceImpl implements JobCommandService {
         if (jobDTO == null) {
             throw new RestApiException(GlobalErrorStatus._BAD_REQUEST);
         }
+
+        //위도, 경도 기반 주소 조회 및 세팅
+        String personalAddress = kakaoMapService.getAddressFromCoord(requestDTO.getLatitude(), requestDTO.getLongitude());
+        requestDTO.setAddress(personalAddress);
 
         PersonalRegistration personalRegistration = jobConverter.toPersonal(requestDTO);
         Job job = jobConverter.toJob(jobDTO);
@@ -76,6 +87,11 @@ public class JobCommandServiceImpl implements JobCommandService {
         }
 
         JobRequestDTO jobDTO = getJobFromSession(session);
+
+        //위도, 경도 기반 주소 조회 및 세팅
+        String jobAddress = kakaoMapService.getAddressFromCoord(jobDTO.getLatitude(), jobDTO.getLongitude());
+        jobDTO.setLocation(jobAddress);
+
         Job job = jobConverter.toJob(jobDTO);
         job.setUser(user);
 
@@ -92,6 +108,10 @@ public class JobCommandServiceImpl implements JobCommandService {
     public JobCreateResponseDTO registerBusinessAndCreateJob(Long userId, BusinessRequestDTO requestDTO, HttpSession session) {
         User user = getUser(userId);
         JobRequestDTO jobDTO = getJobFromSession(session);
+
+        //위도, 경도 기반 주소 조회 및 세팅
+        String jobAddress = kakaoMapService.getAddressFromCoord(jobDTO.getLatitude(), jobDTO.getLongitude());
+        jobDTO.setLocation(jobAddress);
 
         BusinessVerification businessVerification = jobConverter.toBusiness(requestDTO);
         user.setBusinessVerification(businessVerification);
@@ -130,4 +150,5 @@ public class JobCommandServiceImpl implements JobCommandService {
         user.setBusinessVerification(businessVerification);
         userRepository.save(user);
     }
+
 }

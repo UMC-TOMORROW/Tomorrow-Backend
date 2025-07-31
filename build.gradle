@@ -34,6 +34,7 @@ dependencies {
 	// 웹 관련
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+
 	// 데이터베이스 연동 (JPA + MySQL)
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'com.mysql:mysql-connector-j'
@@ -66,6 +67,9 @@ dependencies {
 
 	// .env 파일 환경 변수 로드를 위한 라이브러리
 	implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+
+	//kakao지도
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 test {

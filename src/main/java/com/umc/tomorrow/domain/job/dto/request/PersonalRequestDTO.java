@@ -46,8 +46,7 @@ public class PersonalRequestDTO {
     private String registrationPurpose;
 
     @Schema(description = "주소",
-            example = "인천광역시 서구",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "{job.location.notblank}") // notnull로 수정 예정
+            example = "인천광역시 부평구 부평동",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String address;
 }

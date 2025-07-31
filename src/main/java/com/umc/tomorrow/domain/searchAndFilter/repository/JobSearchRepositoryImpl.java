@@ -42,14 +42,11 @@ public class JobSearchRepositoryImpl implements JobSearchRepository {
             jpql.append(" AND j.location LIKE :locationKeyword");
         }
 
-        // 시작 시간 조건
-        if (dto.getTimeStart() != null && !dto.getTimeStart().isBlank()) {
-            jpql.append(" AND FUNCTION('TIME', j.workStart) <= :timeStart");
-        }
-
-        // 종료 시간 조건
-        if (dto.getTimeEnd() != null && !dto.getTimeEnd().isBlank()) {
-            jpql.append(" AND FUNCTION('TIME', j.workEnd) >= :timeEnd");
+        //시작, 종료 시간
+        if (dto.getTimeStart() != null && !dto.getTimeStart().isBlank() &&
+                dto.getTimeEnd() != null && !dto.getTimeEnd().isBlank()) {
+            jpql.append(" AND FUNCTION('TIME', j.workStart) <= :timeEnd");
+            jpql.append(" AND FUNCTION('TIME', j.workEnd) >= :timeStart");
         }
 
         // 직무 카테고리 조건
