@@ -1,7 +1,8 @@
 /**
- * 일자리(job)예외처리 클래스
- * 작성자: 이승주
- * 생성일: 2025-07-24
+<<<<<<< HEAD
+ * 공고 도메인 예외 클래스
+ * 작성자: 정여진
+ * 생성일: 2025-07-25
  */
 package com.umc.tomorrow.domain.job.exception;
 import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
