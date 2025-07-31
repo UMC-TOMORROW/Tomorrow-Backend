@@ -37,7 +37,7 @@ out/
 .vscode/
 
 # env 환경설정 파일
-/env.properties
+/src/main/resources/env.properties
 
 #keypem
 /umc8-tomorrow-keypair.pem

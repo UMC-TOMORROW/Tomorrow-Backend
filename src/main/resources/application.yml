@@ -49,7 +49,8 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            redirect-uri: https://umctomorrow.shop/login/oauth2/code/google
+
             scope: profile, email
           
           kakao:

@@ -27,7 +27,7 @@ public class UserDTO {
 
     @Email(message = "{user.email.invalid}")
     @NotBlank(message = "{user.email.notblank}")
-    @Size(max = 30, message = "{user.email.size}")
+    @Size(max = 50, message = "{user.email.size}")
     private final String email; // 이메일
 
     @NotBlank(message = "{user.name.notblank}")
