@@ -46,6 +46,9 @@ dependencies {
 
 	// 메일 서버와 연결해서 메일을 발송하는 라이브러리
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	// AWS S3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.636'
 
 	// 개발 편의 기능
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -53,6 +56,9 @@ dependencies {
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.734' // 최신 안정 버전 (2025년 기준)
+	implementation 'com.amazonaws:aws-java-sdk-core:1.12.734'
 
 	// 테스트 관련
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
