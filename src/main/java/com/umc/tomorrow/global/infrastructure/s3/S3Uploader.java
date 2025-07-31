@@ -3,7 +3,7 @@
  * 작성자: 이승주
  * 작성일: 2025-07-28
  */
-package com.umc.tomorrow.domain.Image.s3;
+package com.umc.tomorrow.global.infrastructure.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -11,16 +11,23 @@ import com.umc.tomorrow.global.common.exception.RestApiException;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import java.io.IOException;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component
-@RequiredArgsConstructor
 public class S3Uploader {
 
-    private final AmazonS3 amazonS3;
-    private final String bucketName = "umc8-tomorrow-bucket";
+    private AmazonS3 amazonS3;
+    private final String bucketName;
+
+    public S3Uploader(AmazonS3 amazonS3,
+                      @Value("${cloud.aws.s3.bucket}") String bucketName) {
+        this.amazonS3 = amazonS3;
+        this.bucketName = bucketName;
+    }
 
     public String upload(MultipartFile file, String dirName) {
         String fileName = dirName + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
@@ -44,6 +51,8 @@ public class S3Uploader {
     }
 
     private String extractKeyFromUrl(String fileUrl) {
-        return fileUrl.substring(fileUrl.indexOf(".com/") + 5); // S3 object key 추출
+        String bucketUrl = amazonS3.getUrl(bucketName, "").toString(); // ex: https://bucket.s3.amazonaws.com/
+        return fileUrl.replace(bucketUrl, "");
     }
+
 }
