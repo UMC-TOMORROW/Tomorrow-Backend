@@ -120,7 +120,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addHeader("RefreshToken", refreshToken);
 
          // 프론트로 리다이렉트
-        response.sendRedirect("http://localhost:5173/onboarding");
+        // response.sendRedirect("http://localhost:5173/onboarding");
 
 
 //        response.addCookie(createCookie("Authorization", accessToken, (int)accessTokenExpiredSeconds));
