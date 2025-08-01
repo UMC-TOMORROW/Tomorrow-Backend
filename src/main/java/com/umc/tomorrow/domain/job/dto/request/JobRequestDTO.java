@@ -11,6 +11,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -36,10 +37,10 @@ public class JobRequestDTO {
     private Boolean isPeriodNegotiable = false;
 
     @Schema(description = "근무 시작 시간", example = "12:00")
-    private LocalDateTime workStart;
+    private LocalTime workStart;
 
     @Schema(description = "근무 종료 시간", example = "17:00")
-    private LocalDateTime workEnd;
+    private LocalTime workEnd;
 
     @Schema(description = "근무 시작 협의", example = "true")
     private Boolean isTimeNegotiable = false;
