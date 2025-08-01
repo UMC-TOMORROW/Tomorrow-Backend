@@ -11,6 +11,10 @@ import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,4 +35,10 @@ public class Certificate extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Resume resume;
 
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 } 
