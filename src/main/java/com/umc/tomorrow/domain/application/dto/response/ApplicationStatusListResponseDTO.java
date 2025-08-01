@@ -9,6 +9,7 @@ package com.umc.tomorrow.domain.application.dto.response;
 
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -19,6 +20,6 @@ public class ApplicationStatusListResponseDTO {
     private String company;
     private String date;
 
-    @NotBlank(message = "{application.status.notblank}")
+    @NotNull(message = "{application.status.notblank}")
     private ApplicationStatus status; // "합격", "불합격" (default = 불합격)
 }
