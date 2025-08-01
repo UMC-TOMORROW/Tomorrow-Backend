@@ -8,7 +8,7 @@ public class ReviewConverter {
     public static Review toEntity(ReviewRequestDTO dto, User user) {
         return Review.builder()
                 .postId(dto.getPostId())
-                .stars(dto.getStars())
+                .stars((int) dto.getStars())
                 .review(dto.getReview())
                 .user(user)
                 .build();
