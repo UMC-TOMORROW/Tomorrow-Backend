@@ -70,15 +70,18 @@ public class CareertalkQueryServiceImpl implements CareertalkQueryService {
      */
 
     @Override
-    public GetCareertalkResponseDto getCareertalk(Long careertalkId) {
+    public GetCareertalkResponseDto getCareertalk(Long careertalkId, Long userId) {
         Careertalk careertalk = careertalkRepository.findById(careertalkId)
                 .orElseThrow(() -> new CareertalkException(CareertalkErrorStatus.CAREERTALK_NOT_FOUND));
+
+        boolean isAuthor = careertalk.getUser().getId().equals(userId);
 
         return GetCareertalkResponseDto.builder()
                 .id(careertalk.getId())
                 .category(careertalk.getCategory())
                 .title(careertalk.getTitle())
                 .content(careertalk.getContent())
+                .isAuthor(isAuthor)
                 .createdAt(careertalk.getCreatedAt())
                 .build();
     }

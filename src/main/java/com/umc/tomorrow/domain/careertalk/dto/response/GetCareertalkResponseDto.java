@@ -28,6 +28,9 @@ public class GetCareertalkResponseDto {
     @Schema(description = "내용", example = "요양보호사는 좋은직업입니다.....")
     private String content;
 
+    @Schema(description = "게시글 작성자인지 여부", example = "true")
+    private boolean isAuthor;
+
     @Schema(description = "작성일시", example = "2025-07-08T09:00:00")
     private LocalDateTime createdAt;
 

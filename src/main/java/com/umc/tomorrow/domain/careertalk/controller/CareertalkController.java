@@ -80,15 +80,19 @@ public class CareertalkController {
     /**
      * 커리어톡 게시글 상세 조회(GET)
      * @param careertalkId 조회하고자 하는 커리어톡 게시글 id
+     * @param
      * @return 해당하는 커리어톡 게시글 DTO
      */
     @GetMapping("/{careertalkId}")
     @Operation(summary = "커리어톡 게시글 상세 조회", description = "커리어톡 게시글을 상세 조회합니다.")
     @ApiResponse(responseCode = "200", description = "게시글 상세 조회 성공")
     public ResponseEntity<BaseResponse<GetCareertalkResponseDto>> getCareertalk(
-            @PathVariable Long careertalkId
+            @PathVariable Long careertalkId,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+
     ) {
-        return ResponseEntity.ok(BaseResponse.onSuccess(careertalkQueryService.getCareertalk(careertalkId)));
+        Long userId = customOAuth2User.getUserDTO().getId();
+        return ResponseEntity.ok(BaseResponse.onSuccess(careertalkQueryService.getCareertalk(careertalkId, userId)));
     }
 
     /**
