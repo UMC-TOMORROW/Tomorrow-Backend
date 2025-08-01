@@ -13,6 +13,7 @@ import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,7 +43,7 @@ public class ReviewController {
     @PostMapping
     public ResponseEntity<BaseResponse> saveReview(
             @AuthenticationPrincipal CustomOAuth2User user,
-            @RequestBody ReviewRequestDTO dto) {
+            @Valid @RequestBody ReviewRequestDTO dto) {
         // 실제 DB에 후기 저장
         Long userId = user.getUserDTO().getId();
         reviewService.saveReview(userId, dto);
