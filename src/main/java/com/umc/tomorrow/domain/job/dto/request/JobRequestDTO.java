@@ -102,20 +102,20 @@ public class JobRequestDTO {
     private String preferredQualifications;
 
     @Schema(description = "위도",
-            example = "123.566",
+            example = "37.572950",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "{job.latitude.notnull}")
     private BigDecimal latitude;
 
     @Schema(description = "경도",
-            example = "123.566",
+            example = "126.979357",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "{job.longitude.notnull}")
     private BigDecimal longitude;
 
     @Schema(description = "주소",
             example = "서울특별시 종로구",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     @NotBlank(message = "{job.location.notblank}")
     private String location;
 
