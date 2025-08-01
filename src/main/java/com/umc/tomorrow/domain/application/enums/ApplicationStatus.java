@@ -23,10 +23,11 @@ public enum ApplicationStatus {
     }
 
     public static ApplicationStatus from(String label) {
-        return switch (label) {
-            case "합격" -> ACCEPTED;
-            case "불합격" -> REJECTED;
-            default -> throw new ApplicationException(ApplicationErrorStatus.INVALID_STATUS);
-        };
+        for (ApplicationStatus status : ApplicationStatus.values()) {
+            if (status.name().equalsIgnoreCase(label) || status.label.equals(label)) {
+                return status;
+            }
+        }
+        throw new ApplicationException(ApplicationErrorStatus.INVALID_STATUS);
     }
 }
