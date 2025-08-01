@@ -105,14 +105,31 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             userRepository.save(user);
         }
 
-        // 클라이언트에 전달 (쿠키/헤더)
-        response.addCookie(createCookie("Authorization", accessToken, (int)accessTokenExpiredSeconds));
-        response.addHeader("Authorization", "Bearer " + accessToken);
 
-        response.addCookie(createCookie("RefreshToken", refreshToken, (int)refreshTokenExpiredSeconds));
+        // 쿠키 직접 문자열로 세팅 (SameSite=None, Secure=true)
+        String accessCookie = String.format("Authorization=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
+                accessToken, (int) accessTokenExpiredSeconds);
+        response.addHeader("Set-Cookie", accessCookie);
+
+        String refreshCookie = String.format("RefreshToken=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
+                refreshToken, (int) refreshTokenExpiredSeconds);
+        response.addHeader("Set-Cookie", refreshCookie);
+
+        //헤더 전달
+        response.addHeader("Authorization", "Bearer " + accessToken);
         response.addHeader("RefreshToken", refreshToken);
-        //response.sendRedirect("http://localhost:3000/");
-        //response.sendRedirect("/success");//로컬 테스트 확인용
+
+         // 프론트로 리다이렉트
+        response.sendRedirect("http://localhost:5173/onboarding");
+
+
+//        response.addCookie(createCookie("Authorization", accessToken, (int)accessTokenExpiredSeconds));
+//        response.addHeader("Authorization", "Bearer " + accessToken);
+//
+//        response.addCookie(createCookie("RefreshToken", refreshToken, (int)refreshTokenExpiredSeconds));
+//        response.addHeader("RefreshToken", refreshToken);
+//        response.sendRedirect("http://localhost:5173/onboarding");
+//        //response.sendRedirect("/success");//로컬 테스트 확인용
     }
 
     private Cookie createCookie(String key, String value, int maxAge) {
@@ -123,7 +140,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         cookie.setSecure(false); // 로컬 테스트용
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-
         return cookie;
     }
 }
