@@ -94,7 +94,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         long refreshTokenExpiredSeconds = 60L * 60 * 24 * 14; // 초
 
         // Refresh Token 생성 (2주)
+
         String refreshToken = jwtUtil.createRefreshToken(user.getId(), usernameToUseForTokens, refreshTokenExpiredMs); // 2주
+
 
         // DB에 저장
         if (user != null) {
