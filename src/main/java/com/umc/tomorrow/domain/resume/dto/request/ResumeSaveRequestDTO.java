@@ -18,9 +18,11 @@ public class ResumeSaveRequestDTO {
 
     private final String introduction; // 자기소개서 내용
 
-    private final List<Career> career; // 경력 목록
+    private final List<CareerSaveRequest> careers;
 
-    private final List<String> certificates; // 자격증 목록
+    private final List<ExperienceSaveRequest> experiences;
+
+    private final List<CertificateSaveRequest> certificates;
 
     /**
      * 경력 저장 요청 내부 클래스
@@ -33,4 +35,28 @@ public class ResumeSaveRequestDTO {
         private final int workedYear;
         private WorkPeriodType workedPeriod;
     }
+
+    /**
+     * 자격증 저장 요청 내부 클래스
+     */
+    @Getter
+    @Builder
+    public static class CertificateSaveRequest {
+        private final String name;
+        private final String fileUrl; // 필요하다면 추가
+    }
+
+    /**
+     * 경험 저장 요청 내부 클래스
+     */
+    @Getter
+    @Builder
+    public static class ExperienceSaveRequest {
+        private final String place;
+        private final String task;
+        private final String duration;
+        private final int year;
+        private final String description;
+    }
+
 } 
