@@ -62,6 +62,8 @@ jobs:
             echo "DEV_DATABASE_URL=${{ secrets.DEV_DATABASE_URL }}" >> .env
             echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
             echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+            echo "MAILNAME=${{ secretes.MAILNAME }}" >> .env
+            echo "MAILPASSWORD=${{ secretes.MAILPASSWORD }}" >> .env
              
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             
