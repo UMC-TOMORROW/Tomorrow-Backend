@@ -11,10 +11,16 @@ import com.umc.tomorrow.domain.member.entity.User;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Preference {
 
     @Id
