@@ -9,6 +9,7 @@ package com.umc.tomorrow.domain.application.dto.request;
 
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +18,6 @@ import lombok.Getter;
 @Builder
 public class UpdateApplicationStatusRequestDTO {
     
-    @NotBlank(message = "{application.status.notblank}")
+    @NotNull(message = "{application.status.notblank}")
     private ApplicationStatus status;
 } 
