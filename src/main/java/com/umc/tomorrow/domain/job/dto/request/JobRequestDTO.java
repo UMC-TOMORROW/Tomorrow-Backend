@@ -115,7 +115,7 @@ public class JobRequestDTO {
 
     @Schema(description = "주소",
             example = "서울특별시 종로구",
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+            requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "{job.location.notblank}")
     private String location;
 

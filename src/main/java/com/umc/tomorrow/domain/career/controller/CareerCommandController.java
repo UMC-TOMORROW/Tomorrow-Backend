@@ -6,6 +6,7 @@ import com.umc.tomorrow.domain.career.dto.request.CareerUpdateRequestDTO;
 import com.umc.tomorrow.domain.career.dto.response.CareerCreateResponseDTO;
 import com.umc.tomorrow.domain.career.dto.response.CareerGetResponseDTO;
 import com.umc.tomorrow.domain.career.service.conmmand.CareerCommandService;
+import com.umc.tomorrow.domain.career.service.query.CareerQueryService;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class CareerCommandController {
 
     private final CareerCommandService careerCommandService;
+    private final CareerQueryService careerQueryService;
 
     /**
      * 이력서 경력 저장(POST)
@@ -83,7 +85,7 @@ public class CareerCommandController {
 
         Long userId = user.getUserDTO().getId();
 
-        CareerGetResponseDTO response = careerCommandService.getCareer(userId, resumeId, careerId);
+        CareerGetResponseDTO response = careerQueryService.getCareer(userId, resumeId, careerId);
 
         return ResponseEntity.ok(BaseResponse.onSuccess(response));
     }

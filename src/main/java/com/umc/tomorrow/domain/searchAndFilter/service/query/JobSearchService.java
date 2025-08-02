@@ -1,4 +1,4 @@
-package com.umc.tomorrow.domain.searchAndFilter.service;
+package com.umc.tomorrow.domain.searchAndFilter.service.query;
 
 import com.umc.tomorrow.domain.searchAndFilter.dto.request.JobSearchRequestDTO;
 import com.umc.tomorrow.domain.searchAndFilter.dto.response.JobSearchResponseDTO;

@@ -66,33 +66,7 @@ public class IntroductionCommandServiceImpl implements IntroductionCommandServic
     }
 
     /**
-     * 이력서 자기소개 생성 메서드
-     * @param userId 자기소개를 조회할 사용자
-     * @param resumeId 작설한 이력서 id
-     * @return converter로 이동
-     */
-    @Override
-    public GetIntroductionResponseDTO getIntroduction(Long userId, Long resumeId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RestApiException(IntroductionStatus.INTRODUCTION_FORBIDDEN));
-
-        Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new RestApiException(IntroductionStatus.INTRODUCTION_NOT_FOUND));
-
-        if (!resume.getUser().getId().equals(user.getId())) {
-            throw new RestApiException(IntroductionStatus.INTRODUCTION_FORBIDDEN);
-        }
-
-        Introduction introduction = resume.getIntroduction();
-        if (introduction == null) {
-            throw new RestApiException(GlobalErrorStatus._NOT_FOUND);
-        }
-
-        return introductionConverter.toGetResponseDTO(introduction);
-    }
-
-    /**
-     * 이력서 자기소개 생성 메서드
+     * 이력서 자기소개 수정 메서드
      * @param userId 자기소개를 수정할 사용자
      * @param resumeId 수정할 이력서 id
      * @param dto 자기소개 수정 요청 DTO

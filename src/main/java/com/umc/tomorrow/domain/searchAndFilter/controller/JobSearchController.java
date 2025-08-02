@@ -2,7 +2,7 @@ package com.umc.tomorrow.domain.searchAndFilter.controller;
 
 import com.umc.tomorrow.domain.searchAndFilter.dto.request.JobSearchRequestDTO;
 import com.umc.tomorrow.domain.searchAndFilter.dto.response.JobSearchResponseDTO;
-import com.umc.tomorrow.domain.searchAndFilter.service.JobSearchService;
+import com.umc.tomorrow.domain.searchAndFilter.service.query.JobSearchService;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,6 @@ public class JobSearchController {
     @PostMapping("/search")
     public ResponseEntity<List<JobSearchResponseDTO>> searchJobs(@RequestBody JobSearchRequestDTO requestDTO) {
         List<JobSearchResponseDTO> result = jobSearchService.searchJobs(requestDTO);
-       // return ResponseEntity.ok(result);
         return ResponseEntity.ok(BaseResponse.onSuccess(result).getResult());
     }
 }

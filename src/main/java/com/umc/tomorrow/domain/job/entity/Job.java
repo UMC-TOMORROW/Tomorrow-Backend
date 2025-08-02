@@ -56,8 +56,7 @@ public class Job extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    //private PaymentType paymentType;
-    private PaymentType paymentType = PaymentType.HOURLY; //테스트용
+    private PaymentType paymentType;
 
     @Column(nullable = false)
     private Integer salary;
@@ -78,8 +77,7 @@ public class Job extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    //private RegistrantType registrantType;
-    private RegistrantType registrantType = RegistrantType.PERSONAL;//테스트용
+    private RegistrantType registrantType;
 
     @Column(nullable = false)
     private LocalDateTime deadline;
@@ -87,14 +85,14 @@ public class Job extends BaseEntity {
     @Lob
     private String preferredQualifications;
 
-    @Column(precision = 10, scale = 7, nullable = false)//지도 api추가 후 nullable = false로 변경
+    @Column(precision = 10, scale = 7, nullable = false)
     private BigDecimal latitude; //위도
 
-    @Column(precision = 10, scale = 7, nullable = false)//지도 api추가 후 nullable = false로 변경
+    @Column(precision = 10, scale = 7, nullable = false)
     private BigDecimal longitude; //경도
 
-    @Column(length = 100)//지도 api추가 후 nullable = false로 변경
-    private String location;//위도, 경도를 받아서 address에 저장
+    @Column(length = 100)
+    private String location;//위도, 경도를 받아서 location에 저장
 
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private Boolean alwaysHiring;
@@ -109,7 +107,6 @@ public class Job extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "work_days_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_job_work_days"))
-    //private WorkDays workDays;
     private WorkDays workDays;
 
     //WorkEnvironment와 1:1관계
