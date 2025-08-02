@@ -3,13 +3,13 @@
  * 작성자: 이승주
  * 작성일: 2025-07-28
  */
-package com.umc.tomorrow.domain.resume.certificate.service.command;
+package com.umc.tomorrow.domain.certificate.service.command;
 
-import com.umc.tomorrow.domain.resume.certificate.dto.response.CertificateResponse;
-import com.umc.tomorrow.domain.resume.certificate.entity.Certificate;
-import com.umc.tomorrow.domain.resume.certificate.exception.CertificateException;
-import com.umc.tomorrow.domain.resume.certificate.exception.code.CertificateErrorStatus;
-import com.umc.tomorrow.domain.resume.certificate.repository.CertificateRepository;
+import com.umc.tomorrow.domain.certificate.dto.response.CertificateResponse;
+import com.umc.tomorrow.domain.certificate.entity.Certificate;
+import com.umc.tomorrow.domain.certificate.exception.CertificateException;
+import com.umc.tomorrow.domain.certificate.exception.code.CertificateErrorStatus;
+import com.umc.tomorrow.domain.certificate.repository.CertificateRepository;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.exception.ResumeException;
 import com.umc.tomorrow.domain.resume.exception.code.ResumeErrorStatus;

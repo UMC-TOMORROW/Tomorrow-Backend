@@ -5,7 +5,7 @@
  * 생성일: 2025-07-20
  * 수정일: 2025-07-28
  */
-package com.umc.tomorrow.domain.resume.certificate.entity;
+package com.umc.tomorrow.domain.certificate.entity;
 
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.global.common.base.BaseEntity;

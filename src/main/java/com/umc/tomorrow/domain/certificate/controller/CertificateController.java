@@ -4,10 +4,10 @@
  * 작성자: 이승주
  * 작성일: 2025-07-28
  */
-package com.umc.tomorrow.domain.resume.certificate.controller;
+package com.umc.tomorrow.domain.certificate.controller;
 
-import com.umc.tomorrow.domain.resume.certificate.dto.response.CertificateResponse;
-import com.umc.tomorrow.domain.resume.certificate.service.command.CertificateCommandService;
+import com.umc.tomorrow.domain.certificate.dto.response.CertificateResponse;
+import com.umc.tomorrow.domain.certificate.service.command.CertificateCommandService;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -3,7 +3,7 @@
  * 작성자: 이승주
  * 작성일: 2025-07-28
  */
-package com.umc.tomorrow.domain.resume.certificate.exception.code;
+package com.umc.tomorrow.domain.certificate.exception.code;
 
 import com.umc.tomorrow.global.common.exception.code.BaseCode;
 import com.umc.tomorrow.global.common.exception.code.BaseCodeInterface;
