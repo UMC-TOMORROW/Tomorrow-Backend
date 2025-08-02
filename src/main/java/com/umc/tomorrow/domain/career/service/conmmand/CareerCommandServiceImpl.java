@@ -31,7 +31,6 @@ public class CareerCommandServiceImpl implements CareerCommandService{
     private final UserRepository userRepository;
     private final CareerRepository careerRepository;
     private final ResumeRepository resumeRepository;
-    private final CareerConverter careerConverter;
 
     /**
      * 이력서 경력 생성 메서드
@@ -106,35 +105,6 @@ public class CareerCommandServiceImpl implements CareerCommandService{
         );
 
         return CareerConverter.toResponseDTO(career);
-    }
-
-    /**
-     * 이력서 경력 조회 메서드
-     * @param userId 경력을 조회하는 사용자
-     * @param resumeId 조회할 이력서 id
-     * @param careerId 조회할 경력 id
-     * @return converter로 이동
-     */
-    @Override
-    public CareerGetResponseDTO getCareer(Long userId, Long resumeId, Long careerId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RestApiException(CareerStatus.CAREER_FORBIDDEN));
-
-        Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new RestApiException(CareerStatus.CAREER_NOT_FOUND));
-
-        if (!resume.getUser().getId().equals(user.getId())) {
-            throw new RestApiException(CareerStatus.CAREER_FORBIDDEN);
-        }
-
-        Career career = careerRepository.findById(careerId)
-                .orElseThrow(() -> new RestApiException(CareerStatus.CAREER_NOT_FOUND));
-
-        if (!career.getResume().getId().equals(resumeId)) {
-            throw new RestApiException(CareerStatus.CAREER_FORBIDDEN);
-        }
-
-        return CareerConverter.toGetResponseDTO(career);
     }
 
     /**

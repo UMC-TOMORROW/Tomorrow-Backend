@@ -16,5 +16,3 @@ public class JobCreateResponseDTO {
     @Schema(description = "일자리ID", example = "1")
     private Long jobId;
 }
-
-//개인, 사업자 공통 응답
