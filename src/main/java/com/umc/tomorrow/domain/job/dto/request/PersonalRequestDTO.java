@@ -22,15 +22,15 @@ public class PersonalRequestDTO {
     private String name;
 
     @Schema(description = "위도",
-            example = "123.333",
+            example = "37.572950",
             requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "{personal.latitude.notnull}") // 지도 api 구현하고 필수로
+    @NotNull(message = "{personal.latitude.notnull}")
     private BigDecimal latitude;
 
     @Schema(description = "경도",
-            example = "12.321",
+            example = "126.979357",
             requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "{personal.longitude.notnull}") // 지도 api 구현하고 필수로
+    @NotNull(message = "{personal.longitude.notnull}")
     private BigDecimal longitude;
 
     @Schema(description = "전화번호",
@@ -46,8 +46,7 @@ public class PersonalRequestDTO {
     private String registrationPurpose;
 
     @Schema(description = "주소",
-            example = "인천광역시 서구",
+            example = "인천광역시 부평구 부평동",
             requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "{job.location.notblank}") // notnull로 수정 예정
     private String address;
 }

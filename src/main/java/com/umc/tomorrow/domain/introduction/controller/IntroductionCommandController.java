@@ -6,6 +6,7 @@ import com.umc.tomorrow.domain.introduction.dto.request.IntroductionUpdateReques
 import com.umc.tomorrow.domain.introduction.dto.response.GetIntroductionResponseDTO;
 import com.umc.tomorrow.domain.introduction.dto.response.IntroductionResponseDTO;
 import com.umc.tomorrow.domain.introduction.service.command.IntroductionCommandService;
+import com.umc.tomorrow.domain.introduction.service.query.IntroductionQueryService;
 import com.umc.tomorrow.domain.job.dto.response.JobStepResponseDTO;
 import com.umc.tomorrow.domain.job.service.command.JobCommandService;
 import com.umc.tomorrow.domain.member.entity.User;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class IntroductionCommandController {
 
     private final IntroductionCommandService introductionCommandService;
+    private final IntroductionQueryService introductionQueryService;
 
     /**
      * 이력서 자기소개 저장(POST)
@@ -61,7 +63,7 @@ public class IntroductionCommandController {
 
         Long userId = user.getUserDTO().getId();
 
-        GetIntroductionResponseDTO response = introductionCommandService.getIntroduction(userId, resumeId);
+        GetIntroductionResponseDTO response = introductionQueryService.getIntroduction(userId, resumeId);
 
         return ResponseEntity.ok(BaseResponse.onSuccess(response));
     }

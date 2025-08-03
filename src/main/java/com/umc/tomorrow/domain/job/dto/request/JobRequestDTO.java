@@ -11,6 +11,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -36,10 +37,10 @@ public class JobRequestDTO {
     private Boolean isPeriodNegotiable = false;
 
     @Schema(description = "근무 시작 시간", example = "12:00")
-    private LocalDateTime workStart;
+    private LocalTime workStart;
 
     @Schema(description = "근무 종료 시간", example = "17:00")
-    private LocalDateTime workEnd;
+    private LocalTime workEnd;
 
     @Schema(description = "근무 시작 협의", example = "true")
     private Boolean isTimeNegotiable = false;
@@ -101,13 +102,13 @@ public class JobRequestDTO {
     private String preferredQualifications;
 
     @Schema(description = "위도",
-            example = "123.566",
+            example = "37.572950",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "{job.latitude.notnull}")
     private BigDecimal latitude;
 
     @Schema(description = "경도",
-            example = "123.566",
+            example = "126.979357",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "{job.longitude.notnull}")
     private BigDecimal longitude;

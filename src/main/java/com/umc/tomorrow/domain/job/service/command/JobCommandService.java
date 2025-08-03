@@ -10,25 +10,19 @@ import jakarta.validation.Valid;
 
 public interface JobCommandService {
 
-    /**
-     * Step1. 기본 일자리 정보 (폼) 저장 (세션에 보관)
-     */
+    //기본 일자리 정보 폼 저장 (세션에 보관)
     JobStepResponseDTO saveInitialJobStep(Long userId, JobRequestDTO requestDTO, HttpSession session);
 
-    /**
-     * Step2. 개인 등록 시: Personal 정보 저장 + Job 생성
-     */
+    //개인 등록 시 Personal 정보 저장 + Job 생성
     JobCreateResponseDTO savePersonalRegistration(Long userId, PersonalRequestDTO requestDTO, HttpSession session);
 
-    /**
-     * Step2-1. 사업자 등록이 이미 되어있는 경우: 바로 Job 생성
-     */
+
+    //사업자 등록이 이미 되어있는 경우 바로 Job 생성
     JobCreateResponseDTO createJobWithExistingBusiness(Long userId, HttpSession session);
     
-    /**
-     * Step2-2. 사업자 등록이 안 되어 있는 경우: Business 등록 후 Job 생성
-     */
+    //사업자 등록이 안 되어 있는 경우 Business 등록 후 Job 생성
     JobCreateResponseDTO registerBusinessAndCreateJob(Long userId, BusinessRequestDTO requestDTO, HttpSession session);
 
+    //사업자 등록
     void saveBusinessVerification(Long userId, BusinessRequestDTO requestDTO);
 }
