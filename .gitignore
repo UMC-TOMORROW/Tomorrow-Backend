@@ -38,6 +38,7 @@ out/
 
 # env 환경설정 파일
 /env.properties
+.env
 
 #keypem
 /umc8-tomorrow-keypair.pem
