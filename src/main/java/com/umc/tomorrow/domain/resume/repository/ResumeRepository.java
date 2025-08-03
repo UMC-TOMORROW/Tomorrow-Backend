@@ -7,13 +7,15 @@
 package com.umc.tomorrow.domain.resume.repository;
 
 import com.umc.tomorrow.domain.resume.entity.Resume;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
 public interface ResumeRepository extends JpaRepository<Resume, Long> {
-    Resume findByUserId(Long userId);
+    Optional<Resume> findFirstByUserIdOrderByCreatedAtDesc(Long userId);
     Optional<Resume> findByIdAndUserId(Long resumeId, Long userId);
 }
 

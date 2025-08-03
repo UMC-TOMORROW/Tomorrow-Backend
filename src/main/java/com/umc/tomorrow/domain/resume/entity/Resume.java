@@ -10,6 +10,7 @@ import com.umc.tomorrow.domain.career.entity.Career;
 import com.umc.tomorrow.domain.introduction.entity.Introduction;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.resume.certificate.entity.Certificate;
+import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Resume {
+public class Resume extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

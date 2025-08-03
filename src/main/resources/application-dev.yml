@@ -24,7 +24,6 @@ spring:
 
           kakao:
             redirect-uri: https://umctomorrow.shop/login/oauth2/code/kakao
-      
 
   jpa:
     hibernate:
