@@ -20,17 +20,8 @@ public class CareerConverter {
     }
 
     /**
-     * CareerCreateRequestDTO → Career Entity
+     * Career Entity → CareerCreateRequestDTO
      */
-    public static Career toEntity(CareerCreateRequestDTO dto) {
-        return Career.builder()
-                .company(dto.getCompany())
-                .description(dto.getDescription())
-                .workedYear(dto.getWorkedYear())
-                .workedPeriod(dto.getWorkedPeriod())
-                .build();
-    }
-
     public static CareerGetResponseDTO toGetResponseDTO(Career career) {
         return CareerGetResponseDTO.builder()
                 .careerId(career.getId())

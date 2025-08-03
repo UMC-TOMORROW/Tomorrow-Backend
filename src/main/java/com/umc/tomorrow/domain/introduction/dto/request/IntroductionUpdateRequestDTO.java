@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Schema(description = "자기소개 수정 요청 DTO")
 public class IntroductionUpdateRequestDTO {
 
     @Schema(description = "자기소개 본문",
