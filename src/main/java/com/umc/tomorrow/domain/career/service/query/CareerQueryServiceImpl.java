@@ -1,3 +1,10 @@
+/**
+ * 경력 조회 서비스
+ * - 경력 조회 비즈니스 로직
+ * 작성자: 한지혜
+ * 생성일: 2020-07-25
+ * 수정일: 2025-08-04
+ */
 package com.umc.tomorrow.domain.career.service.query;
 
 import com.umc.tomorrow.domain.career.converter.CareerConverter;
@@ -17,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CareerQueryServiceImpl implements CareerQueryService {
 
