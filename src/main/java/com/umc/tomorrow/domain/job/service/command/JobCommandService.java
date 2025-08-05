@@ -3,10 +3,10 @@ package com.umc.tomorrow.domain.job.service.command;
 import com.umc.tomorrow.domain.job.dto.request.BusinessRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.JobRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.PersonalRequestDTO;
+import com.umc.tomorrow.domain.job.dto.response.GetRecommendationListResponse;
 import com.umc.tomorrow.domain.job.dto.response.JobCreateResponseDTO;
 import com.umc.tomorrow.domain.job.dto.response.JobStepResponseDTO;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 
 public interface JobCommandService {
 
@@ -25,4 +25,6 @@ public interface JobCommandService {
 
     //사업자 등록
     void saveBusinessVerification(Long userId, BusinessRequestDTO requestDTO);
+
+    GetRecommendationListResponse getTomorrowRecommendations(Long userId, Long cursor, int size);
 }
