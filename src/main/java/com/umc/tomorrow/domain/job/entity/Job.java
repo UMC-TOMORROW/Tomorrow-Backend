@@ -5,6 +5,7 @@ import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.job.enums.PaymentType;
 import com.umc.tomorrow.domain.job.enums.RegistrantType;
 import com.umc.tomorrow.domain.job.enums.WorkPeriod;
+import com.umc.tomorrow.domain.jobbookmark.entity.JobBookmark;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
@@ -123,4 +124,8 @@ public class Job extends BaseEntity {
     // 지원서와 1:N 관계
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Application> applications = new ArrayList<>();
+
+    // 찜과 1:N 관계
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobBookmark> jobBookmarks = new ArrayList<>();
 }

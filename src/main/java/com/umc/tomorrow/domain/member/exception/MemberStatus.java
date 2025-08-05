@@ -16,7 +16,8 @@ public enum MemberStatus implements BaseCodeInterface {
 
     // 400번대 실패
     INVALID_RECOVERY_PERIOD(HttpStatus.BAD_REQUEST, false, "MEMBER4001", "복구 가능 기간이 지났습니다."),
-    NOT_DELETED_USER(HttpStatus.BAD_REQUEST, false, "MEMBER4002", "탈퇴한 회원이 아닙니다.");
+    NOT_DELETED_USER(HttpStatus.BAD_REQUEST, false, "MEMBER4002", "탈퇴한 회원이 아닙니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, false, "MEMBER4003", "사용자를 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final boolean isSuccess;
