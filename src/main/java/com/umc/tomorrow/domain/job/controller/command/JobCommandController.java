@@ -4,6 +4,7 @@ import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.job.dto.request.BusinessRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.JobRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.PersonalRequestDTO;
+import com.umc.tomorrow.domain.job.dto.request.PostStatusRequestDTO;
 import com.umc.tomorrow.domain.job.dto.response.JobCreateResponseDTO;
 import com.umc.tomorrow.domain.job.dto.response.JobStepResponseDTO;
 import com.umc.tomorrow.domain.job.enums.RegistrantType;
@@ -50,7 +51,6 @@ public class JobCommandController {
         JobStepResponseDTO result = jobCommandService.saveInitialJobStep(userId, requestDTO, session);
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
-
 
     /**
      * 일자리, 개인 등록 사유 정보 db에 저장(POST)
@@ -129,6 +129,26 @@ public class JobCommandController {
         Long userId = user.getUserDTO().getId();
         jobCommandService.saveBusinessVerification(userId, requestDTO);
         return ResponseEntity.ok(BaseResponse.onSuccess(null));
+    }
 
+    /**
+     * 모집글 상태 변경(PATCH)
+     * @param postId 변경할 모집글 ID
+     * @param requestDTO 변경할 상태 정보 DTO
+     * @return 성공 응답
+     */
+    @Operation(summary = "모집글 상태 변경", description = "특정 모집글의 상태를 변경합니다.")
+    @PatchMapping("/{postId}/status")
+    public ResponseEntity<BaseResponse<Void>> updatePostStatus(
+            @AuthenticationPrincipal CustomOAuth2User user,
+            @PathVariable Long postId,
+            @Valid @RequestBody PostStatusRequestDTO requestDTO
+    ) {
+        Long userId = user.getUserDTO().getId();
+
+        // jobCommandService 안에있는 함수 호출
+        jobCommandService.updatePostStatus(userId, postId, requestDTO.getStatus());
+
+        return ResponseEntity.ok(BaseResponse.onSuccess(null));
     }
 }
