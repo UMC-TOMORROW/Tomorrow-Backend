@@ -9,7 +9,7 @@ import com.umc.tomorrow.domain.certificate.dto.response.CertificateResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface CertificateCommandService {
-    CertificateResponse uploadCertificate(Long resumeId, MultipartFile file);
-    CertificateResponse deleteCertificate(Long certificateId);
+    CertificateResponse uploadCertificate(Long userId,Long resumeId, MultipartFile file);
+    CertificateResponse deleteCertificate(Long userId,Long certificateId);
 
 }
