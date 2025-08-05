@@ -6,6 +6,7 @@
  */
 package com.umc.tomorrow.domain.certificate.controller;
 
+import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.certificate.dto.response.CertificateResponse;
 import com.umc.tomorrow.domain.certificate.service.command.CertificateCommandService;
 import com.umc.tomorrow.domain.certificate.service.query.CertificateQueryService;
@@ -17,6 +18,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,10 +41,11 @@ public class CertificateController {
     @Operation(summary = "이력서 자격증 업로드", description = "이력서에 자격증을 업로드합니다.")
     @ApiResponse(responseCode = "201", description = "자격증 업로드 성공")
     public ResponseEntity<BaseResponse<CertificateResponse>> uploadCertificate(
+            @AuthenticationPrincipal CustomOAuth2User user,
             @PathVariable Long resumeId,
             @RequestParam("file") MultipartFile file
     ){
-        CertificateResponse response = certificateCommandService.uploadCertificate(resumeId, file);
+        CertificateResponse response = certificateCommandService.uploadCertificate(user.getUserDTO().getId(), resumeId, file);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.onSuccessCreate(response));
     }
 
@@ -50,10 +53,11 @@ public class CertificateController {
     @Operation(summary = "이력서 자격증 삭제", description = "이력서에서 자격증을 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "자격증 삭제 성공")
     public ResponseEntity<BaseResponse<CertificateResponse>> deleteCertificate(
+            @AuthenticationPrincipal CustomOAuth2User user,
             @PathVariable Long resumeId,
             @PathVariable Long certificateId
     ) {
-        CertificateResponse response = certificateCommandService.deleteCertificate(certificateId);
+        CertificateResponse response = certificateCommandService.deleteCertificate(user.getUserDTO().getId(),certificateId);
         return ResponseEntity.ok(BaseResponse.onSuccessDelete(response));
     }
 
