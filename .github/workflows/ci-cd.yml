@@ -64,6 +64,7 @@ jobs:
             echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
             echo "MAILNAME=${{ secrets.MAILNAME }}" >> .env
             echo "MAILPASSWORD=${{ secrets.MAILPASSWORD }}" >> .env
+            echo "KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}" >> .env
              
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             
