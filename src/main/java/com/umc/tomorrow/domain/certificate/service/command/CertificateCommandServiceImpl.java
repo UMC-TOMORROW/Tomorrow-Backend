@@ -33,10 +33,14 @@ public class CertificateCommandServiceImpl implements CertificateCommandService 
     자격증 업로드
      */
     @Override
-    public CertificateResponse uploadCertificate(Long resumeId, MultipartFile file) {
+    public CertificateResponse uploadCertificate(Long userId,Long resumeId, MultipartFile file) {
 
         Resume resume = resumeRepository.findById(resumeId)
                 .orElseThrow(() -> new ResumeException(ResumeErrorStatus.RESUME_NOT_FOUND));
+
+        if (!resume.getUser().getId().equals(userId)) {
+            throw new ResumeException(ResumeErrorStatus.RESUME_FORBIDDEN);
+        }
 
         String fileUrl = s3Uploader.upload(file, "certificates");
 
@@ -57,9 +61,13 @@ public class CertificateCommandServiceImpl implements CertificateCommandService 
     자격증 삭제
      */
     @Override
-    public CertificateResponse deleteCertificate(Long certificateId) {
+    public CertificateResponse deleteCertificate(Long userId,Long certificateId) {
         Certificate certificate = certificateRepository.findById(certificateId)
                 .orElseThrow(() -> new CertificateException(CertificateErrorStatus.CERTIFICATE_NOT_FOUND));
+
+        if (!certificate.getResume().getUser().getId().equals(userId)) {
+            throw new CertificateException(CertificateErrorStatus.CERTIFICATE_FORBIDDEN);
+        }
 
         s3Uploader.delete(certificate.getFileUrl()); // S3 삭제
         certificateRepository.delete(certificate); // db 삭제
