@@ -63,6 +63,9 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<ReviewResponseDTO> getReviewsByPostId(Long postId, Long userId) {
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
         List<Review> reviews = reviewRepository.findByPostId(postId);
 
         return reviews.stream()
