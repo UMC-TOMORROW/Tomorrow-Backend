@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>채팅 테스트 페이지</title>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+<h2>채팅 테스트</h2>
+
+<label>채팅방 ID: <input type="text" id="chatRoomId" value="1"></label><br/>
+<label>메시지 내용: <input type="text" id="message" value="안녕하세요!"></label><br/>
+<button onclick="connect()">연결</button>
+<button onclick="sendMessage()">메시지 전송</button>
+
+<ul id="chat-log"></ul>
+
+<script>
+  let stompClient = null;
+
+  function connect() {
+    const socket = new SockJS("/wss");
+    stompClient = Stomp.over(socket);
+    stompClient.debug = null;
+
+    const token = localStorage.getItem("accessToken"); // ✅ JWT 토큰 꺼내오기
+
+    stompClient.connect(
+      { Authorization: "Bearer " + token }, // ✅ 헤더에 포함
+      function () {
+        const chatRoomId = document.getElementById("chatRoomId").value;
+
+        console.log("✅ STOMP 연결 성공");
+
+        stompClient.subscribe("/sub/chats/" + chatRoomId, function (messageOutput) {
+          const body = JSON.parse(messageOutput.body);
+          console.log("📩 메시지 수신:", body);
+
+          const log = document.getElementById("chat-log");
+          const li = document.createElement("li");
+          li.innerText = `📨 메시지 ID: ${body.messageId}`;
+          log.appendChild(li);
+        });
+
+        alert("연결 성공!");
+      },
+      function (error) {
+        console.error("❌ STOMP 연결 실패:", error);
+        alert("연결 실패. 콘솔을 확인하세요.");
+      }
+    );
+  }
+
+
+  function sendMessage() {
+    if (!stompClient || !stompClient.connected) {
+      alert("먼저 연결을 해주세요.");
+      return;
+    }
+
+    const chatRoomId = document.getElementById("chatRoomId").value;
+    const message = document.getElementById("message").value;
+
+    if (!chatRoomId || !message) {
+      alert("채팅방 ID와 메시지를 입력해주세요.");
+      return;
+    }
+
+    const payload = {
+      chattingRoomId: Number(chatRoomId),
+      content: message,
+      sentAt: new Date().toISOString()
+    };
+
+    console.log("🚀 메시지 전송:", payload);
+    stompClient.send("/pub/chats/send", {}, JSON.stringify(payload));
+  }
+</script>
+</body>
+</html>
