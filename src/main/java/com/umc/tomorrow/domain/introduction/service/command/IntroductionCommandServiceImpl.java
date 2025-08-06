@@ -52,7 +52,7 @@ public class IntroductionCommandServiceImpl implements IntroductionCommandServic
             throw new RestApiException(IntroductionStatus.INTRODUCTION_FORBIDDEN);
         }
 
-        //이미 자기소개가 존재할 경오 예외처리
+        //이미 자기소개가 존재할 경우 예외처리
         if (resume.getIntroduction() != null) {
             throw new RestApiException(IntroductionStatus.INTRODUCTION_ALREADY_EXISTS);
         }
