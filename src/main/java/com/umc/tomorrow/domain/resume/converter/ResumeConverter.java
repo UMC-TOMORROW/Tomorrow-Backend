@@ -12,7 +12,7 @@ import com.umc.tomorrow.domain.resume.dto.request.ResumeSaveRequestDTO;
 import com.umc.tomorrow.domain.resume.dto.response.ResumeSummaryResponseDTO;
 import com.umc.tomorrow.domain.resume.entity.Experience;
 import com.umc.tomorrow.domain.resume.entity.Resume;
-import com.umc.tomorrow.domain.resume.certificate.entity.Certificate;
+import com.umc.tomorrow.domain.certificate.entity.Certificate;
 import com.umc.tomorrow.domain.member.entity.User;
 import java.util.stream.Collectors;
 import java.util.List;
@@ -84,14 +84,16 @@ public class ResumeConverter {
                 .introduction(resume.getIntroduction() != null
                         ? resume.getIntroduction().getContent()
                         : null)
-                .career(resume.getCareer().stream()
+                .career(resume.getCareer() != null // null 처리
+                        ? resume.getCareer().stream()
                         .map(career -> ResumeSummaryResponseDTO.CareerSummary.builder()
                                 .companyName(career.getCompany())
                                 .description(career.getDescription())
                                 .workedYear(career.getWorkedYear())
                                 .workedPeriod(career.getWorkedPeriod())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toList())
+                        : List.of())
                 .certificates(resume.getCertificates().stream()
                         .map(Certificate::getName)
                         .collect(Collectors.toList()))

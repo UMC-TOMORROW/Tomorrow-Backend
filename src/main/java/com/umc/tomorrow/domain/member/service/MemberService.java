@@ -13,7 +13,7 @@ import com.umc.tomorrow.domain.member.dto.response.DeactivateUserResponse;
 import com.umc.tomorrow.domain.member.dto.response.RecoverUserResponse;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.enums.UserStatus;
-import com.umc.tomorrow.domain.member.exception.MemberStatus;
+import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.domain.member.dto.UserConverter;
 import com.umc.tomorrow.global.common.exception.RestApiException;

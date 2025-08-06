@@ -21,10 +21,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Careertalk", description = "커리어톡 관련 API")
+@Validated
 @RestController
 @RequestMapping("/api/v1/careertalks")
 @RequiredArgsConstructor
@@ -71,8 +74,8 @@ public class CareertalkController {
     @Operation(summary = "커리어톡 게시글 목록 조회 (무한 스크롤)", description = "커리어톡 게시글 목록을 무한 스크롤 방식으로 조회합니다.")
     @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공")
     public ResponseEntity<BaseResponse<GetCareertalkListResponseDto>> getCareertalks(
-            @RequestParam(required = false) Long cursor,
-            @RequestParam(defaultValue = "8") int size
+            @Positive @RequestParam(required = false) Long cursor,
+            @Positive @RequestParam(defaultValue = "8") int size
     ) {
         return ResponseEntity.ok(BaseResponse.onSuccess(careertalkQueryService.getCareertalks(cursor, size)));
     }
@@ -158,8 +161,8 @@ public class CareertalkController {
     @ApiResponse(responseCode = "200", description = "게시글 조회 성공")
     public ResponseEntity<BaseResponse<GetCareertalkListResponseDto>> getCareertalksByCategory(
             @RequestParam String category,
-            @RequestParam(required = false) Long cursor,
-            @RequestParam(defaultValue = "8") int size
+            @Positive @RequestParam(required = false) Long cursor,
+            @Positive @RequestParam(defaultValue = "8") int size
     ){
         return ResponseEntity.ok(BaseResponse.onSuccess(careertalkQueryService.getCareertalksByCategory(category,cursor,size)));
     }
