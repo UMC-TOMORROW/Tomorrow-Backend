@@ -6,6 +6,7 @@
  */
 package com.umc.tomorrow.domain.resume.entity;
 
+import com.umc.tomorrow.global.common.base.BaseEntity;
 import com.umc.tomorrow.domain.career.entity.Career;
 import com.umc.tomorrow.domain.introduction.entity.Introduction;
 import com.umc.tomorrow.domain.member.entity.User;
