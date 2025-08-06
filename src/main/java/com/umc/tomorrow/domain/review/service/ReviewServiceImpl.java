@@ -7,7 +7,10 @@
  */
 package com.umc.tomorrow.domain.review.service;
 
+import com.umc.tomorrow.domain.application.entity.Application;
+import com.umc.tomorrow.domain.application.repository.ApplicationRepository;
 import com.umc.tomorrow.domain.review.dto.ReviewRequestDTO;
+import com.umc.tomorrow.domain.review.dto.ReviewResponseDTO;
 import com.umc.tomorrow.domain.review.entity.Review;
 import com.umc.tomorrow.domain.review.repository.ReviewRepository;
 import com.umc.tomorrow.domain.member.entity.User;
@@ -16,16 +19,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final ApplicationRepository applicationRepository;
+
 
     @Autowired
-    public ReviewServiceImpl(ReviewRepository reviewRepository, UserRepository userRepository) {
+    public ReviewServiceImpl(ReviewRepository reviewRepository, UserRepository userRepository,  ApplicationRepository applicationRepository) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
+        this.applicationRepository = applicationRepository;
     }
 
     /**
@@ -46,4 +54,32 @@ public class ReviewServiceImpl implements ReviewService {
                 .build();
         reviewRepository.save(review);
     }
+
+    /**
+     * 후기 조회
+     * @param userId 회원 ID
+     * @param jobId 일자리 ID
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReviewResponseDTO> getReviewsByJobId(Long jobId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+        List<Application> applications = applicationRepository.findByJobIdAndReviewIsNotNull(jobId);
+
+        return applications.stream()
+                .map(app -> {
+                    Review review = app.getReview();
+                    return new ReviewResponseDTO(
+                            review.getStars(),
+                            review.getReview(),
+                            review.getCreatedAt()
+                    );
+                })
+                .toList();
+    }
+
+
+
 }

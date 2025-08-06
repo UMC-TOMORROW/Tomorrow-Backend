@@ -1,19 +1,23 @@
-/**
- * ReviewService
- * - 후기 저장 비즈니스 로직 인터페이스
- *
- * 작성자: 정여진
- * 생성일: 2025-07-17
- */
 package com.umc.tomorrow.domain.review.service;
 
 import com.umc.tomorrow.domain.review.dto.ReviewRequestDTO;
+import com.umc.tomorrow.domain.review.dto.ReviewResponseDTO;
+
+import java.util.List;
 
 public interface ReviewService {
+
     /**
      * 후기 저장
      * @param userId 회원 ID
      * @param dto 후기 요청 DTO
      */
     void saveReview(Long userId, ReviewRequestDTO dto);
+
+    /**
+     * 특정 공고의 후기 목록 조회
+     * @param jobId 공고 ID
+     * @param userId 로그인한 유저 ID
+     */
+    List<ReviewResponseDTO> getReviewsByJobId(Long jobId, Long userId);
 }

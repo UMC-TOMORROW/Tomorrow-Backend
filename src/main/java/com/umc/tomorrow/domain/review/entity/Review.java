@@ -7,6 +7,7 @@
 package com.umc.tomorrow.domain.review.entity;
 
 import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +17,7 @@ import jakarta.validation.constraints.NotNull;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Review {
+public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

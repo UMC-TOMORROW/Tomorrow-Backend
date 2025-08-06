@@ -56,4 +56,9 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
      * 직업 id에 따라 모든 직업 조회
      * */
     List<Application> findAllByJobId(Long jobId);
+
+    /**
+     * 특정 job에 속한 리뷰가 있는 지원서 목록 조회
+     * */
+    List<Application> findByJobIdAndReviewIsNotNull(Long jobId);
 }

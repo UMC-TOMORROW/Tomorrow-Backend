@@ -3,7 +3,7 @@
  * 작성자: 정인도
  * 생성일: 2025-07-25
  */
-package com.umc.tomorrow.domain.job.controller.query;
+package com.umc.tomorrow.domain.job.service.query;
 
 import com.umc.tomorrow.domain.job.converter.JobConverter;
 import com.umc.tomorrow.domain.job.dto.request.MyPostResponseDTO;
@@ -11,7 +11,6 @@ import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.job.enums.PostStatus;
 import com.umc.tomorrow.domain.job.exception.JobException;
 import com.umc.tomorrow.domain.job.repository.JobRepository;
-import com.umc.tomorrow.domain.job.service.query.JobQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
