@@ -42,11 +42,6 @@ public class Resume extends BaseEntity {
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Certificate> certificates;
 
-    public void setCareer(List<Career> career) { this.career = career; }
-
-    public void setCertificates(List<Certificate> certificates) {
-        this.certificates = certificates;
-    }
 
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Experience> experiences;
