@@ -72,6 +72,10 @@ dependencies {
 
 	//kakao지도
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	//웹소켓 채팅
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
 
 test {
