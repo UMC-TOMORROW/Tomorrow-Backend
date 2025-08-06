@@ -16,8 +16,8 @@ public interface ReviewService {
 
     /**
      * 특정 공고의 후기 목록 조회
-     * @param jobId 공고 ID
+     * @param postId 공고 ID
      * @param userId 로그인한 유저 ID
      */
-    List<ReviewResponseDTO> getReviewsByJobId(Long jobId, Long userId);
+    List<ReviewResponseDTO> getReviewsByPostId( Long userId, Long postId);
 }

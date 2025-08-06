@@ -58,28 +58,15 @@ public class ReviewServiceImpl implements ReviewService {
     /**
      * 후기 조회
      * @param userId 회원 ID
-     * @param jobId 일자리 ID
+     * @param postId 일자리 ID
      */
     @Override
-    @Transactional(readOnly = true)
-    public List<ReviewResponseDTO> getReviewsByJobId(Long jobId, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+    public List<ReviewResponseDTO> getReviewsByPostId(Long postId, Long userId) {
 
-        List<Application> applications = applicationRepository.findByJobIdAndReviewIsNotNull(jobId);
+        List<Review> reviews = reviewRepository.findByPostId(postId);
 
-        return applications.stream()
-                .map(app -> {
-                    Review review = app.getReview();
-                    return new ReviewResponseDTO(
-                            review.getStars(),
-                            review.getReview(),
-                            review.getCreatedAt()
-                    );
-                })
+        return reviews.stream()
+                .map(r -> new ReviewResponseDTO(r.getStars(), r.getReview(), r.getCreatedAt()))
                 .toList();
     }
-
-
-
 }
