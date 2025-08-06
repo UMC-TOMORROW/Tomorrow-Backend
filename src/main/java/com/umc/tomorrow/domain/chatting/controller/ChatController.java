@@ -94,8 +94,8 @@ public class ChatController {
     @ApiResponse(responseCode = "200", description = "채팅 메시지 조회 성공")
     public ResponseEntity<BaseResponse<GetChatMessageListResponseDTO>> getChatMessages(
             @NotNull @Positive @PathVariable Long chattingRoomId,
-            @NotNull @Positive @RequestParam(required = false) Long cursor,
-            @NotNull @Positive @RequestParam(defaultValue = "20") int size
+            @Positive @RequestParam(required = false) Long cursor,
+            @NotNull @Positive @RequestParam(defaultValue = "8") int size
     ) {
         GetChatMessageListResponseDTO response = chatQueryService.getMessages(chattingRoomId, cursor, size);
         return ResponseEntity.ok(BaseResponse.onSuccess(response));

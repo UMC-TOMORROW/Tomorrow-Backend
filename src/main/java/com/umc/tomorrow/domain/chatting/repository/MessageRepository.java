@@ -9,15 +9,19 @@ import com.umc.tomorrow.domain.chatting.entity.Message;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
     // 최신 메시지부터 조회 (최초 요청 시)
-    Slice<Message> findByChattingRoomIdOrderByIdDesc(Long chattingRoomId, Pageable pageable);
+    @Query("SELECT m FROM Message m JOIN FETCH m.chatPart WHERE m.chattingRoom.id = :chattingRoomId ORDER BY m.id DESC")
+    Slice<Message> findByChattingRoomIdOrderByIdDesc(@Param("chattingRoomId") Long chattingRoomId, Pageable pageable);
 
-    // 커서 기반 메시지 조회 (무한 스크롤)
-    Slice<Message> findByChattingRoomIdAndIdLessThanOrderByIdDesc(Long chattingRoomId, Long cursor, Pageable pageable);
+    @Query("SELECT m FROM Message m JOIN FETCH m.chatPart WHERE m.chattingRoom.id = :chattingRoomId AND m.id < :cursor ORDER BY m.id DESC")
+    Slice<Message> findByChattingRoomIdAndIdLessThanOrderByIdDesc(@Param("chattingRoomId") Long chattingRoomId, @Param("cursor") Long cursor, Pageable pageable);
+
 }
 

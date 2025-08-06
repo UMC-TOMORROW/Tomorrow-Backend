@@ -67,7 +67,7 @@ public class ChatCommandService {
         boolean alreadyJoined = chatPartRepository.existsByUserAndChattingRoom(user, room);
 
         if (!alreadyJoined) {
-            String anonymousName = generateAnonymousName(room);
+            String anonymousName = generateAnonymousName(room,user);
 
             ChatPart chatPart = ChatPart.builder()
                     .user(user)
@@ -79,7 +79,13 @@ public class ChatCommandService {
         }
     }
 
-    private String generateAnonymousName(ChattingRoom room) {
+    private String generateAnonymousName(ChattingRoom room, User user) {
+        // 커리어톡 작성자 여부 확인
+        if (room.getCareertalk().getUser().getId().equals(user.getId())) {
+            return "작성자";
+        }
+
+        // 기존 익명 처리
         int index = chatPartRepository.countByChattingRoom(room) + 1;
         return "익명" + index;
     }
