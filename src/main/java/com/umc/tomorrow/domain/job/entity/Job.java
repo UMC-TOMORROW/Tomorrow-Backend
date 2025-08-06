@@ -37,6 +37,9 @@ public class Job extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String title;
 
+    @Lob
+    private String jobDescription;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private JobCategory jobCategory;
@@ -60,9 +63,6 @@ public class Job extends BaseEntity {
 
     @Column(nullable = false)
     private Integer salary;
-
-    @Lob
-    private String jobDescription;
 
     private String jobImageUrl;
 
