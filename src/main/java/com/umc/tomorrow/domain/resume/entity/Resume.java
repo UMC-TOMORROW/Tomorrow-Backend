@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Resume {
+public class Resume extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
