@@ -7,9 +7,11 @@
  */
 package com.umc.tomorrow.domain.careertalk.entity;
 
+import com.umc.tomorrow.domain.chatting.entity.ChattingRoom;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.global.common.base.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,6 +20,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,6 +54,9 @@ public class Careertalk extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToOne(mappedBy = "careertalk", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ChattingRoom chattingRoom;
 
     public void update(String title, String content, String category) {
         this.title = title;
