@@ -25,6 +25,7 @@ import com.umc.tomorrow.domain.email.dto.request.EmailRequestDTO;
 import com.umc.tomorrow.domain.email.enums.EmailType;
 import com.umc.tomorrow.domain.email.service.EmailService;
 import com.umc.tomorrow.domain.job.entity.Job;
+import com.umc.tomorrow.domain.job.enums.PostStatus;
 import com.umc.tomorrow.domain.job.exception.JobException;
 import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
 import com.umc.tomorrow.domain.job.repository.JobRepository;
@@ -168,7 +169,7 @@ public class ApplicationCommandService {
     private boolean isJobClosed(Job job) {
         LocalDateTime now = LocalDateTime.now();
         boolean deadlinePassed = job.getDeadline().isBefore(now);
-        boolean manuallyClosed = Boolean.FALSE.equals(job.getIsActive());
+        boolean manuallyClosed = Boolean.FALSE.equals(job.getStatus() == PostStatus.CLOSED);
         return deadlinePassed || manuallyClosed;
     }
 

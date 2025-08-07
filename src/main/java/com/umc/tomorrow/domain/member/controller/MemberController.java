@@ -14,7 +14,6 @@ import com.umc.tomorrow.domain.member.dto.response.DeactivateUserResponse;
 import com.umc.tomorrow.domain.member.dto.response.RecoverUserResponse;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.umc.tomorrow.domain.member.exception.MemberStatus;
+import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
 
 @Tag(name = "member-controller", description = "회원 관련 API")
 @RestController

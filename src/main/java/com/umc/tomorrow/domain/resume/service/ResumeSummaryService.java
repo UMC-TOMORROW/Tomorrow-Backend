@@ -8,6 +8,8 @@ package com.umc.tomorrow.domain.resume.service;
 
 import com.umc.tomorrow.domain.resume.dto.response.ResumeSummaryResponseDTO;
 import com.umc.tomorrow.domain.resume.entity.Resume;
+import com.umc.tomorrow.domain.resume.exception.ResumeException;
+import com.umc.tomorrow.domain.resume.exception.code.ResumeErrorStatus;
 import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
 import com.umc.tomorrow.domain.resume.converter.ResumeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +30,12 @@ public class ResumeSummaryService {
      * @return 이력서 요약 응답 DTO
      */
     public ResumeSummaryResponseDTO getResumeSummary(Long userId) {
-        Resume resume = resumeRepository.findByUserId(userId);
-        if (resume == null) throw new IllegalArgumentException("이력서를 찾을 수 없습니다.");
-        return ResumeConverter.toSummaryDTO(resume);
+        try {
+            return resumeRepository.findFirstByUserIdOrderByCreatedAtDesc(userId)
+                    .map(ResumeConverter::toSummaryDTO)
+                    .orElseThrow(() -> new RuntimeException("Test Exception"));
+        } catch (RuntimeException e) {
+            throw new ResumeException(ResumeErrorStatus.RESUME_NOT_FOUND);
+        }
     }
 } 
