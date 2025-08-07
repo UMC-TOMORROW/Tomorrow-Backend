@@ -26,6 +26,7 @@ public class JobConverter {
                 .jobImageUrl(dto.getJobImageUrl())
                 .companyName(dto.getCompanyName())
                 .status(PostStatus.OPEN)
+                .isActive(dto.getIsActive())
                 .recruitmentLimit(dto.getRecruitmentLimit())
                 .registrantType(dto.getRegistrantType())
                 .deadline(dto.getDeadline())
