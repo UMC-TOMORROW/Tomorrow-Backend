@@ -3,13 +3,13 @@
  * 작성자: 이승주
  * 작성일: 2025-07-28
  */
-package com.umc.tomorrow.domain.resume.certificate.service.command;
+package com.umc.tomorrow.domain.certificate.service.command;
 
-import com.umc.tomorrow.domain.resume.certificate.dto.response.CertificateResponse;
-import com.umc.tomorrow.domain.resume.certificate.entity.Certificate;
-import com.umc.tomorrow.domain.resume.certificate.exception.CertificateException;
-import com.umc.tomorrow.domain.resume.certificate.exception.code.CertificateErrorStatus;
-import com.umc.tomorrow.domain.resume.certificate.repository.CertificateRepository;
+import com.umc.tomorrow.domain.certificate.dto.response.CertificateResponse;
+import com.umc.tomorrow.domain.certificate.entity.Certificate;
+import com.umc.tomorrow.domain.certificate.exception.CertificateException;
+import com.umc.tomorrow.domain.certificate.exception.code.CertificateErrorStatus;
+import com.umc.tomorrow.domain.certificate.repository.CertificateRepository;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.exception.ResumeException;
 import com.umc.tomorrow.domain.resume.exception.code.ResumeErrorStatus;
@@ -33,10 +33,14 @@ public class CertificateCommandServiceImpl implements CertificateCommandService 
     자격증 업로드
      */
     @Override
-    public CertificateResponse uploadCertificate(Long resumeId, MultipartFile file) {
+    public CertificateResponse uploadCertificate(Long userId,Long resumeId, MultipartFile file) {
 
         Resume resume = resumeRepository.findById(resumeId)
                 .orElseThrow(() -> new ResumeException(ResumeErrorStatus.RESUME_NOT_FOUND));
+
+        if (!resume.getUser().getId().equals(userId)) {
+            throw new ResumeException(ResumeErrorStatus.RESUME_FORBIDDEN);
+        }
 
         String fileUrl = s3Uploader.upload(file, "certificates");
 
@@ -57,9 +61,13 @@ public class CertificateCommandServiceImpl implements CertificateCommandService 
     자격증 삭제
      */
     @Override
-    public CertificateResponse deleteCertificate(Long certificateId) {
+    public CertificateResponse deleteCertificate(Long userId,Long certificateId) {
         Certificate certificate = certificateRepository.findById(certificateId)
                 .orElseThrow(() -> new CertificateException(CertificateErrorStatus.CERTIFICATE_NOT_FOUND));
+
+        if (!certificate.getResume().getUser().getId().equals(userId)) {
+            throw new CertificateException(CertificateErrorStatus.CERTIFICATE_FORBIDDEN);
+        }
 
         s3Uploader.delete(certificate.getFileUrl()); // S3 삭제
         certificateRepository.delete(certificate); // db 삭제

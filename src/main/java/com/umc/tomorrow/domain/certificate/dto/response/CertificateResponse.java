@@ -3,7 +3,7 @@
  * 작성자: 이승주
  * 생성일: 2025-07-28
  */
-package com.umc.tomorrow.domain.resume.certificate.dto.response;
+package com.umc.tomorrow.domain.certificate.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
