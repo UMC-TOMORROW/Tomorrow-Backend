@@ -124,8 +124,4 @@ public class Job extends BaseEntity {
     // 지원서와 1:N 관계
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Application> applications = new ArrayList<>();
-
-    // 찜과 1:N 관계
-    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<JobBookmark> jobBookmarks = new ArrayList<>();
 }
