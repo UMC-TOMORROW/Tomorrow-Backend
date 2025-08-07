@@ -4,29 +4,31 @@ import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.job.dto.request.BusinessRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.JobRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.PersonalRequestDTO;
+import com.umc.tomorrow.domain.job.dto.response.GetRecommendationListResponse;
 import com.umc.tomorrow.domain.job.dto.request.PostStatusRequestDTO;
 import com.umc.tomorrow.domain.job.dto.response.JobCreateResponseDTO;
 import com.umc.tomorrow.domain.job.dto.response.JobStepResponseDTO;
 import com.umc.tomorrow.domain.job.enums.RegistrantType;
 import com.umc.tomorrow.domain.job.service.command.JobCommandService;
-import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.base.BaseResponse;
-import com.umc.tomorrow.global.common.exception.RestApiException;
-import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Job", description = "일자리 관련 API")
 @RestController
 @RequestMapping("/api/v1/jobs")
 @RequiredArgsConstructor
+@Validated
 public class JobCommandController {
 
     private final JobCommandService jobCommandService;
@@ -51,6 +53,7 @@ public class JobCommandController {
         JobStepResponseDTO result = jobCommandService.saveInitialJobStep(userId, requestDTO, session);
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
+
 
     /**
      * 일자리, 개인 등록 사유 정보 db에 저장(POST)
@@ -129,6 +132,19 @@ public class JobCommandController {
         Long userId = user.getUserDTO().getId();
         jobCommandService.saveBusinessVerification(userId, requestDTO);
         return ResponseEntity.ok(BaseResponse.onSuccess(null));
+
+    }
+    @GetMapping("recommendations")
+    @Operation(summary = "내일 추천 게시글 목록 조회 (무한 스크롤)", description = "내일 추천 게시글 목록을 무한 스크롤 방식으로 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "내일 추천 목록 조회 성공")
+    public ResponseEntity<BaseResponse<GetRecommendationListResponse>> getTomorrowRecommendations(
+            @AuthenticationPrincipal CustomOAuth2User user,
+            @Positive @RequestParam(required = false) Long cursor,
+            @Positive @RequestParam(defaultValue = "8") int size
+    ){
+        Long userId = user.getUserDTO().getId();
+        GetRecommendationListResponse result = jobCommandService.getTomorrowRecommendations(userId, cursor,size);
+        return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
 
     /**
