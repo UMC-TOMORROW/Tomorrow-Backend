@@ -3,9 +3,11 @@ version: '3.8'
 services:
   app:
     container_name: tomorrow-backend
-    image: eun07213/tomorrow:latest   # Docker Hub에서 pull
+    image: eun07213/tomorrow:latest
     depends_on:
       mysql8-local:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     ports:
       - "8080:8080"
@@ -24,7 +26,24 @@ services:
       MAILNAME: ${MAILNAME}
       MAILPASSWORD: ${MAILPASSWORD}
       KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY}
+      # Redis 연결 정보 추가
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     restart: always
+  # redis 추가
+  redis:
+    image: redis:6-alpine
+    container_name: tomorrow-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mysql8-local:
     image: mysql:8.0
@@ -47,4 +66,7 @@ services:
       retries: 5
 
 volumes:
-  tomorrow-local-data:
+  redis-data:
+    driver: local
+  tomorrow-local-data: # mysql-local-data 볼륨 이름 변경
+    driver: local
