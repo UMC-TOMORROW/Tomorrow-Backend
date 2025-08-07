@@ -47,6 +47,10 @@ public class JobBookmarkCommandServiceImpl implements JobBookmarkCommandService 
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
 
+        if (jobBookmarkRepository.existsByUserIdAndJobId(userId, jobId)) {
+            throw new RestApiException(JobBookmarkErrorStatus.JOB_BOOKMARK_ALREADY_EXISTS);
+        }
+
         // 2. JobBookmark 엔티티를 생성하고 연관 관계
         JobBookmark jobBookmark = JobBookmark.builder()
                 .user(user)
@@ -68,7 +72,6 @@ public class JobBookmarkCommandServiceImpl implements JobBookmarkCommandService 
     @Override
     @Transactional
     public void delete(Long userId, Long jobId) {
-        // Find and delete the bookmark
         JobBookmark jobBookmark = jobBookmarkRepository.findByUserIdAndJobId(userId, jobId)
                 .orElseThrow(() -> new RestApiException(JobBookmarkErrorStatus.JOB_BOOKMARK_NOT_FOUND));
 

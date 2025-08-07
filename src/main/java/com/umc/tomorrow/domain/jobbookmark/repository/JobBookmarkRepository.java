@@ -20,6 +20,8 @@ import java.util.Optional;
 public interface JobBookmarkRepository extends JpaRepository<JobBookmark, Long> {
     Optional<JobBookmark> findByUserIdAndJobId(Long userId, Long jobId);
 
+    // 특정 사용자와 직업 ID로 북마크가 있는지 확인
+    boolean existsByUserIdAndJobId(Long userId, Long jobId);
     /**
      * 특정 사용자에 대한 JobBookmark 목록을 커서 기반 페이지네이션을 사용하여 슬라이스로 조회
      * @param userId 사용자의 ID.

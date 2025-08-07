@@ -35,10 +35,6 @@ public class JobBookmarkQueryServiceImpl implements JobBookmarkQueryService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(MemberStatus.USER_NOT_FOUND));
 
-        if (cursor != null && cursor < 0) {
-            throw new RestApiException(GlobalErrorStatus.INVALID_CURSOR_VALUE);
-        }
-
         PageRequest pageRequest = PageRequest.of(0, size);
 
         Slice<JobBookmark> jobBookmarks = jobBookmarkRepository.findByUserIdAndIdLessThanOrderByIdDesc(userId, cursor, pageRequest);
