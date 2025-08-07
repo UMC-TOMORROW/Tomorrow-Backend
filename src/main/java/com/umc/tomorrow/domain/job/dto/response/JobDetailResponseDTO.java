@@ -5,6 +5,7 @@ import com.umc.tomorrow.domain.job.dto.request.WorkEnvironmentRequestDTO;
 import com.umc.tomorrow.domain.job.enums.JobCategory;
 import com.umc.tomorrow.domain.job.enums.PaymentType;
 import com.umc.tomorrow.domain.job.enums.WorkPeriod;
+import com.umc.tomorrow.domain.preferences.entity.PreferenceType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Set;
 
 @Getter
 @Builder
@@ -81,6 +83,11 @@ public class JobDetailResponseDTO {
 
     @Schema(description = "근무환경", example = "[\"TUTORING\"]")
     private WorkEnvironmentRequestDTO workEnvironment;
+
+    @Schema(description = "희망조건", example = "[\"SIT\"]")
+    private Set<PreferenceType> preferences;
+
+
 
 
 }

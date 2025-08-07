@@ -5,9 +5,15 @@ import com.umc.tomorrow.domain.job.dto.response.GetRecommendationResponse;
 import com.umc.tomorrow.domain.job.dto.response.JobDetailResponseDTO;
 import com.umc.tomorrow.domain.job.entity.*;
 import com.umc.tomorrow.domain.job.enums.PostStatus;
+import com.umc.tomorrow.domain.preferences.entity.Preference;
 import org.springframework.stereotype.Component;
+import com.umc.tomorrow.domain.preferences.entity.PreferenceType;
 
+
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Component
 public class JobConverter {
@@ -100,6 +106,11 @@ public class JobConverter {
     }
 
     public JobDetailResponseDTO toJobDetailResponseDTO(Job job) {
+
+        Set<PreferenceType> preferences = Optional.ofNullable(job.getUser().getPreference())
+                .map(Preference::getPreferences)
+                .orElse(Collections.emptySet());
+
         return JobDetailResponseDTO.builder()
                 .title(job.getTitle())
                 .jobDescription(job.getJobDescription())
@@ -121,6 +132,7 @@ public class JobConverter {
                 .alwaysHiring(job.getAlwaysHiring())
                 .workDays(toWorkDaysRequestDTO(job.getWorkDays()))
                 .workEnvironment(toWorkEnvironmentRequestDTO(job.getWorkEnvironment()))
+                .preferences(preferences)
                 .build();
     }
 

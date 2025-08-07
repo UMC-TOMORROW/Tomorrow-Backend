@@ -15,4 +15,5 @@ import java.util.List;
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
     List<Job> findByUserIdAndStatus(Long userId, PostStatus status);
+
 }
