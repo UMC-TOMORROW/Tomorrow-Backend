@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     container_name: tomorrow-backend
-    image: eun07213/tomorrow:latest   # Docker Hub에서 pull
+    image: eun07213/tomorrow:latest
     depends_on:
       mysql8-local:
         condition: service_healthy
@@ -38,6 +38,7 @@ services:
       TZ: Asia/Seoul
     ports:
       - "3306:3306"
+    command: --sql-mode="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION"  
     volumes:
       - tomorrow-local-data:/var/lib/mysql
     healthcheck:
