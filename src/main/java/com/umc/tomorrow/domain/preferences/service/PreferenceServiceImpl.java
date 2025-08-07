@@ -6,15 +6,16 @@
  */
 package com.umc.tomorrow.domain.preferences.service;
 
+import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
 import com.umc.tomorrow.domain.preferences.dto.PreferencesDTO;
 import com.umc.tomorrow.domain.preferences.entity.Preference;
+import com.umc.tomorrow.domain.preferences.exception.code.PreferenceStatus;
 import com.umc.tomorrow.domain.preferences.repository.PreferenceRepository;
 import com.umc.tomorrow.domain.preferences.converter.PreferenceConverter;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,15 +31,19 @@ public class PreferenceServiceImpl implements PreferenceService {
      */
     @Override
     @Transactional
-    public PreferencesDTO savePreferences(Long userId, PreferencesDTO dto) {
+    public void savePreferences(Long userId, PreferencesDTO dto) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+            .orElseThrow(() -> new RestApiException(MemberStatus.MEMBER_NOT_FOUND));
+
+        if (preferenceRepository.findByUser(user).isPresent()) {
+            throw new RestApiException(PreferenceStatus.PREFERENCE_ALREADY_EXISTS); // 가상의 예외
+        }
+
         Preference entity = Preference.builder()
             .user(user)
             .preferences(dto.getPreferences())
             .build();
         preferenceRepository.save(entity);
-        return PreferenceConverter.toDTO(entity);
     }
 
     /**
@@ -46,13 +51,14 @@ public class PreferenceServiceImpl implements PreferenceService {
      */
     @Override
     @Transactional
-    public PreferencesDTO updatePreferences(Long userId, PreferencesDTO dto) {
+    public void updatePreferences(Long userId, PreferencesDTO dto) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+            .orElseThrow(() -> new RestApiException(MemberStatus.MEMBER_NOT_FOUND));
+
         Preference entity = preferenceRepository.findByUser(user)
-            .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+            .orElseThrow(() -> new RestApiException(PreferenceStatus.PREFERENCE_NOT_FOUND));
+
         PreferenceConverter.updateEntity(entity, dto);
         preferenceRepository.save(entity);
-        return PreferenceConverter.toDTO(entity);
     }
 } 

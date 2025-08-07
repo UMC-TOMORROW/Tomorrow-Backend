@@ -7,6 +7,9 @@
  */
 package com.umc.tomorrow.domain.preferences.entity;
 
+import lombok.Getter;
+
+@Getter
 public enum PreferenceType {
     SIT("앉아서 근무 중심"),
     STAND("서서 근무 중심"),
@@ -20,11 +23,4 @@ public enum PreferenceType {
     PreferenceType(String description) {
         this.description = description;
     }
-
-    /**
-     * 한글 설명 반환
-     */
-    public String getDescription() {
-        return description;
-    }
-} 
+}
