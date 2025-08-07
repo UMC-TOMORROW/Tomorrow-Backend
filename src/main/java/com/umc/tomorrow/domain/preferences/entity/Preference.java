@@ -36,6 +36,7 @@ public class Preference {
     /**
      * 희망 조건 목록 (EnumSet)
      */
+    @Builder.Default
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private Set<PreferenceType> preferences = new HashSet<>();
