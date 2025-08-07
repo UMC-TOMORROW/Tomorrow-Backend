@@ -35,8 +35,8 @@ public class JobQueryServiceImpl implements JobQueryService {
         } catch (IllegalArgumentException e) {
             throw new JobException(JobErrorStatus.POST_STATUS_INVALID);
         }
-        Boolean isActive = (postStatus == PostStatus.OPEN);
-        List<Job> jobs = jobRepository.findByUserIdAndIsActive(userId, isActive);
+
+        List<Job> jobs = jobRepository.findByUserIdAndStatus(userId, postStatus);
 
         return jobs.stream()
                 .map(jobConverter::toMyPostResponseDto)

@@ -133,4 +133,5 @@ public class Job extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobBookmark> jobBookmarks = new ArrayList<>();
+
 }

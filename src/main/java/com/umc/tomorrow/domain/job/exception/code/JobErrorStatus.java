@@ -16,8 +16,10 @@ import org.springframework.http.HttpStatus;
 public enum JobErrorStatus implements BaseCodeInterface {
 
     JOB_NOT_FOUND(HttpStatus.NOT_FOUND, "JOB404", "공고를 찾을 수 없습니다."),
-    JOB_ALREADY_CLOSED(HttpStatus.BAD_REQUEST, "JOB4001", "마감된 공고입니다."),
-    POST_STATUS_INVALID(HttpStatus.BAD_REQUEST, "JOB400", "잘못된 공고 상태입니다.");
+    JOB_ALREADY_CLOSED(HttpStatus.BAD_REQUEST, "JOB401", "마감된 공고입니다."),
+    JOB_ALREADY_OPEN(HttpStatus.BAD_REQUEST, "JOB401", "아직 마감 안 된 공고입니다."),
+    POST_STATUS_INVALID(HttpStatus.BAD_REQUEST, "JOB400", "잘못된 공고 상태입니다."),
+    JOB_FORBIDDEN(HttpStatus.FORBIDDEN, "JOB403", "공고에 대한 권한이 없습니다.");
 
     private final HttpStatus httpStatus;
     private final boolean isSuccess = false;

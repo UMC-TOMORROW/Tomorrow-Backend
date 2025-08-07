@@ -2,6 +2,7 @@ package com.umc.tomorrow.domain.job.converter;
 
 import com.umc.tomorrow.domain.job.dto.request.*;
 import com.umc.tomorrow.domain.job.entity.*;
+import com.umc.tomorrow.domain.job.enums.PostStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class JobConverter {
                 .jobDescription(dto.getJobDescription())
                 .jobImageUrl(dto.getJobImageUrl())
                 .companyName(dto.getCompanyName())
-                .isActive(dto.getIsActive())
+                .status(PostStatus.OPEN)
                 .recruitmentLimit(dto.getRecruitmentLimit())
                 .registrantType(dto.getRegistrantType())
                 .deadline(dto.getDeadline())
@@ -85,7 +86,7 @@ public class JobConverter {
         return MyPostResponseDTO.builder()
                 .postId(job.getId())
                 .title(job.getTitle())
-                .status(job.getIsActive() ? "모집중" : "모집완료")
+                .status(job.getStatus().getDisplayValue())
                 .date(job.getDeadline().toLocalDate())
                 .location(job.getLocation())
                 .tags(List.of(
