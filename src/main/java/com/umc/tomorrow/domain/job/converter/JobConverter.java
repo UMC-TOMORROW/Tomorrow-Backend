@@ -2,6 +2,7 @@ package com.umc.tomorrow.domain.job.converter;
 
 import com.umc.tomorrow.domain.job.dto.request.*;
 import com.umc.tomorrow.domain.job.dto.response.GetRecommendationResponse;
+import com.umc.tomorrow.domain.job.dto.response.JobDetailResponseDTO;
 import com.umc.tomorrow.domain.job.entity.*;
 import com.umc.tomorrow.domain.job.enums.PostStatus;
 import org.springframework.stereotype.Component;
@@ -94,6 +95,55 @@ public class JobConverter {
                         job.getJobCategory().getDescription()
                         // 추후 WorkEnvironment 등에서 태그 추가 가능
                 ))
+                .build();
+    }
+
+    public JobDetailResponseDTO toJobDetailResponseDTO(Job job) {
+        return JobDetailResponseDTO.builder()
+                .title(job.getTitle())
+                .jobDescription(job.getJobDescription())
+                .workPeriod(job.getWorkPeriod())
+                .isPeriodNegotiable(job.getIsPeriodNegotiable())
+                .workStart(job.getWorkStart())
+                .workEnd(job.getWorkEnd())
+                .isTimeNegotiable(job.getIsTimeNegotiable())
+                .paymentType(job.getPaymentType())
+                .jobCategory(job.getJobCategory())
+                .salary(job.getSalary())
+                .jobImageUrl(job.getJobImageUrl())
+                .companyName(job.getUser().getName())
+                .isActive(job.getIsActive())
+                .recruitmentLimit(job.getRecruitmentLimit())
+                .deadline(job.getDeadline())
+                .preferredQualifications(job.getPreferredQualifications())
+                .location(job.getLocation())
+                .alwaysHiring(job.getAlwaysHiring())
+                .workDays(toWorkDaysRequestDTO(job.getWorkDays()))
+                .workEnvironment(toWorkEnvironmentRequestDTO(job.getWorkEnvironment()))
+                .build();
+    }
+
+    public WorkDaysRequestDTO toWorkDaysRequestDTO(WorkDays workDays) {
+        return WorkDaysRequestDTO.builder()
+                .MON(workDays.getMON())
+                .TUE(workDays.getTUE())
+                .WED(workDays.getWED())
+                .THU(workDays.getTHU())
+                .FRI(workDays.getFRI())
+                .SAT(workDays.getSAT())
+                .SUN(workDays.getSUN())
+                .isDayNegotiable(workDays.getIsDayNegotiable())
+                .build();
+    }
+
+    public WorkEnvironmentRequestDTO toWorkEnvironmentRequestDTO(WorkEnvironment workEnvironment) {
+        return WorkEnvironmentRequestDTO.builder()
+                .canWorkSitting(workEnvironment.isCanWorkSitting())
+                .canWorkStanding(workEnvironment.isCanWorkStanding())
+                .canLiftHeavyObjects(workEnvironment.isCanLiftHeavyObjects())
+                .canLiftLightObjects(workEnvironment.isCanLiftLightObjects())
+                .canMoveActively(workEnvironment.isCanMoveActively())
+                .canCommunicate(workEnvironment.isCanCommunicate())
                 .build();
     }
 

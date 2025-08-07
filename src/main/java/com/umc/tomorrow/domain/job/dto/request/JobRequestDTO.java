@@ -76,7 +76,7 @@ public class JobRequestDTO {
             example = "true",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "{job.isActive.notnull}")
-    private Boolean isActive;
+    private final Boolean isActive = true;
 
     @Schema(description = "모집인원",
             example = "2",
