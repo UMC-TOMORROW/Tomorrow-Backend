@@ -11,13 +11,11 @@ import com.umc.tomorrow.domain.member.entity.User;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Entity
+import lombok.*;
+
 @Getter
+@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,23 +25,13 @@ public class Preference {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * 희망 조건을 소유한 사용자
-     */
+    // 희망 조건을 소유한 사용자
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    /**
-     * 희망 조건 목록 (EnumSet)
-     */
+    // 희망 조건 목록 (EnumSet)
+    @Setter
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private Set<PreferenceType> preferences = new HashSet<>();
-
-    // Getter, Setter
-    public Long getId() { return id; }
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
-    public Set<PreferenceType> getPreferences() { return preferences; }
-    public void setPreferences(Set<PreferenceType> preferences) { this.preferences = preferences; }
 } 

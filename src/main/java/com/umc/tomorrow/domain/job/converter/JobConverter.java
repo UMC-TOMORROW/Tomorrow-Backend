@@ -5,6 +5,7 @@ import com.umc.tomorrow.domain.job.entity.*;
 import com.umc.tomorrow.domain.job.enums.PostStatus;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -23,7 +24,6 @@ public class JobConverter {
                 .jobDescription(dto.getJobDescription())
                 .jobImageUrl(dto.getJobImageUrl())
                 .companyName(dto.getCompanyName())
-                .status(PostStatus.OPEN)
                 .recruitmentLimit(dto.getRecruitmentLimit())
                 .registrantType(dto.getRegistrantType())
                 .deadline(dto.getDeadline())
@@ -86,12 +86,11 @@ public class JobConverter {
         return MyPostResponseDTO.builder()
                 .postId(job.getId())
                 .title(job.getTitle())
-                .status(job.getStatus().getDisplayValue())
+
                 .date(job.getDeadline().toLocalDate())
                 .location(job.getLocation())
                 .tags(List.of(
                         job.getJobCategory().getDescription()
-                        // 추후 WorkEnvironment 등에서 태그 추가 가능
                 ))
                 .build();
     }

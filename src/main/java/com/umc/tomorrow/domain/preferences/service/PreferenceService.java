@@ -12,10 +12,10 @@ public interface PreferenceService {
     /**
      * 희망 조건 저장
      */
-    PreferencesDTO savePreferences(Long userId, PreferencesDTO dto);
+    void savePreferences(Long userId, PreferencesDTO dto);
 
     /**
      * 희망 조건 수정
      */
-    PreferencesDTO updatePreferences(Long userId, PreferencesDTO dto);
+    void updatePreferences(Long userId, PreferencesDTO dto);
 } 
