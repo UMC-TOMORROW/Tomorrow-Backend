@@ -48,7 +48,7 @@ public class JobQueryController {
     public ResponseEntity<BaseResponse<JobDetailResponseDTO>> getJobDetail(
             @PathVariable Long jobId) {
         JobDetailResponseDTO result = jobQueryService.getJobDetail(jobId);
-        
+
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
 

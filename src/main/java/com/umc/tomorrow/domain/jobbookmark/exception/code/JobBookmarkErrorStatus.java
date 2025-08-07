@@ -1,10 +1,9 @@
 /**
- * 직업job 에 대한 예외처리
+ * 찜 에러 상태코드
  * 작성자: 정여진
- * 생성일: 2025-07-23
+ * 작성일: 2025-08-05
  */
-package com.umc.tomorrow.domain.job.exception.code;
-
+package com.umc.tomorrow.domain.jobbookmark.exception.code;
 import com.umc.tomorrow.global.common.exception.code.BaseCode;
 import com.umc.tomorrow.global.common.exception.code.BaseCodeInterface;
 import lombok.AllArgsConstructor;
@@ -13,13 +12,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum JobErrorStatus implements BaseCodeInterface {
-
-    JOB_NOT_FOUND(HttpStatus.NOT_FOUND, "JOB404", "공고를 찾을 수 없습니다."),
-    JOB_ALREADY_CLOSED(HttpStatus.BAD_REQUEST, "JOB401", "마감된 공고입니다."),
-    JOB_ALREADY_OPEN(HttpStatus.BAD_REQUEST, "JOB401", "아직 마감 안 된 공고입니다."),
-    POST_STATUS_INVALID(HttpStatus.BAD_REQUEST, "JOB400", "잘못된 공고 상태입니다."),
-    JOB_FORBIDDEN(HttpStatus.FORBIDDEN, "JOB403", "공고에 대한 권한이 없습니다.");
+public enum JobBookmarkErrorStatus implements BaseCodeInterface {
+    JOB_BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK4001", "찜을 찾을 수 없습니다."),
+    JOB_BOOKMARK_ALREADY_EXISTS(HttpStatus.CONFLICT, "BOOKMARK4002", "이미 찜한 공고입니다.");
 
     private final HttpStatus httpStatus;
     private final boolean isSuccess = false;

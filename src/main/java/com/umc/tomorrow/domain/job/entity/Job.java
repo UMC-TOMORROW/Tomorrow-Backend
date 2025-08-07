@@ -1,10 +1,8 @@
 package com.umc.tomorrow.domain.job.entity;
 
-import com.umc.tomorrow.domain.job.enums.JobCategory;
+import com.umc.tomorrow.domain.job.enums.*;
 import com.umc.tomorrow.domain.application.entity.Application;
-import com.umc.tomorrow.domain.job.enums.PaymentType;
-import com.umc.tomorrow.domain.job.enums.RegistrantType;
-import com.umc.tomorrow.domain.job.enums.WorkPeriod;
+import com.umc.tomorrow.domain.jobbookmark.entity.JobBookmark;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
@@ -37,6 +35,9 @@ public class Job extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String title;
 
+    @Column(nullable = false)
+    private Boolean isActive;
+
     @Lob
     private String jobDescription;
 
@@ -47,15 +48,17 @@ public class Job extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private WorkPeriod workPeriod;
 
+    @Builder.Default
     @Column(columnDefinition = "BOOLEAN DEFAULT false", nullable = false) //false라면 workPeriod를 필수로 입력 받아야함
-    private Boolean isPeriodNegotiable;
+    private Boolean isPeriodNegotiable = false;
 
     private LocalTime workStart;
 
     private LocalTime workEnd;
 
+    @Builder.Default
     @Column(columnDefinition = "BOOLEAN DEFAULT false") //false라면 workStart, workEnd를 필수로 입력 받아야함
-    private Boolean isTimeNegotiable;
+    private Boolean isTimeNegotiable = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -70,7 +73,9 @@ public class Job extends BaseEntity {
     private String companyName;
 
     @Column(nullable = false)
-    private Boolean isActive; //공고 활성화 여부
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private PostStatus status = PostStatus.OPEN;
 
     @Column(nullable = false)
     private Integer recruitmentLimit;
@@ -94,8 +99,9 @@ public class Job extends BaseEntity {
     @Column(length = 100)
     private String location;//위도, 경도를 받아서 location에 저장
 
+    @Builder.Default
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
-    private Boolean alwaysHiring;
+    private Boolean alwaysHiring = false;
 
     //personalRegistration와 1:1관계
     @OneToOne(cascade = CascadeType.ALL, optional = true)
@@ -121,6 +127,16 @@ public class Job extends BaseEntity {
     private User user; // 등록자
     
     // 지원서와 1:N 관계
+    @Builder.Default
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Application> applications = new ArrayList<>();
+
+    // 찜과 1:N 관계
+    @Builder.Default
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobBookmark> jobBookmarks = new ArrayList<>();
+
+    public void updateStatus(PostStatus newStatus) {
+        this.status = newStatus;
+    }
 }

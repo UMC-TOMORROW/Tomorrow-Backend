@@ -1,8 +1,10 @@
 package com.umc.tomorrow.domain.job.converter;
 
 import com.umc.tomorrow.domain.job.dto.request.*;
+import com.umc.tomorrow.domain.job.dto.response.GetRecommendationResponse;
 import com.umc.tomorrow.domain.job.dto.response.JobDetailResponseDTO;
 import com.umc.tomorrow.domain.job.entity.*;
+import com.umc.tomorrow.domain.job.enums.PostStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,7 +25,7 @@ public class JobConverter {
                 .jobDescription(dto.getJobDescription())
                 .jobImageUrl(dto.getJobImageUrl())
                 .companyName(dto.getCompanyName())
-                .isActive(dto.getIsActive())
+                .status(PostStatus.OPEN)
                 .recruitmentLimit(dto.getRecruitmentLimit())
                 .registrantType(dto.getRegistrantType())
                 .deadline(dto.getDeadline())
@@ -86,7 +88,7 @@ public class JobConverter {
         return MyPostResponseDTO.builder()
                 .postId(job.getId())
                 .title(job.getTitle())
-                .status(job.getIsActive() ? "모집중" : "모집완료")
+                .status(job.getStatus().getDisplayValue())
                 .date(job.getDeadline().toLocalDate())
                 .location(job.getLocation())
                 .tags(List.of(
@@ -142,6 +144,23 @@ public class JobConverter {
                 .canLiftLightObjects(workEnvironment.isCanLiftLightObjects())
                 .canMoveActively(workEnvironment.isCanMoveActively())
                 .canCommunicate(workEnvironment.isCanCommunicate())
+                .build();
+    }
+
+    public GetRecommendationResponse toRecommendationResponse(Job job, long reviewCount) {
+        return GetRecommendationResponse.builder()
+                .id(job.getId())
+                .companyName(job.getCompanyName())
+                .title(job.getTitle())
+                .location(job.getLocation())
+                .salary(job.getSalary())
+                .paymentType(job.getPaymentType())
+                .isTimeNegotiable(job.getIsTimeNegotiable())
+                .workStart(job.getIsTimeNegotiable() ? null : job.getWorkStart())
+                .workEnd(job.getIsTimeNegotiable() ? null : job.getWorkEnd())
+                .isPeriodNegotiable(job.getIsPeriodNegotiable())
+                .workPeriod(job.getIsPeriodNegotiable() ? null : job.getWorkPeriod())
+                .reviewCount(reviewCount)
                 .build();
     }
 }

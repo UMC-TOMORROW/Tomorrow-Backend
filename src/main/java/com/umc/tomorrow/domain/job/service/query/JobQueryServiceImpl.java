@@ -3,7 +3,7 @@
  * 작성자: 정인도
  * 생성일: 2025-07-25
  */
-package com.umc.tomorrow.domain.job.controller.query;
+package com.umc.tomorrow.domain.job.service.query;
 
 import com.umc.tomorrow.domain.job.converter.JobConverter;
 import com.umc.tomorrow.domain.job.dto.request.MyPostResponseDTO;
@@ -38,8 +38,8 @@ public class JobQueryServiceImpl implements JobQueryService {
         } catch (IllegalArgumentException e) {
             throw new JobException(JobErrorStatus.POST_STATUS_INVALID);
         }
-        Boolean isActive = (postStatus == PostStatus.OPEN);
-        List<Job> jobs = jobRepository.findByUserIdAndIsActive(userId, isActive);
+
+        List<Job> jobs = jobRepository.findByUserIdAndStatus(userId, postStatus);
 
         return jobs.stream()
                 .map(jobConverter::toMyPostResponseDto)
