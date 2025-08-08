@@ -11,6 +11,7 @@ import com.umc.tomorrow.domain.career.entity.Career;
 import com.umc.tomorrow.domain.introduction.entity.Introduction;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.certificate.entity.Certificate;
+import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
