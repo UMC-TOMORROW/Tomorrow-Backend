@@ -10,7 +10,10 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum IntroductionStatus implements BaseCodeInterface {
     INTRODUCTION_NOT_FOUND(HttpStatus.NOT_FOUND, "INTRODUCTION404", "해당 자기소개 페이지를 찾을 수 없습니다."),
-    INTRODUCTION_FORBIDDEN(HttpStatus.FORBIDDEN, "INTRODUCTION403", "해당 자기소개 페이지에 대한 권한이 없습니다.");
+    INTRODUCTION_FORBIDDEN(HttpStatus.FORBIDDEN, "INTRODUCTION403", "해당 자기소개 페이지에 대한 권한이 없습니다."),
+    INTRODUCTION_ALREADY_EXISTS(HttpStatus.CONFLICT, "INTRODUCTION405", "이미 존재하는 자기소개입니다.");
+
+
 
     private final HttpStatus httpStatus;
     private final boolean isSuccess = false;
@@ -26,4 +29,5 @@ public enum IntroductionStatus implements BaseCodeInterface {
                 .message(message)
                 .build();
     }
+
 }

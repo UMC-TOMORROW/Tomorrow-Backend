@@ -8,10 +8,9 @@ import java.math.BigDecimal;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class PersonalRegistration extends BaseEntity {
 
     @Id

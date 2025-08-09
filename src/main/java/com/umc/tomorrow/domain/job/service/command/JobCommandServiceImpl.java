@@ -35,6 +35,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -84,10 +85,14 @@ public class JobCommandServiceImpl implements JobCommandService {
         requestDTO.setAddress(personalAddress);
 
         PersonalRegistration personalRegistration = jobConverter.toPersonal(requestDTO);
-        Job job = jobConverter.toJob(jobDTO);
-        job.setUser(user);
-        job.setPersonalRegistration(personalRegistration);
-        personalRegistration.setJob(job);
+        Job job = jobConverter.toJob(jobDTO).toBuilder()
+                .user(user)
+                .personalRegistration(personalRegistration)
+                .build();
+
+        personalRegistration = personalRegistration.toBuilder()
+                .job(job)
+                .build();
 
         Job savedJob = jobRepository.save(job);
         session.removeAttribute(JOB_SESSION_KEY);
@@ -112,8 +117,9 @@ public class JobCommandServiceImpl implements JobCommandService {
         String jobAddress = kakaoMapService.getAddressFromCoord(jobDTO.getLatitude(), jobDTO.getLongitude());
         jobDTO.setLocation(jobAddress);
 
-        Job job = jobConverter.toJob(jobDTO);
-        job.setUser(user);
+        Job job = jobConverter.toJob(jobDTO).toBuilder()
+                .user(user)
+                .build();
 
         Job savedJob = jobRepository.save(job);
         session.removeAttribute(JOB_SESSION_KEY);
@@ -138,8 +144,9 @@ public class JobCommandServiceImpl implements JobCommandService {
         user.setBusinessVerification(businessVerification);
         userRepository.save(user);
 
-        Job job = jobConverter.toJob(jobDTO);
-        job.setUser(user);
+        Job job = jobConverter.toJob(jobDTO).toBuilder()
+                .user(user)
+                .build();
 
         Job savedJob = jobRepository.save(job);
         session.removeAttribute(JOB_SESSION_KEY);

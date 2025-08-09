@@ -8,6 +8,7 @@
 package com.umc.tomorrow.domain.review.controller;
 
 import com.umc.tomorrow.domain.review.dto.ReviewRequestDTO;
+import com.umc.tomorrow.domain.review.dto.ReviewResponseDTO;
 import com.umc.tomorrow.domain.review.service.ReviewService;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.global.common.base.BaseResponse;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Tag(name = "review-controller", description = "후기 관련 API")
@@ -51,4 +53,22 @@ public class ReviewController {
                 BaseResponse.onSuccess(Map.of("saved", true))
         );
     }
+
+    /**
+     * 후기 조회(GET)
+     * @param user 인증된 사용자
+     * @param postId 일자리 ID
+     */
+    @Operation(summary = "후기 조회", description = "공고에 대한 후기를 조회합니다.")
+    @GetMapping("/{postId}")
+    public ResponseEntity<BaseResponse<List<ReviewResponseDTO>>> getReviewsByPostId(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal CustomOAuth2User user
+    ) {
+        Long userId = user.getUserDTO().getId();
+        List<ReviewResponseDTO> result = reviewService.getReviewsByPostId(postId, userId);
+        return ResponseEntity.ok(BaseResponse.onSuccess(result));
+    }
+
+
 }

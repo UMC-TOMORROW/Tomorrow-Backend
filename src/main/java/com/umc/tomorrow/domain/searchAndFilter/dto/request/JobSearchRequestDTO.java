@@ -20,8 +20,8 @@ public class JobSearchRequestDTO {
             requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String keyword;
 
-    @Schema(description = "업무 유형",
-            example = "SERVING",
+    @Schema(description = "업무 유형(배열형식)",
+            example = "[\"TUTORING\"]",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private List<JobCategory> jobCategories;
 
@@ -40,8 +40,8 @@ public class JobSearchRequestDTO {
             requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private LocalTime timeEnd;
 
-    @Schema(description = "근무 요일",
-            example = "mon",
+    @Schema(description = "근무 요일(배열형식)",
+            example = "[\"mon\"]",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private List<String> workDays;
 

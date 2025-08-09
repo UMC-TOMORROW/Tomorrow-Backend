@@ -22,10 +22,9 @@ import java.util.List;
                 @UniqueConstraint(name = "uk_job_work_days", columnNames = "work_days_id")
         })
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class Job extends BaseEntity {
 
     @Id
