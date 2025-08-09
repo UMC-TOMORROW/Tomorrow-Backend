@@ -37,7 +37,6 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/tomorrow:latest -f docker/Dockerfile .
           docker push ${{ secrets.DOCKER_USERNAME }}/tomorrow:latest
 
-      # 6. SSH to EC2 and deploy with Docker Compose (NO .env)
       - name: Deploy on EC2 with Docker Compose (no .env)
         uses: appleboy/ssh-action@v1
         with:
