@@ -6,6 +6,7 @@
 package com.umc.tomorrow.domain.job.service.query;
 
 import com.umc.tomorrow.domain.job.dto.request.MyPostResponseDTO;
+import com.umc.tomorrow.domain.job.dto.response.JobDetailResponseDTO;
 
 import java.util.List;
 
@@ -18,4 +19,5 @@ public interface JobQueryService {
      * @return 공고 응답 리스트
      */
     List<MyPostResponseDTO> getMyPosts(Long userId, String status);
+    JobDetailResponseDTO getJobDetail(Long jobId);
 }

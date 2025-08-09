@@ -16,7 +16,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @Schema(description = "커리어톡 게시글 생성 요청 DTO")
-public class CreateCareertalkRequestDto {
+public class CreateCareertalkRequestDTO {
 
     @Schema(
             description = "게시글 카테고리",

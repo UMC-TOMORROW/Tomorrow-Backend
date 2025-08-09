@@ -13,6 +13,10 @@ public class RestApiException extends RuntimeException {
         super(errorCode.getCode().getMessage());
         this.errorCode = errorCode;
     }
+    public RestApiException(BaseCodeInterface errorCode, String customMessage) {
+        super(customMessage);
+        this.errorCode = errorCode;
+    }
 
     //추상화 시킨 ErrorCode의 getCode()를 사용하여 ErrorCode를 반환
     public BaseCode getErrorCode() {

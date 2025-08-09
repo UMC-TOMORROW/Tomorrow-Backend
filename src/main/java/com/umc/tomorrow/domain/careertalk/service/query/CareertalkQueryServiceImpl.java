@@ -82,6 +82,7 @@ public class CareertalkQueryServiceImpl implements CareertalkQueryService {
                 .title(careertalk.getTitle())
                 .content(careertalk.getContent())
                 .isAuthor(isAuthor)
+                .chatroomId(careertalk.getChattingRoom().getId())
                 .createdAt(careertalk.getCreatedAt())
                 .build();
     }

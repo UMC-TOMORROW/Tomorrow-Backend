@@ -3,10 +3,11 @@ package com.umc.tomorrow.domain.job.service.command;
 import com.umc.tomorrow.domain.job.dto.request.BusinessRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.JobRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.PersonalRequestDTO;
+import com.umc.tomorrow.domain.job.dto.response.GetRecommendationListResponse;
 import com.umc.tomorrow.domain.job.dto.response.JobCreateResponseDTO;
 import com.umc.tomorrow.domain.job.dto.response.JobStepResponseDTO;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface JobCommandService {
 
@@ -16,7 +17,6 @@ public interface JobCommandService {
     //개인 등록 시 Personal 정보 저장 + Job 생성
     JobCreateResponseDTO savePersonalRegistration(Long userId, PersonalRequestDTO requestDTO, HttpSession session);
 
-
     //사업자 등록이 이미 되어있는 경우 바로 Job 생성
     JobCreateResponseDTO createJobWithExistingBusiness(Long userId, HttpSession session);
     
@@ -25,4 +25,10 @@ public interface JobCommandService {
 
     //사업자 등록
     void saveBusinessVerification(Long userId, BusinessRequestDTO requestDTO);
+
+    GetRecommendationListResponse getTomorrowRecommendations(Long userId, Long cursor, int size);
+
+    // PATCH 공고 모집완료/모집전 처리하기
+    @Transactional
+    void updatePostStatus(Long userId, Long postId, String status);
 }

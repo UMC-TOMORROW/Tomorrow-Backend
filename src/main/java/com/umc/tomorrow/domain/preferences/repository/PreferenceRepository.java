@@ -16,4 +16,6 @@ public interface PreferenceRepository extends JpaRepository<Preference, Long> {
      * 사용자별 Preference 조회
      */
     Optional<Preference> findByUser(User user);
+
+    Optional<Preference> findByUserId(Long userId);
 } 

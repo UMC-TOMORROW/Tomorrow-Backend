@@ -3,6 +3,7 @@ package com.umc.tomorrow.domain.searchAndFilter.repository;
 import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.job.entity.WorkDays;
 import com.umc.tomorrow.domain.searchAndFilter.dto.request.JobSearchRequestDTO;
+import com.umc.tomorrow.domain.searchAndFilter.dto.response.JobSearchResponseDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -97,4 +98,5 @@ public class JobSearchRepositoryImpl implements JobSearchRepository {
 
         return result;
     }
+
 }

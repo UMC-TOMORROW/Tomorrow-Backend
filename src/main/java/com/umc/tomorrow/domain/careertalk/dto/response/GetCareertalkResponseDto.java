@@ -31,6 +31,9 @@ public class GetCareertalkResponseDto {
     @Schema(description = "게시글 작성자인지 여부", example = "true")
     private boolean isAuthor;
 
+    @Schema(description = "커리어톡 게시글 채팅방 ID", example = "1")
+    private Long chatroomId;
+
     @Schema(description = "작성일시", example = "2025-07-08T09:00:00")
     private LocalDateTime createdAt;
 

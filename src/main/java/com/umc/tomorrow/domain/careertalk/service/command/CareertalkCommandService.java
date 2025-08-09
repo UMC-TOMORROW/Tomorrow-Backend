@@ -6,14 +6,14 @@
  */
 package com.umc.tomorrow.domain.careertalk.service.command;
 
-import com.umc.tomorrow.domain.careertalk.dto.request.CreateCareertalkRequestDto;
-import com.umc.tomorrow.domain.careertalk.dto.request.UpdateCareertalkRequestDto;
+import com.umc.tomorrow.domain.careertalk.dto.request.CreateCareertalkRequestDTO;
+import com.umc.tomorrow.domain.careertalk.dto.request.UpdateCareertalkRequestDTO;
 import com.umc.tomorrow.domain.careertalk.dto.response.CareertalkResponseDto;
 
 public interface CareertalkCommandService {
 
-    CareertalkResponseDto createCareertalk(Long userId, CreateCareertalkRequestDto createCareertalkRequestDto);
-    CareertalkResponseDto updateCareertalk(Long userId, Long careertalkId, UpdateCareertalkRequestDto updateCareertalkRequestDto);
+    CareertalkResponseDto createCareertalk(Long userId, CreateCareertalkRequestDTO createCareertalkRequestDto);
+    CareertalkResponseDto updateCareertalk(Long userId, Long careertalkId, UpdateCareertalkRequestDTO updateCareertalkRequestDto);
     CareertalkResponseDto deleteCareertalk(Long userId, Long careertalkId);
 
 }

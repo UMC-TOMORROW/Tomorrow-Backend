@@ -6,6 +6,7 @@
  */
 package com.umc.tomorrow.domain.resume.entity;
 
+import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Experience {
+public class Experience extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
