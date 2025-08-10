@@ -82,6 +82,5 @@ public class ApplicationDetailsResponseDTO {
     public static class CertificationDTO {
         private String certificationName;
         private String fileUrl;
-        private String filename;
     }
 }

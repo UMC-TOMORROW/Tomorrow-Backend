@@ -138,7 +138,6 @@ public class ApplicationConverter {
         return ApplicationDetailsResponseDTO.CertificationDTO.builder()
                 .certificationName(certificate.getName())
                 .fileUrl(certificate.getFileUrl())
-                .filename(certificate.getName())
                 .build();
     }
 
