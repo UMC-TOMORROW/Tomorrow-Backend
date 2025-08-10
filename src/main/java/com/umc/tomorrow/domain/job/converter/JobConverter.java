@@ -58,8 +58,7 @@ public class JobConverter {
         return WorkEnvironment.builder()
                 .canWorkSitting(dto.getCanWorkSitting())
                 .canWorkStanding(dto.getCanWorkStanding())
-                .canLiftHeavyObjects(dto.getCanLiftHeavyObjects())
-                .canLiftLightObjects(dto.getCanLiftLightObjects())
+                .canCarryObjects(dto.getCanCarryObjects())
                 .canMoveActively(dto.getCanMoveActively())
                 .canCommunicate(dto.getCanCommunicate())
                 .build();
@@ -141,8 +140,7 @@ public class JobConverter {
         return WorkEnvironmentRequestDTO.builder()
                 .canWorkSitting(workEnvironment.isCanWorkSitting())
                 .canWorkStanding(workEnvironment.isCanWorkStanding())
-                .canLiftHeavyObjects(workEnvironment.isCanLiftHeavyObjects())
-                .canLiftLightObjects(workEnvironment.isCanLiftLightObjects())
+                .canCarryObjects(workEnvironment.isCanCarryObjects())
                 .canMoveActively(workEnvironment.isCanMoveActively())
                 .canCommunicate(workEnvironment.isCanCommunicate())
                 .build();

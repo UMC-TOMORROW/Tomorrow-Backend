@@ -216,8 +216,7 @@ public class JobCommandServiceImpl implements JobCommandService {
         int score = 0;
 
         if (preferences.contains(PreferenceType.HUMAN) && env.isCanCommunicate()) score++;
-        if (preferences.contains(PreferenceType.HEAVY_DELIVERY) && env.isCanLiftHeavyObjects()) score++;
-        if (preferences.contains(PreferenceType.LIGHT_DELIVERY) && env.isCanLiftLightObjects()) score++;
+        if (preferences.contains(PreferenceType.DELIVERY) && env.isCanCarryObjects()) score++;
         if (preferences.contains(PreferenceType.PHYSICAL) && env.isCanMoveActively()) score++;
         if (preferences.contains(PreferenceType.SIT) && env.isCanWorkSitting()) score++;
         if (preferences.contains(PreferenceType.STAND) && env.isCanWorkStanding()) score++;
