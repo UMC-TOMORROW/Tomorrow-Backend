@@ -65,7 +65,4 @@ public class Application extends BaseEntity {
         this.setUpdatedAt(LocalDateTime.now());
     }
 
-    protected void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 } 

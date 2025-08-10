@@ -106,12 +106,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         }
 
 
-        // 쿠키 직접 문자열로 세팅 (SameSite=None, Secure=true)
-        String accessCookie = String.format("Authorization=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
+        // 쿠키 직접 문자열로 세팅 (로컬 테스트용 - Secure=false)
+        String accessCookie = String.format("Authorization=%s; Max-Age=%d; Path=/; HttpOnly; Secure=false; SameSite=None",
                 accessToken, (int) accessTokenExpiredSeconds);
         response.addHeader("Set-Cookie", accessCookie);
 
-        String refreshCookie = String.format("RefreshToken=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
+        String refreshCookie = String.format("RefreshToken=%s; Max-Age=%d; Path=/; HttpOnly; Secure=false; SameSite=None",
                 refreshToken, (int) refreshTokenExpiredSeconds);
         response.addHeader("Set-Cookie", refreshCookie);
 
@@ -120,7 +120,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addHeader("RefreshToken", refreshToken);
 
          // 프론트로 리다이렉트
-        // response.sendRedirect("http://localhost:5173/onboarding");
+        response.sendRedirect("http://localhost:5173/onboarding");
 
 
 //        response.addCookie(createCookie("Authorization", accessToken, (int)accessTokenExpiredSeconds));
