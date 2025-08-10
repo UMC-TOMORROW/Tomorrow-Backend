@@ -13,6 +13,7 @@ import com.umc.tomorrow.domain.member.dto.response.DeactivateUserResponse;
 import com.umc.tomorrow.domain.member.dto.response.RecoverUserResponse;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.enums.UserStatus;
+import com.umc.tomorrow.domain.member.exception.MemberException;
 import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.domain.member.dto.UserConverter;
@@ -46,7 +47,7 @@ public class MemberService {
     @Transactional
     public UserDTO updateUser(UserDTO currentUser, UserDTO userDTO) {
         Long userId = currentUser.getId();
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new MemberException(MemberStatus.MEMBER_NOT_FOUND));
         UserConverter.updateEntity(user, userDTO);
         userRepository.save(user);
         return UserConverter.toDTO(user);
@@ -66,7 +67,7 @@ public class MemberService {
     @Transactional
     public DeactivateUserResponse deactivateUser(Long userId, DeactivateUserRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new MemberException(MemberStatus.MEMBER_NOT_FOUND));
 
         if (user.getStatus() == UserStatus.DELETED) {
             throw new IllegalStateException("이미 탈퇴한 사용자입니다.");
@@ -115,7 +116,7 @@ public class MemberService {
     @Transactional
     public void updateResumeIdIfNull(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new MemberException(MemberStatus.MEMBER_NOT_FOUND));
         
         if (user.getResumeId() == null) {
             // 사용자의 Resume을 찾아서 resumeId 업데이트
