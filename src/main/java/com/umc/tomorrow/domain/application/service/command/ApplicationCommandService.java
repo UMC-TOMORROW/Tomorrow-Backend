@@ -143,17 +143,19 @@ public class ApplicationCommandService {
      * 개별 지원자 이력서 조회
      */
     public ApplicationDetailsResponseDTO getApplicantResume(Long postId, Long applicantId) {
-        // 1. 공고 ID와 지원자 ID로 지원서(Application)를 조회
-        Application application = applicationRepository.findByJobIdAndUserId(postId, applicantId)
+        Application application = applicationRepository.findByJobIdAndUserIdWithResume(postId, applicantId)
                 .orElseThrow(() -> new RestApiException(ApplicationErrorStatus.APPLICATION_NOT_FOUND));
-
-        // 2. 연관된 엔티티들 조회
         User user = application.getUser();
-
-        // Application 엔티티에 추가된 `resume` 필드를 사용하여 조회
-        Resume resume = application.getResume();
-
-        // 3. Converter를 사용하여 엔티티를 DTO로 변환
+        // Resume 기본 정보만 가져오기 (Introduction은 별도 로드)
+        Resume resume = resumeRepository.findFirstByUserIdOrderByCreatedAtDesc(user.getId())
+                .orElse(null);
+        
+        // Resume이 있고 Introduction이 없다면 Introduction 로드
+        if (resume != null && resume.getIntroduction() == null) {
+            // Introduction을 별도로 로드하는 로직이 필요할 수 있음
+            // 현재는 기본 Resume 정보만 사용
+        }
+        
         return ApplicationConverter.toApplicantResumeResponseDTO(
                 application,
                 user,

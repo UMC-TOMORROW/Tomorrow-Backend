@@ -13,6 +13,7 @@ import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsRespon
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
 import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
+import com.umc.tomorrow.domain.career.entity.Career;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.certificate.entity.Certificate;
 import com.umc.tomorrow.domain.resume.entity.Experience;
@@ -80,19 +81,31 @@ public class ApplicationConverter {
             List<ApplicationDetailsResponseDTO.ExperienceDTO> experienceDTOS = Optional.ofNullable(resume.getExperiences())
                     .orElse(Collections.emptyList())
                     .stream()
-                    .map(ApplicationConverter::toExperienceDTO)
+                    .map(experience -> ApplicationConverter.toExperienceDTO(experience))
+                    .collect(Collectors.toList());
+
+            List<ApplicationDetailsResponseDTO.CareerDTO> careerDTOS = Optional.ofNullable(resume.getCareer())
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(career -> ApplicationConverter.toCareerDTO(career))
                     .collect(Collectors.toList());
 
             List<ApplicationDetailsResponseDTO.CertificationDTO> certificationDTOS = Optional.ofNullable(resume.getCertificates())
                     .orElse(Collections.emptyList())
                     .stream()
-                    .map(ApplicationConverter::toCertificationDTO)
+                    .map(certificate -> ApplicationConverter.toCertificationDTO(certificate))
                     .collect(Collectors.toList());
 
+            // Introduction이 null인 경우 빈 문자열로 처리
+            String resumeContent = null;
+            if (resume.getIntroduction() != null) {
+                resumeContent = resume.getIntroduction().getContent();
+            }
+
             resumeInfo = ApplicationDetailsResponseDTO.ResumeInfoDTO.builder()
-                    //.resumeContent(resume.getIntroduction())// Resume 엔티티의 introduction 필드사용
-                    .resumeContent(resume.getIntroduction().getContent())
+                    .resumeContent(resumeContent)
                     .experiences(experienceDTOS)
+                    .careers(careerDTOS)
                     .certifications(certificationDTOS)
                     .build();
         }
@@ -123,6 +136,20 @@ public class ApplicationConverter {
     // Certificate 엔티티를 CertificationDTO로 변환
     private static ApplicationDetailsResponseDTO.CertificationDTO toCertificationDTO(Certificate certificate) {
         return ApplicationDetailsResponseDTO.CertificationDTO.builder()
+                .certificationName(certificate.getName())
+                .fileUrl(certificate.getFileUrl())
+                .filename(certificate.getName())
+                .build();
+    }
+
+    // Career 엔티티를 CareerDTO로 변환
+    private static ApplicationDetailsResponseDTO.CareerDTO toCareerDTO(com.umc.tomorrow.domain.career.entity.Career career) {
+        return ApplicationDetailsResponseDTO.CareerDTO.builder()
+                .id(career.getId())
+                .company(career.getCompany())
+                .position(career.getWorkedPeriod().getLabel()) // WorkPeriodType의 라벨 사용
+                .duration(career.getWorkedYear() + "년") // workedYear를 문자열로 변환
+                .description(career.getDescription())
                 .build();
     }
 

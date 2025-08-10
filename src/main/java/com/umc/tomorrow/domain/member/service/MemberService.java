@@ -18,6 +18,7 @@ import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.domain.member.dto.UserConverter;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
+import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +29,12 @@ import java.time.LocalDateTime;
 public class MemberService {
 
     private final UserRepository userRepository;
+    private final ResumeRepository resumeRepository;
 
     @Autowired
-    public MemberService(UserRepository userRepository) {
+    public MemberService(UserRepository userRepository, ResumeRepository resumeRepository) {
         this.userRepository = userRepository;
+        this.resumeRepository = resumeRepository;
     }
 
     /**
@@ -106,5 +109,22 @@ public class MemberService {
                 .build();
     }
 
+    /**
+     * 사용자의 resumeId가 null인 경우 Resume 엔티티에서 찾아서 업데이트
+     */
+    @Transactional
+    public void updateResumeIdIfNull(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        
+        if (user.getResumeId() == null) {
+            // 사용자의 Resume을 찾아서 resumeId 업데이트
+            resumeRepository.findFirstByUserIdOrderByCreatedAtDesc(userId)
+                    .ifPresent(resume -> {
+                        user.setResumeId(resume.getId());
+                        userRepository.save(user);
+                    });
+        }
+    }
 
 } 
