@@ -8,8 +8,7 @@ import com.umc.tomorrow.domain.member.enums.Provider;
 import com.umc.tomorrow.domain.member.enums.UserStatus;
 import com.umc.tomorrow.domain.preferences.entity.Preference;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -22,6 +21,9 @@ import java.util.List;
 @EntityListeners(org.springframework.data.jpa.domain.support.AuditingEntityListener.class) // auditing 활성화
 @Getter
 @Setter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@Builder
 public class User {
 
     @Id
@@ -88,5 +90,15 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Preference preference;
+
+    //JUnit테스트용
+    public User(String name, String email, Provider provider, String providerUserId, String username) {
+        this.name = name;
+        this.email = email;
+        this.provider = provider;
+        this.providerUserId = providerUserId;
+        this.username = username;
+    }
+
 
 }
