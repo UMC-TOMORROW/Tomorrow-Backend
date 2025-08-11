@@ -8,8 +8,8 @@
 package com.umc.tomorrow.domain.careertalk.controller;
 
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
-import com.umc.tomorrow.domain.careertalk.dto.request.CreateCareertalkRequestDto;
-import com.umc.tomorrow.domain.careertalk.dto.request.UpdateCareertalkRequestDto;
+import com.umc.tomorrow.domain.careertalk.dto.request.CreateCareertalkRequestDTO;
+import com.umc.tomorrow.domain.careertalk.dto.request.UpdateCareertalkRequestDTO;
 import com.umc.tomorrow.domain.careertalk.dto.response.CareertalkResponseDto;
 import com.umc.tomorrow.domain.careertalk.dto.response.GetCareertalkListResponseDto;
 import com.umc.tomorrow.domain.careertalk.dto.response.GetCareertalkResponseDto;
@@ -58,7 +58,7 @@ public class CareertalkController {
     @ApiResponse(responseCode = "201", description = "게시글 생성 성공")
     public ResponseEntity<BaseResponse<CareertalkResponseDto>> createCareertalk(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-            @Valid @RequestBody CreateCareertalkRequestDto requestDto
+            @Valid @RequestBody CreateCareertalkRequestDTO requestDto
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponse.onSuccessCreate(careertalkCommandService.createCareertalk(customOAuth2User.getUserDTO().getId(), requestDto)));
@@ -110,7 +110,7 @@ public class CareertalkController {
     public ResponseEntity<BaseResponse<CareertalkResponseDto>> updateCareertalk(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @PathVariable Long careertalkId,
-            @Valid @RequestBody UpdateCareertalkRequestDto requestDto
+            @Valid @RequestBody UpdateCareertalkRequestDTO requestDto
     ){
         return ResponseEntity.ok(BaseResponse.onSuccess(careertalkCommandService.updateCareertalk(customOAuth2User.getUserDTO().getId(),careertalkId,requestDto)));
     }
