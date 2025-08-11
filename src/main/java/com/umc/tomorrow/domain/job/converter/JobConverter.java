@@ -1,7 +1,10 @@
 package com.umc.tomorrow.domain.job.converter;
 
 import com.umc.tomorrow.domain.job.dto.request.*;
+import com.umc.tomorrow.domain.job.dto.response.GetRecommendationResponse;
+import com.umc.tomorrow.domain.job.dto.response.JobDetailResponseDTO;
 import com.umc.tomorrow.domain.job.entity.*;
+import com.umc.tomorrow.domain.job.enums.PostStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,6 +25,7 @@ public class JobConverter {
                 .jobDescription(dto.getJobDescription())
                 .jobImageUrl(dto.getJobImageUrl())
                 .companyName(dto.getCompanyName())
+                .status(PostStatus.OPEN)
                 .isActive(dto.getIsActive())
                 .recruitmentLimit(dto.getRecruitmentLimit())
                 .registrantType(dto.getRegistrantType())
@@ -54,8 +58,7 @@ public class JobConverter {
         return WorkEnvironment.builder()
                 .canWorkSitting(dto.getCanWorkSitting())
                 .canWorkStanding(dto.getCanWorkStanding())
-                .canLiftHeavyObjects(dto.getCanLiftHeavyObjects())
-                .canLiftLightObjects(dto.getCanLiftLightObjects())
+                .canCarryObjects(dto.getCanCarryObjects())
                 .canMoveActively(dto.getCanMoveActively())
                 .canCommunicate(dto.getCanCommunicate())
                 .build();
@@ -85,13 +88,78 @@ public class JobConverter {
         return MyPostResponseDTO.builder()
                 .postId(job.getId())
                 .title(job.getTitle())
-                .status(job.getIsActive() ? "모집중" : "모집완료")
+                .status(job.getStatus().getDisplayValue())
                 .date(job.getDeadline().toLocalDate())
                 .location(job.getLocation())
                 .tags(List.of(
                         job.getJobCategory().getDescription()
                         // 추후 WorkEnvironment 등에서 태그 추가 가능
                 ))
+                .build();
+    }
+
+    public JobDetailResponseDTO toJobDetailResponseDTO(Job job) {
+        return JobDetailResponseDTO.builder()
+                .title(job.getTitle())
+                .jobDescription(job.getJobDescription())
+                .workPeriod(job.getWorkPeriod())
+                .isPeriodNegotiable(job.getIsPeriodNegotiable())
+                .workStart(job.getWorkStart())
+                .workEnd(job.getWorkEnd())
+                .isTimeNegotiable(job.getIsTimeNegotiable())
+                .paymentType(job.getPaymentType())
+                .jobCategory(job.getJobCategory())
+                .salary(job.getSalary())
+                .jobImageUrl(job.getJobImageUrl())
+                .companyName(job.getUser().getName())
+                .isActive(job.getIsActive())
+                .recruitmentLimit(job.getRecruitmentLimit())
+                .deadline(job.getDeadline())
+                .preferredQualifications(job.getPreferredQualifications())
+                .location(job.getLocation())
+                .alwaysHiring(job.getAlwaysHiring())
+                .workDays(toWorkDaysRequestDTO(job.getWorkDays()))
+                .workEnvironment(toWorkEnvironmentRequestDTO(job.getWorkEnvironment()))
+                .build();
+    }
+
+    public WorkDaysRequestDTO toWorkDaysRequestDTO(WorkDays workDays) {
+        return WorkDaysRequestDTO.builder()
+                .MON(workDays.getMON())
+                .TUE(workDays.getTUE())
+                .WED(workDays.getWED())
+                .THU(workDays.getTHU())
+                .FRI(workDays.getFRI())
+                .SAT(workDays.getSAT())
+                .SUN(workDays.getSUN())
+                .isDayNegotiable(workDays.getIsDayNegotiable())
+                .build();
+    }
+
+    public WorkEnvironmentRequestDTO toWorkEnvironmentRequestDTO(WorkEnvironment workEnvironment) {
+        return WorkEnvironmentRequestDTO.builder()
+                .canWorkSitting(workEnvironment.isCanWorkSitting())
+                .canWorkStanding(workEnvironment.isCanWorkStanding())
+                .canCarryObjects(workEnvironment.isCanCarryObjects())
+                .canMoveActively(workEnvironment.isCanMoveActively())
+                .canCommunicate(workEnvironment.isCanCommunicate())
+                .build();
+    }
+
+    public GetRecommendationResponse toRecommendationResponse(Job job, long reviewCount) {
+        return GetRecommendationResponse.builder()
+                .id(job.getId())
+                .companyName(job.getCompanyName())
+                .title(job.getTitle())
+                .location(job.getLocation())
+                .salary(job.getSalary())
+                .paymentType(job.getPaymentType())
+                .isTimeNegotiable(job.getIsTimeNegotiable())
+                .workStart(job.getIsTimeNegotiable() ? null : job.getWorkStart())
+                .workEnd(job.getIsTimeNegotiable() ? null : job.getWorkEnd())
+                .isPeriodNegotiable(job.getIsPeriodNegotiable())
+                .workPeriod(job.getIsPeriodNegotiable() ? null : job.getWorkPeriod())
+                .reviewCount(reviewCount)
                 .build();
     }
 }

@@ -20,4 +20,7 @@ public class CertificateResponse {
     @Schema(description = "자격증 파일 주소", example = "https://chatgpt.com/c/6886e83b-7298-8321-a5d0-26ed42114e4a")
     private String fileUrl;
 
+    @Schema(description = "자격증 파일명", example = "Group46.png")
+    private String filename;
+
 }

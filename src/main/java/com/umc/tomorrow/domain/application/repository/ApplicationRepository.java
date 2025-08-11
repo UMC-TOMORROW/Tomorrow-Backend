@@ -37,6 +37,14 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     Optional<Application> findByJobIdAndUserId(@Param("jobId") Long jobId, @Param("userId") Long userId);
     
     /**
+     * 특정 공고에 특정 사용자가 지원했는지 확인 (Resume 포함)
+     */
+    @Query("SELECT a FROM Application a " +
+           "LEFT JOIN FETCH a.resume " +
+           "WHERE a.job.id = :jobId AND a.user.id = :userId")
+    Optional<Application> findByJobIdAndUserIdWithResume(@Param("jobId") Long jobId, @Param("userId") Long userId);
+    
+    /**
      * 특정 공고의 특정 상태 지원서 목록 조회
      */
     @Query("SELECT a FROM Application a WHERE a.job.id = :jobId AND a.status = :status")

@@ -30,12 +30,13 @@ public class Preference {
     /**
      * 희망 조건을 소유한 사용자
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
     /**
      * 희망 조건 목록 (EnumSet)
      */
+    @Builder.Default
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private Set<PreferenceType> preferences = new HashSet<>();

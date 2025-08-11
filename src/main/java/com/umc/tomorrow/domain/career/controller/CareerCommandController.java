@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Career", description = "경력 관련 API")
 @RestController
 @RequestMapping("/api/v1/resumes/{resumeId}/experiences")
@@ -70,22 +72,20 @@ public class CareerCommandController {
     }
 
     /**
-     * 이력서 경력 조회(GET)
+     * 이력서 경력 목록 조회(GET)
      * @param resumeId 이력서 아이디
-     * @param careerId 경력 아이디
      * @param user 인증된 사용자
      * @return 성공 응답
      */
-    @GetMapping("/{careerId}")
-    @Operation(summary = "이력서 경력 조회", description = "경력 정보를 조회하는 API입니다.")
-    public ResponseEntity<BaseResponse<CareerGetResponseDTO>> getCareer(
+    @GetMapping
+    @Operation(summary = "이력서 경력 목록 조회", description = "경력 목록을 조회하는 API입니다.")
+    public ResponseEntity<BaseResponse<List<CareerGetResponseDTO>>> getCareerList(
             @PathVariable Long resumeId,
-            @PathVariable Long careerId,
             @AuthenticationPrincipal CustomOAuth2User user) {
 
         Long userId = user.getUserDTO().getId();
 
-        CareerGetResponseDTO response = careerQueryService.getCareer(userId, resumeId, careerId);
+        List<CareerGetResponseDTO> response = careerQueryService.getCareerList(userId, resumeId);
 
         return ResponseEntity.ok(BaseResponse.onSuccess(response));
     }

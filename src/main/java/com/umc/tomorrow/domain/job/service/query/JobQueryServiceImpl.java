@@ -7,10 +7,14 @@ package com.umc.tomorrow.domain.job.service.query;
 
 import com.umc.tomorrow.domain.job.converter.JobConverter;
 import com.umc.tomorrow.domain.job.dto.request.MyPostResponseDTO;
+import com.umc.tomorrow.domain.job.dto.response.JobDetailResponseDTO;
 import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.job.enums.PostStatus;
 import com.umc.tomorrow.domain.job.exception.JobException;
 import com.umc.tomorrow.domain.job.repository.JobRepository;
+import com.umc.tomorrow.domain.job.service.query.JobQueryService;
+import com.umc.tomorrow.global.common.exception.RestApiException;
+import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
@@ -34,11 +38,20 @@ public class JobQueryServiceImpl implements JobQueryService {
         } catch (IllegalArgumentException e) {
             throw new JobException(JobErrorStatus.POST_STATUS_INVALID);
         }
-        Boolean isActive = (postStatus == PostStatus.OPEN);
-        List<Job> jobs = jobRepository.findByUserIdAndIsActive(userId, isActive);
+
+        List<Job> jobs = jobRepository.findByUserIdAndStatus(userId, postStatus);
 
         return jobs.stream()
                 .map(jobConverter::toMyPostResponseDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public JobDetailResponseDTO getJobDetail(Long jobId) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
+
+        return jobConverter.toJobDetailResponseDTO(job);
+    }
+
 }

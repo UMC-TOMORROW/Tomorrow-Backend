@@ -3,9 +3,11 @@ version: '3.8'
 services:
   app:
     container_name: tomorrow-backend
-    image: eun07213/tomorrow:latest   # Docker Hub에서 pull
+    image: eun07213/tomorrow:latest
     depends_on:
       mysql8-local:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     ports:
       - "8080:8080"
@@ -24,7 +26,24 @@ services:
       MAILNAME: ${MAILNAME}
       MAILPASSWORD: ${MAILPASSWORD}
       KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY}
+      # Redis 연결 정보 추가
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     restart: always
+  # redis 추가
+  redis:
+    image: redis:6-alpine
+    container_name: tomorrow-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mysql8-local:
     image: mysql:8.0
@@ -38,6 +57,7 @@ services:
       TZ: Asia/Seoul
     ports:
       - "3306:3306"
+    command: --sql-mode="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION"
     volumes:
       - tomorrow-local-data:/var/lib/mysql
     healthcheck:
@@ -46,5 +66,38 @@ services:
       timeout: 5s
       retries: 5
 
+  ngrinder-controller:
+    image: ngrinder/controller:3.5.9
+    container_name: ngrinder-controller
+    profiles: [ "perf" ]
+    ports:
+      - "8081:80"
+      - "16001:16001"
+      - "12000-12004:12000-12004"
+    volumes:
+      - ngrinder-controller-data:/opt/ngrinder-controller
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+
+  ngrinder-agent:
+    image: ngrinder/agent:latest
+    container_name: ngrinder-agent
+    profiles: [ "perf" ]
+    command: [ "ngrinder-controller:80" ]
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 131072
+        hard: 131072
+
 volumes:
+  redis-data:
+    driver: local
+  tomorrow-local-data: # mysql-local-data 볼륨 이름 변경
+    driver: local
   tomorrow-local-data:
+  ngrinder-controller-data:
+
