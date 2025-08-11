@@ -79,6 +79,9 @@ public class ReviewServiceImpl implements ReviewService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
+        jobRepository.findById(postId)
+                .orElseThrow(() -> new JobException(JobErrorStatus.JOB_NOT_FOUND));
+
         List<Review> reviews = reviewRepository.findByJobId(postId);
 
         return reviews.stream()

@@ -1,6 +1,9 @@
 package com.umc.tomorrow.domain.review.service;
 
 import com.umc.tomorrow.domain.job.entity.Job;
+import com.umc.tomorrow.domain.job.exception.JobException;
+import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
+import com.umc.tomorrow.domain.job.repository.JobRepository;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.domain.review.dto.ReviewResponseDTO;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +35,9 @@ class ReviewServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private JobRepository jobRepository;
 
     @Test
     @DisplayName("후기 조회 성공: 해당 게시물의 리뷰 리스트 반환")
@@ -61,6 +68,7 @@ class ReviewServiceImplTest {
                 .build();
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(jobRepository.findById(postId)).thenReturn(Optional.of(mockJob));
         when(reviewRepository.findByJobId(postId)).thenReturn(List.of(review1, review2));
 
         // when
@@ -85,4 +93,27 @@ class ReviewServiceImplTest {
         assertThrows(IllegalArgumentException.class,
                 () -> reviewService.getReviewsByPostId(10L, 1L));
     }
+
+    @Test
+    @DisplayName("후기 조회 실패: 존재하지 않는 Job")
+    void getReviewsByPostId_Job없음_실패() {
+        // given
+        Long userId = 1L;
+        Long postId = 10L;
+        User mockUser = User.builder()
+                .id(userId)
+                .username("testUser")
+                .build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(jobRepository.findById(postId)).thenReturn(Optional.empty());
+
+        // when & then
+        JobException exception = assertThrows(JobException.class,
+                () -> reviewService.getReviewsByPostId(postId, userId));
+
+        assertEquals(JobErrorStatus.JOB_NOT_FOUND.getCode().getCode(), exception.getErrorCode().getCode());
+    }
+
+
 }
