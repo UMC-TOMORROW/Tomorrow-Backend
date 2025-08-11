@@ -8,8 +8,12 @@ import com.umc.tomorrow.domain.member.enums.Provider;
 import com.umc.tomorrow.domain.member.enums.UserStatus;
 import com.umc.tomorrow.domain.preferences.entity.Preference;
 import com.umc.tomorrow.domain.resume.entity.Resume;
+import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,10 +24,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "user")
-@EntityListeners(org.springframework.data.jpa.domain.support.AuditingEntityListener.class) // auditing 활성화
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Setter
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,14 +66,6 @@ public class User {
     @Column(length = 255, nullable = false)
     private String providerUserId;
 
-    @CreatedDate
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
     private Long resumeId;
 
     @Column(length = 512)
@@ -89,7 +87,5 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Preference preference;
-
-    // Resume 관계 매핑 제거 (resumeId 필드만 사용)
 
 }
