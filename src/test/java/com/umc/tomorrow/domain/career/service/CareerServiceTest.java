@@ -1,4 +1,4 @@
-package com.umc.tomorrow.domain.introduction.service.command;
+package com.umc.tomorrow.domain.career.service;
 
 import com.umc.tomorrow.domain.career.dto.request.CareerCreateRequestDTO;
 import com.umc.tomorrow.domain.career.dto.request.CareerUpdateRequestDTO;

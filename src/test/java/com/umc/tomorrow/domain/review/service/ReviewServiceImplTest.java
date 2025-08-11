@@ -1,5 +1,6 @@
 package com.umc.tomorrow.domain.review.service;
 
+import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.domain.review.dto.ReviewResponseDTO;
@@ -11,8 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,16 +44,20 @@ class ReviewServiceImplTest {
                 .username("testUser")
                 .build();
 
+        Job mockJob = Job.builder().id(postId).build();
+
         Review review1 = Review.builder()
                 .stars(5)
                 .review("좋아요")
-                .createdAt(LocalDateTime.now())
+                .user(mockUser)
+                .job(mockJob)
                 .build();
 
         Review review2 = Review.builder()
                 .stars(4)
                 .review("괜찮아요")
-                .createdAt(LocalDateTime.now())
+                .user(mockUser)
+                .job(mockJob)
                 .build();
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
