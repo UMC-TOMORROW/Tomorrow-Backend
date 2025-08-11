@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,7 +42,7 @@ public class S3Controller {
             @RequestParam("dir") String dirName
     ) {
         String imageUrl = s3Uploader.upload(file, dirName);
-        return ResponseEntity.ok(BaseResponse.onSuccessCreate(imageUrl));
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.onSuccessCreate(imageUrl));
     }
 
     /**
@@ -51,7 +52,7 @@ public class S3Controller {
      */
     @DeleteMapping("/delete")
     @Operation(summary = "파일 삭제", description = "파일 url을 받아 삭제합니다.")
-    @ApiResponse(responseCode = "201", description = "파일 업로드 성공")
+    @ApiResponse(responseCode = "200", description = "파일 삭제 성공")
     public ResponseEntity<BaseResponse<String>> delete(@RequestParam("fileUrl") String fileUrl) {
         s3Uploader.delete(fileUrl);
         return ResponseEntity.ok(BaseResponse.onSuccess(fileUrl));
