@@ -21,11 +21,9 @@ public class WorkEnvironment extends BaseEntity {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     private boolean canWorkStanding;
 
+    //물건운반으로 통일
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
-    private boolean canLiftHeavyObjects;
-
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
-    private boolean canLiftLightObjects;
+    private boolean canCarryObjects;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     private boolean canMoveActively;
