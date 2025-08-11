@@ -24,29 +24,29 @@
     stompClient = Stomp.over(socket);
     stompClient.debug = null;
 
-    const token = localStorage.getItem("accessToken"); // ✅ JWT 토큰 꺼내오기
+    const token = localStorage.getItem("accessToken"); // JWT 토큰 꺼내오기
 
     stompClient.connect(
-      { Authorization: "Bearer " + token }, // ✅ 헤더에 포함
+      { Authorization: "Bearer " + token }, // 헤더에 포함
       function () {
         const chatRoomId = document.getElementById("chatRoomId").value;
 
-        console.log("✅ STOMP 연결 성공");
+        console.log(" STOMP 연결 성공");
 
         stompClient.subscribe("/sub/chats/" + chatRoomId, function (messageOutput) {
           const body = JSON.parse(messageOutput.body);
-          console.log("📩 메시지 수신:", body);
+          console.log(" 메시지 수신:", body);
 
           const log = document.getElementById("chat-log");
           const li = document.createElement("li");
-          li.innerText = `📨 메시지 ID: ${body.messageId}`;
+          li.innerText = `메시지 ID: ${body.messageId}`;
           log.appendChild(li);
         });
 
         alert("연결 성공!");
       },
       function (error) {
-        console.error("❌ STOMP 연결 실패:", error);
+        console.error(" STOMP 연결 실패:", error);
         alert("연결 실패. 콘솔을 확인하세요.");
       }
     );
@@ -73,7 +73,7 @@
       sentAt: new Date().toISOString()
     };
 
-    console.log("🚀 메시지 전송:", payload);
+    console.log(" 메시지 전송:", payload);
     stompClient.send("/pub/chats/send", {}, JSON.stringify(payload));
   }
 </script>
