@@ -11,8 +11,8 @@ import com.umc.tomorrow.domain.chatting.dto.response.CreateChatMessageResponseDT
 import com.umc.tomorrow.domain.chatting.dto.response.GetChatMessageListResponseDTO;
 import com.umc.tomorrow.domain.chatting.entity.Message;
 import com.umc.tomorrow.domain.chatting.service.command.ChatBroadcastService;
-import com.umc.tomorrow.domain.chatting.service.command.ChatCommandService;
-import com.umc.tomorrow.domain.chatting.service.query.ChatQueryService;
+import com.umc.tomorrow.domain.chatting.service.command.ChatCommandServiceImpl;
+import com.umc.tomorrow.domain.chatting.service.query.ChatQueryServiceImpl;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -41,8 +41,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ChatController {
 
-    private final ChatCommandService chatCommandService;
-    private final ChatQueryService chatQueryService;
+    private final ChatCommandServiceImpl chatCommandServiceImpl;
+    private final ChatQueryServiceImpl chatQueryServiceImpl;
     private final ChatBroadcastService chatBroadcastService;
 
    @MessageMapping("/chats/send")
@@ -56,7 +56,7 @@ public class ChatController {
                 Long userId = user.getUserDTO().getId();
 
                 // 1. 저장 (동기)
-                Message message = chatCommandService.saveMessage(request, userId);
+                Message message = chatCommandServiceImpl.saveMessage(request, userId);
 
                 // 2. 응답 DTO 생성
                 CreateChatMessageResponseDTO response = CreateChatMessageResponseDTO.builder()
@@ -82,7 +82,7 @@ public class ChatController {
         @AuthenticationPrincipal CustomOAuth2User user
     ){
         Long userId = user.getUserDTO().getId();
-        chatCommandService.joinChatRoom(chattingRoomId, userId);
+        chatCommandServiceImpl.joinChatRoom(chattingRoomId, userId);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -97,7 +97,7 @@ public class ChatController {
             @Positive @RequestParam(required = false) Long cursor,
             @NotNull @Positive @RequestParam(defaultValue = "8") int size
     ) {
-        GetChatMessageListResponseDTO response = chatQueryService.getMessages(chattingRoomId, cursor, size);
+        GetChatMessageListResponseDTO response = chatQueryServiceImpl.getMessages(chattingRoomId, cursor, size);
         return ResponseEntity.ok(BaseResponse.onSuccess(response));
     }
 
