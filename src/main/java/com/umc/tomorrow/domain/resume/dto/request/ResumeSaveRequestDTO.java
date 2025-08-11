@@ -20,8 +20,6 @@ public class ResumeSaveRequestDTO {
 
     private final List<CareerSaveRequest> careers;
 
-    private final List<ExperienceSaveRequest> experiences;
-
     private final List<CertificateSaveRequest> certificates;
 
     /**
@@ -42,21 +40,10 @@ public class ResumeSaveRequestDTO {
     @Getter
     @Builder
     public static class CertificateSaveRequest {
-        private final String name;
-        private final String fileUrl; // 필요하다면 추가
+        private final String fileUrl;
+        private final String filename;
     }
 
-    /**
-     * 경험 저장 요청 내부 클래스
-     */
-    @Getter
-    @Builder
-    public static class ExperienceSaveRequest {
-        private final String place;
-        private final String task;
-        private final String duration;
-        private final int year;
-        private final String description;
-    }
+
 
 } 

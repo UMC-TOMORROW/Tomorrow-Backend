@@ -35,6 +35,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -84,10 +85,14 @@ public class JobCommandServiceImpl implements JobCommandService {
         requestDTO.setAddress(personalAddress);
 
         PersonalRegistration personalRegistration = jobConverter.toPersonal(requestDTO);
-        Job job = jobConverter.toJob(jobDTO);
-        job.setUser(user);
-        job.setPersonalRegistration(personalRegistration);
-        personalRegistration.setJob(job);
+        Job job = jobConverter.toJob(jobDTO).toBuilder()
+                .user(user)
+                .personalRegistration(personalRegistration)
+                .build();
+
+        personalRegistration = personalRegistration.toBuilder()
+                .job(job)
+                .build();
 
         Job savedJob = jobRepository.save(job);
         session.removeAttribute(JOB_SESSION_KEY);
@@ -112,8 +117,9 @@ public class JobCommandServiceImpl implements JobCommandService {
         String jobAddress = kakaoMapService.getAddressFromCoord(jobDTO.getLatitude(), jobDTO.getLongitude());
         jobDTO.setLocation(jobAddress);
 
-        Job job = jobConverter.toJob(jobDTO);
-        job.setUser(user);
+        Job job = jobConverter.toJob(jobDTO).toBuilder()
+                .user(user)
+                .build();
 
         Job savedJob = jobRepository.save(job);
         session.removeAttribute(JOB_SESSION_KEY);
@@ -138,8 +144,9 @@ public class JobCommandServiceImpl implements JobCommandService {
         user.setBusinessVerification(businessVerification);
         userRepository.save(user);
 
-        Job job = jobConverter.toJob(jobDTO);
-        job.setUser(user);
+        Job job = jobConverter.toJob(jobDTO).toBuilder()
+                .user(user)
+                .build();
 
         Job savedJob = jobRepository.save(job);
         session.removeAttribute(JOB_SESSION_KEY);
@@ -216,8 +223,7 @@ public class JobCommandServiceImpl implements JobCommandService {
         int score = 0;
 
         if (preferences.contains(PreferenceType.HUMAN) && env.isCanCommunicate()) score++;
-        if (preferences.contains(PreferenceType.HEAVY_DELIVERY) && env.isCanLiftHeavyObjects()) score++;
-        if (preferences.contains(PreferenceType.LIGHT_DELIVERY) && env.isCanLiftLightObjects()) score++;
+        if (preferences.contains(PreferenceType.DELIVERY) && env.isCanCarryObjects()) score++;
         if (preferences.contains(PreferenceType.PHYSICAL) && env.isCanMoveActively()) score++;
         if (preferences.contains(PreferenceType.SIT) && env.isCanWorkSitting()) score++;
         if (preferences.contains(PreferenceType.STAND) && env.isCanWorkStanding()) score++;

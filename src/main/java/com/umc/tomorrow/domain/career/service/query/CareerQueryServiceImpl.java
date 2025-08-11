@@ -1,8 +1,16 @@
+/**
+ * 경력 조회 서비스
+ * - 경력 조회 비즈니스 로직
+ * 작성자: 한지혜
+ * 생성일: 2020-07-25
+ * 수정일: 2025-08-04
+ */
 package com.umc.tomorrow.domain.career.service.query;
 
 import com.umc.tomorrow.domain.career.converter.CareerConverter;
 import com.umc.tomorrow.domain.career.dto.response.CareerGetResponseDTO;
 import com.umc.tomorrow.domain.career.entity.Career;
+import java.util.List;
 import com.umc.tomorrow.domain.career.exception.code.CareerStatus;
 import com.umc.tomorrow.domain.career.repository.CareerRepository;
 import com.umc.tomorrow.domain.member.entity.User;
@@ -10,14 +18,12 @@ import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CareerQueryServiceImpl implements CareerQueryService {
 
@@ -52,5 +58,30 @@ public class CareerQueryServiceImpl implements CareerQueryService {
         }
 
         return CareerConverter.toGetResponseDTO(career);
+    }
+
+    /**
+     * 이력서 경력 목록 조회 메서드
+     * @param userId 경력을 조회하는 사용자
+     * @param resumeId 조회할 이력서 id
+     * @return converter로 이동
+     */
+    @Override
+    public List<CareerGetResponseDTO> getCareerList(Long userId, Long resumeId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(CareerStatus.CAREER_FORBIDDEN));
+
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() -> new RestApiException(CareerStatus.CAREER_NOT_FOUND));
+
+        if (!resume.getUser().getId().equals(user.getId())) {
+            throw new RestApiException(CareerStatus.CAREER_FORBIDDEN);
+        }
+
+        List<Career> careers = careerRepository.findByResumeId(resumeId);
+        
+        return careers.stream()
+                .map(CareerConverter::toGetResponseDTO)
+                .collect(java.util.stream.Collectors.toList());
     }
 }

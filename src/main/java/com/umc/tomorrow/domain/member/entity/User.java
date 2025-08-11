@@ -7,6 +7,7 @@ import com.umc.tomorrow.domain.member.enums.Gender;
 import com.umc.tomorrow.domain.member.enums.Provider;
 import com.umc.tomorrow.domain.member.enums.UserStatus;
 import com.umc.tomorrow.domain.preferences.entity.Preference;
+import com.umc.tomorrow.domain.resume.entity.Resume;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -90,6 +91,8 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Preference preference;
+
+    // Resume 관계 매핑 제거 (resumeId 필드만 사용)
 
     //JUnit테스트용
     public User(String name, String email, Provider provider, String providerUserId, String username) {

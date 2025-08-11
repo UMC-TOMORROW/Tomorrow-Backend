@@ -43,16 +43,18 @@ public class ApplicationDetailsResponseDTO {
     public static class ResumeInfoDTO {
         private String resumeContent;
         private String portfolioUrl;
-        private List<ExperienceDTO> experiences;
+        private List<CareerDTO> careers;
         private List<CertificationDTO> certifications;
     }
 
-    // 경험
+
+
+    // 경력
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ExperienceDTO {
+    public static class CareerDTO {
         private Long id;
         private String company;     // 일한 곳
         private String position;    // 했던 일

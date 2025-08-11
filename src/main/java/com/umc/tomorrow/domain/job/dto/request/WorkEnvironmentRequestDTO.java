@@ -29,20 +29,12 @@ public class WorkEnvironmentRequestDTO {
     private Boolean canWorkStanding;
 
     @Schema(
-            description = "무거운 물건 문반",
-            example = "canLiftHeavyObjects",
+            description = "물건 문반",
+            example = "canCarryObjects",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
     @NotNull
-    private Boolean canLiftHeavyObjects;
-
-    @Schema(
-            description = "가벼운 물건 문반",
-            example = "canLiftLightObjects",
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED
-    )
-    @NotNull
-    private Boolean canLiftLightObjects;
+    private Boolean canCarryObjects;
 
     @Schema(
             description = "활동적인 환경",
