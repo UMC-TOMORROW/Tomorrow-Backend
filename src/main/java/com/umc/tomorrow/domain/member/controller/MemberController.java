@@ -37,6 +37,10 @@ public class MemberController {
         if (user == null) {
             return ResponseEntity.status(401).build();
         }
+        
+        // resumeId가 null인 경우 업데이트
+        memberService.updateResumeIdIfNull(user.getUserDTO().getId());
+        
         UserDTO userDTO = user.getUserDTO();
         return ResponseEntity.ok(userDTO);
     }

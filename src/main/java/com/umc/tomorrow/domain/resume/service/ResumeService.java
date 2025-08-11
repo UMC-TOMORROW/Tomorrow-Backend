@@ -40,6 +40,12 @@ public class ResumeService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new MemberException(MemberStatus.MEMBER_NOT_FOUND));
         Resume resume = ResumeConverter.toEntity(dto, user);
-        return resumeRepository.save(resume);
+        Resume savedResume = resumeRepository.save(resume);
+        
+        // 사용자의 resumeId 필드 업데이트
+        user.setResumeId(savedResume.getId());
+        userRepository.save(user);
+        
+        return savedResume;
     }
 } 

@@ -17,6 +17,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -33,12 +34,6 @@ public class Certificate extends BaseEntity {
     private String fileUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_id")
     private Resume resume;
-
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 } 
