@@ -5,9 +5,11 @@ import com.umc.tomorrow.domain.job.dto.response.GetRecommendationResponse;
 import com.umc.tomorrow.domain.job.dto.response.JobDetailResponseDTO;
 import com.umc.tomorrow.domain.job.entity.*;
 import com.umc.tomorrow.domain.job.enums.PostStatus;
+import com.umc.tomorrow.domain.preferences.entity.Preference;
+import com.umc.tomorrow.domain.preferences.entity.PreferenceType;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.*;
 
 @Component
 public class JobConverter {
@@ -99,6 +101,18 @@ public class JobConverter {
     }
 
     public JobDetailResponseDTO toJobDetailResponseDTO(Job job) {
+
+        List<String> workEnvironmentList = new ArrayList<>();
+        WorkEnvironment we = job.getWorkEnvironment();
+
+        if (we != null) {
+            if (we.isCanWorkSitting()) workEnvironmentList.add("canWorkSitting");
+            if (we.isCanWorkStanding()) workEnvironmentList.add("canWorkStanding");
+            if (we.isCanCarryObjects()) workEnvironmentList.add("canCarryObjects");
+            if (we.isCanMoveActively()) workEnvironmentList.add("canMoveActively");
+            if (we.isCanCommunicate()) workEnvironmentList.add("canCommunicate");
+        }
+
         return JobDetailResponseDTO.builder()
                 .title(job.getTitle())
                 .jobDescription(job.getJobDescription())
@@ -119,7 +133,7 @@ public class JobConverter {
                 .location(job.getLocation())
                 .alwaysHiring(job.getAlwaysHiring())
                 .workDays(toWorkDaysRequestDTO(job.getWorkDays()))
-                .workEnvironment(toWorkEnvironmentRequestDTO(job.getWorkEnvironment()))
+                .workEnvironment(workEnvironmentList)
                 .build();
     }
 
