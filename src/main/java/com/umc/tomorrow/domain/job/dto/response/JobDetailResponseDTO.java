@@ -5,6 +5,7 @@ import com.umc.tomorrow.domain.job.dto.request.WorkEnvironmentRequestDTO;
 import com.umc.tomorrow.domain.job.enums.JobCategory;
 import com.umc.tomorrow.domain.job.enums.PaymentType;
 import com.umc.tomorrow.domain.job.enums.WorkPeriod;
+import com.umc.tomorrow.domain.preferences.entity.PreferenceType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,8 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Builder
@@ -44,7 +47,7 @@ public class JobDetailResponseDTO {
     @Schema(description = "급여 형태", example = "HOURLY")
     private PaymentType paymentType;
 
-    @Schema(description = "일자리 카테고리", example = "TUTORING")
+    @Schema(description = "일자리 카테고리", example = "[\"TUTORING\"]")
     private JobCategory jobCategory;
 
     @Schema(description = "급여",
@@ -76,11 +79,8 @@ public class JobDetailResponseDTO {
     private Boolean alwaysHiring = false;
 
     @Schema(description = "근무요일", example = "[\"mon\"]")
-
     private WorkDaysRequestDTO workDays;
 
-    @Schema(description = "근무환경", example = "[\"TUTORING\"]")
-    private WorkEnvironmentRequestDTO workEnvironment;
-
-
+    @Schema(description = "희망조건", example = "[\"canWorkSitting\", \"canCarryObjects\"]")
+    private List<String> workEnvironment;
 }
