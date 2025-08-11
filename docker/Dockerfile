@@ -1,6 +1,9 @@
 # Base 이미지: Java 17
 FROM openjdk:17-jdk-slim
 
+#timezone 서울 시간대로 설정
+ENV JAVA_TOOL_OPTIONS="-Duser.timezone=Asia/Seoul"
+
 # GitHub Actions에서 복사한 app.jar을 컨테이너에 복사
 COPY build/libs/*.jar app.jar
 
