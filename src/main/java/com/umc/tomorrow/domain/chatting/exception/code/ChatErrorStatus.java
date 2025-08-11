@@ -16,8 +16,8 @@ import org.springframework.http.HttpStatus;
 public enum ChatErrorStatus implements BaseCodeInterface{
 
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHATROOM404", "해당 채팅방을 찾을 수 없습니다."),
-    CHATPART_NOT_FOUND(HttpStatus.NOT_FOUND, "CHATPART404", "해당 채팅방에 참여하고 있지 않습니다.");
-
+    CHATPART_NOT_FOUND(HttpStatus.NOT_FOUND, "CHATPART404", "해당 채팅방에 참여하고 있지 않습니다."),
+    MESSAGE_EMPTY(HttpStatus.BAD_REQUEST, "MESSAGE400", "메시지 내용이 비어있습니다.");
     private final HttpStatus httpStatus;
     private final boolean isSuccess = false;
     private final String code;
