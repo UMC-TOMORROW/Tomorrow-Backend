@@ -13,10 +13,8 @@ import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsRespon
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
 import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
-import com.umc.tomorrow.domain.career.entity.Career;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.certificate.entity.Certificate;
-import com.umc.tomorrow.domain.resume.entity.Experience;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 
 import java.util.Collections;
@@ -78,12 +76,7 @@ public class ApplicationConverter {
         // 2. 이력서 상세 정보 DTO 생성
         ApplicationDetailsResponseDTO.ResumeInfoDTO resumeInfo = null;
         if (resume != null) {
-            List<ApplicationDetailsResponseDTO.ExperienceDTO> experienceDTOS = Optional.ofNullable(resume.getExperiences())
-                    .orElse(Collections.emptyList())
-                    .stream()
-                    .map(experience -> ApplicationConverter.toExperienceDTO(experience))
-                    .collect(Collectors.toList());
-
+            // 경력과 경험을 하나로 합쳐서 처리
             List<ApplicationDetailsResponseDTO.CareerDTO> careerDTOS = Optional.ofNullable(resume.getCareer())
                     .orElse(Collections.emptyList())
                     .stream()
@@ -104,7 +97,6 @@ public class ApplicationConverter {
 
             resumeInfo = ApplicationDetailsResponseDTO.ResumeInfoDTO.builder()
                     .resumeContent(resumeContent)
-                    .experiences(experienceDTOS)
                     .careers(careerDTOS)
                     .certifications(certificationDTOS)
                     .build();
@@ -119,19 +111,7 @@ public class ApplicationConverter {
                 .build();
     }
 
-    // Experience 엔티티를 ExperienceDTO로 변환
-    private static ApplicationDetailsResponseDTO.ExperienceDTO toExperienceDTO(Experience experience) {
-        return ApplicationDetailsResponseDTO.ExperienceDTO.builder()
-                .id(experience.getId())
-                .company(experience.getPlace())
-                .position(experience.getTask())
 
-                .duration(experience.getDuration())
-                .description(String.valueOf(experience))
-                .description(experience.getDescription())
-
-                .build();
-    }
 
     // Certificate 엔티티를 CertificationDTO로 변환
     private static ApplicationDetailsResponseDTO.CertificationDTO toCertificationDTO(Certificate certificate) {
