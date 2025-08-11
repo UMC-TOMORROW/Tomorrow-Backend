@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 
 @DisplayName("IntroductionCommandService 단위 테스트")
 @ExtendWith(MockitoExtension.class)
-class IntroductionCommandServiceTest {
+class IntroductionServiceTest {
 
     @InjectMocks
     private IntroductionCommandServiceImpl introductionCommandService;
