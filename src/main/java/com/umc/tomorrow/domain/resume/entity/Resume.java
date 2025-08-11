@@ -42,8 +42,4 @@ public class Resume extends BaseEntity {
     // 자격증 목록
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Certificate> certificates;
-
-
-    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Experience> experiences;
 }

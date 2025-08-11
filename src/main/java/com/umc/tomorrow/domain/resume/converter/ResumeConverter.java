@@ -10,7 +10,6 @@ import com.umc.tomorrow.domain.career.entity.Career;
 import com.umc.tomorrow.domain.introduction.entity.Introduction;
 import com.umc.tomorrow.domain.resume.dto.request.ResumeSaveRequestDTO;
 import com.umc.tomorrow.domain.resume.dto.response.ResumeSummaryResponseDTO;
-import com.umc.tomorrow.domain.resume.entity.Experience;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.certificate.entity.Certificate;
 import com.umc.tomorrow.domain.member.entity.User;
@@ -46,31 +45,19 @@ public class ResumeConverter {
                         .build())
                 .collect(Collectors.toList());
 
-        // ExperienceSaveRequest DTO 리스트를 Experience 엔티티 리스트로 변환
-        // ResumeSaveRequestDTO에 Experience DTO 필드가 있다고 가정
-        List<Experience> experiences = dto.getExperiences().stream()
-                .map(experienceDto -> Experience.builder()
-                        .place(experienceDto.getPlace())
-                        .task(experienceDto.getTask())
-                        .duration(experienceDto.getDuration())
-                        .year(experienceDto.getYear())
-                        .description(experienceDto.getDescription())
-                        .resume(resume)
-                        .build())
-                .collect(Collectors.toList());
+
 
         // CertificateSaveRequest DTO 리스트를 Certificate 엔티티 리스트로 변환
         List<Certificate> certificates = dto.getCertificates().stream()
                 .map(certificateDto -> Certificate.builder()
-                        .name(certificateDto.getName())
-                        .fileUrl(certificateDto.getFileUrl()) // 파일 URL 필드도 사용
+                        .fileUrl(certificateDto.getFileUrl())
+                        .filename(certificateDto.getFilename())
                         .resume(resume) // 연관관계 설정
                         .build())
                 .collect(Collectors.toList());
 
         // Resume 엔티티에 변환된 리스트 할당
         resume.setCareer(careers);
-        resume.setExperiences(experiences);
         resume.setCertificates(certificates);
 
         return resume;
@@ -95,7 +82,7 @@ public class ResumeConverter {
                         .collect(Collectors.toList())
                         : List.of())
                 .certificates(resume.getCertificates().stream()
-                        .map(Certificate::getName)
+                        .map(Certificate::getFilename)
                         .collect(Collectors.toList()))
                 .build();
     }
