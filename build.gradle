@@ -49,7 +49,7 @@ dependencies {
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.636'
 
 	// 개발 편의 기능
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	// developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
@@ -73,9 +73,8 @@ dependencies {
 	//kakao지도
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-
 	// redis
-	'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	//웹소켓 채팅
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'

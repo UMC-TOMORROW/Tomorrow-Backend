@@ -1,5 +1,15 @@
-# application-local.yml
 spring:
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:tomorrow-redis}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      timeout: 1000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
   datasource:
     url: jdbc:mysql://localhost:3306/tomorrow_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: ${DB_USERNAME}
@@ -13,7 +23,6 @@ spring:
       max-lifetime: 1200000
       pool-name: HikariCP-Local
 
-  # JPA 설정 (로컬 개발용)
   jpa:
     hibernate:
       ddl-auto: none
@@ -27,22 +36,23 @@ spring:
           lob:
             non_contextual_creation: true
 
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: lax
+        secure: false
 
-# JWT 시크릿 키 설정 추가
 jwt:
   secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalaaaaaaaaaaaaaaaabbbbb
 
-# 전반
-com.umc.tomorrow: DEBUG
-
-# 인증
-com.umc.tomorrow.auth: TRACE
-com.umc.tomorrow.auth.service: DEBUG
-
-# Spring Security / OAuth
-org.springframework.security: DEBUG
-org.springframework.security.oauth2: TRACE
-
-# JPA / SQL
-org.hibernate.SQL: DEBUG
-org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+logging:
+  level:
+    com.umc.tomorrow: DEBUG
+    com.umc.tomorrow.auth: TRACE
+    com.umc.tomorrow.auth.service: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: TRACE
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.data.redis: DEBUG
