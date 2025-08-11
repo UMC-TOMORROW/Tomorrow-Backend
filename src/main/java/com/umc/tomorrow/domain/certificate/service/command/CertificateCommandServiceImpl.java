@@ -42,22 +42,36 @@ public class CertificateCommandServiceImpl implements CertificateCommandService 
             throw new ResumeException(ResumeErrorStatus.RESUME_FORBIDDEN);
         }
 
-        String fileUrl = s3Uploader.upload(file, "certificates");
+        String fileUrl = null;
         String filename = file.getOriginalFilename();
 
-        Certificate certificate = Certificate.builder()
-                .name(filename)
-                .fileUrl(fileUrl)
-                .resume(resume)
-                .build();
+        try {
+            fileUrl = s3Uploader.upload(file, "certificates");
 
-        Certificate saved = certificateRepository.save(certificate);
 
-        return CertificateResponse.builder()
-                .id(saved.getId())
-                .fileUrl(saved.getFileUrl())
-                .filename(saved.getName())
-                .build();
+            Certificate certificate = Certificate.builder()
+                    .name(filename)
+                    .fileUrl(fileUrl)
+                    .resume(resume)
+                    .build();
+
+            Certificate saved = certificateRepository.save(certificate);
+
+            return CertificateResponse.builder()
+                    .id(saved.getId())
+                    .fileUrl(saved.getFileUrl())
+                    .filename(saved.getName())
+                    .build();
+        } catch (RuntimeException e) {
+            // DB 실패 등 예외 시 보상 삭제
+            if (fileUrl != null) {
+                try {
+                    s3Uploader.delete(fileUrl);
+                } catch (Exception ignore) {
+                }
+            }
+            throw e;
+        }
     }
 
     /*
@@ -72,13 +86,18 @@ public class CertificateCommandServiceImpl implements CertificateCommandService 
             throw new CertificateException(CertificateErrorStatus.CERTIFICATE_FORBIDDEN);
         }
 
-        s3Uploader.delete(certificate.getFileUrl()); // S3 삭제
+        Long id = certificate.getId();
+        String url = certificate.getFileUrl();
+        String name = certificate.getName();
+
         certificateRepository.delete(certificate); // db 삭제
 
+        try { if (url != null) s3Uploader.delete(url); } catch (Exception ignore) {} //s3 삭제 실패시 해당 로직 무시
+
         return CertificateResponse.builder()
-                .id(certificate.getId())
-                .fileUrl(certificate.getFileUrl())
-                .filename(certificate.getName())
+                .id(id)
+                .fileUrl(url)
+                .filename(name)
                 .build();
     }
 }
