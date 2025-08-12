@@ -77,7 +77,7 @@ public class ApplicationController {
             @AuthenticationPrincipal CustomOAuth2User user,
             @Valid @RequestBody CreateApplicationRequestDTO requestDto
     ) {
-        CreateApplicationResponseDTO result = applicationCommandService.createApplication(user.getUserDTO().getId(), requestDto);
+        CreateApplicationResponseDTO result = applicationCommandService.createApplication(user.getUserDTO().getId(), postId, requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.onSuccessCreate(result));
     }
 

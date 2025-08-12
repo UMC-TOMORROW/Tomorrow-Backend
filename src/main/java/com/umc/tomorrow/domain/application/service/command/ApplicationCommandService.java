@@ -93,16 +93,21 @@ public class ApplicationCommandService {
      * 일자리에 지원하기
      *
      * @param userId     일자리에 지원하는 userId
+     * @param postId      지원하고자 하는 post의 Id
      * @param requestDTO 일자리 지원 요청 DTO
      * @return 일자리 응답 DTO
      */
     @Transactional
-    public CreateApplicationResponseDTO createApplication(Long userId, CreateApplicationRequestDTO requestDTO) {
-        Job job = jobRepository.findById(requestDTO.getJobId())
+    public CreateApplicationResponseDTO createApplication(Long userId, Long postId, CreateApplicationRequestDTO requestDTO) {
+        Job job = jobRepository.findById(postId)
                 .orElseThrow(() -> new JobException(JobErrorStatus.JOB_NOT_FOUND));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+
+        if (applicationRepository.existsByUserIdAndJobId(userId, job.getId())) {
+            throw new ApplicationException(ApplicationErrorStatus.APPLICATION_DUPLICATED);
+        }
 
         Application application;
 
