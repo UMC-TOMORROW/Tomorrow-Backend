@@ -25,6 +25,12 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     List<Application> findByJobId(@Param("jobId") Long jobId);
     
     /**
+     * 특정 공고의 지원서 목록 조회 (findAllByJobId와 동일)
+     */
+    @Query("SELECT a FROM Application a WHERE a.job.id = :jobId")
+    List<Application> findAllByJobId(@Param("jobId") Long jobId);
+    
+    /**
      * 특정 사용자의 지원서 목록 조회
      */
     @Query("SELECT a FROM Application a WHERE a.user.id = :userId")
@@ -59,9 +65,4 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
      * 사용자의 ID, 상태(합격/불합)에 따라 공고 조회
      */
     List<Application> findAllByUserIdAndStatus(Long userId, ApplicationStatus status);
-
-    /**
-     * 직업 id에 따라 모든 직업 조회
-     * */
-    List<Application> findAllByJobId(Long jobId);
 }
