@@ -63,8 +63,11 @@ public class Job extends BaseEntity {
     @Column(nullable = false)
     private PaymentType paymentType;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private Integer salary;
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    private Boolean isSalaryNegotiable = false;
 
     private String jobImageUrl;
 
