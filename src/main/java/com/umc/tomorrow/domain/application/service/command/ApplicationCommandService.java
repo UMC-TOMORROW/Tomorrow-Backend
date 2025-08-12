@@ -31,6 +31,8 @@ import com.umc.tomorrow.domain.job.exception.JobException;
 import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
 import com.umc.tomorrow.domain.job.repository.JobRepository;
 import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.domain.member.exception.MemberException;
+import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.exception.ResumeException;
@@ -147,7 +149,7 @@ public class ApplicationCommandService {
      */
     public ApplicationDetailsResponseDTO getApplicantResume(Long postId, Long applicantId) {
         Application application = applicationRepository.findByJobIdAndUserIdWithResume(postId, applicantId)
-                .orElseThrow(() -> new RestApiException(ApplicationErrorStatus.APPLICATION_NOT_FOUND));
+                .orElseThrow(() -> new ApplicationException(ApplicationErrorStatus.APPLICATION_NOT_FOUND));
         User user = application.getUser();
         // Resume 기본 정보만 가져오기 (Introduction은 별도 로드)
         Resume resume = resumeRepository.findFirstByUserIdOrderByCreatedAtDesc(user.getId())

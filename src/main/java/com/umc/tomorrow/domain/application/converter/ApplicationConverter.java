@@ -62,6 +62,8 @@ public class ApplicationConverter {
     ) {
         String statusText = application.getStatus() != null ? application.getStatus().getLabel() : "불합격";
 
+        String content = application.getContent();
+
         ApplicationDetailsResponseDTO.UserProfileDTO userProfile = ApplicationDetailsResponseDTO.UserProfileDTO.builder()
                 .userName(user.getName())
                 .email(user.getEmail())
@@ -98,6 +100,7 @@ public class ApplicationConverter {
         return ApplicationDetailsResponseDTO.builder()
                 .applicantId(user.getId())
                 .status(statusText)
+                .content(content)
                 .userProfile(userProfile)
                 .resumeInfo(resumeInfo)
                 .build();
@@ -126,9 +129,11 @@ public class ApplicationConverter {
         return ApplicantListResponseDTO.builder()
                 .applicantId(application.getUser().getId())
                 .userName(application.getUser().getName())
+                .phoneNumber(application.getUser().getPhoneNumber())
                 .applicationDate(application.getCreatedAt())
                 .status(statusLabel)
-                .resumeTitle(application.getResume() != null ? application.getResume().toString() : null) // 또는 "없음"
+                .resumeId(application.getResume() != null ? application.getResume().getId() : null) // 또는 "없음"
+                .content(application.getContent())
                 .build();
     }
 }

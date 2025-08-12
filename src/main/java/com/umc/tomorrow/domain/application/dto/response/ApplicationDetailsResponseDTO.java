@@ -19,6 +19,7 @@ import java.util.List;
 public class ApplicationDetailsResponseDTO {
     private Long applicantId;
     private String status; // 현재 지원 상태
+    private String content; //지원 시 한 줄로 입력하는 정보, ex)이승주/남/26세/관악구/열심히 하겠습니다.
 
     private UserProfileDTO userProfile;
     private ResumeInfoDTO resumeInfo;

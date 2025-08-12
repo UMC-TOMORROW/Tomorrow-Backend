@@ -15,9 +15,11 @@ import java.time.LocalDateTime;
 @Builder
 public class ApplicantListResponseDTO {
     private Long applicantId;
+    private Long resumeId;
     private String userName;
+    private String phoneNumber;
     private LocalDateTime applicationDate;
     private String status;
-    private String resumeTitle;
+    private String content;
 }
 
