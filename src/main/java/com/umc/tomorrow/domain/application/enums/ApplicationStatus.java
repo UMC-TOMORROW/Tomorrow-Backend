@@ -9,8 +9,8 @@ import com.umc.tomorrow.domain.application.exception.code.ApplicationErrorStatus
 import com.umc.tomorrow.domain.application.exception.ApplicationException;
 
 public enum ApplicationStatus {
-    ACCEPTED("합격"),
-    REJECTED("불합격");
+    REJECTED("불합격"),  // 지원서 제출 후 기본 상태
+    ACCEPTED("합격");    // 합격
 
     private final String label;
 

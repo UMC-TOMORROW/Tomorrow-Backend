@@ -20,6 +20,7 @@ import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusR
 import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
 import com.umc.tomorrow.domain.application.exception.code.ApplicationErrorStatus;
+import com.umc.tomorrow.domain.application.exception.ApplicationException;
 import com.umc.tomorrow.domain.application.repository.ApplicationRepository;
 import com.umc.tomorrow.domain.email.dto.request.EmailRequestDTO;
 import com.umc.tomorrow.domain.email.enums.EmailType;
@@ -114,6 +115,7 @@ public class ApplicationCommandService {
                     .job(job)
                     .user(user)
                     .resume(resume)
+                    .status(ApplicationStatus.REJECTED)
                     .appliedAt(LocalDateTime.now())
                     .build();
         } else {
@@ -121,6 +123,7 @@ public class ApplicationCommandService {
                     .content(requestDTO.getContent())
                     .job(job)
                     .user(user)
+                    .status(ApplicationStatus.REJECTED)
                     .appliedAt(LocalDateTime.now())
                     .build();
         }
@@ -171,32 +174,40 @@ public class ApplicationCommandService {
     private boolean isJobClosed(Job job) {
         LocalDateTime now = LocalDateTime.now();
         boolean deadlinePassed = job.getDeadline().isBefore(now);
-        boolean manuallyClosed = Boolean.FALSE.equals(job.getStatus() == PostStatus.CLOSED);
+        boolean manuallyClosed = job.getStatus() == PostStatus.CLOSED;
         return deadlinePassed || manuallyClosed;
     }
 
     @Transactional(readOnly = true)
     public List<ApplicantListResponseDTO> getApplicantsByPostAndStatus(Long postId, String status) {
-        Job job = jobRepository.findById(postId)
-                .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
+        try {
+            Job job = jobRepository.findById(postId)
+                    .orElseThrow(() -> new ApplicationException(ApplicationErrorStatus.JOB_NOT_FOUND));
 
-        boolean isClosed = isJobClosed(job);
+            boolean isClosed = isJobClosed(job);
 
-        List<Application> applications;
-        if (status == null || status.isBlank()) {
-            // 전체
-            applications = applicationRepository.findAllByJobId(postId);
-        } else if (status.equalsIgnoreCase("open")) {
-            applications = isClosed ? List.of() : applicationRepository.findAllByJobId(postId);
-        } else if (status.equalsIgnoreCase("closed")) {
-            applications = isClosed ? applicationRepository.findAllByJobId(postId) : List.of();
-        } else {
-            throw new RestApiException(ApplicationErrorStatus.INVALID_STATUS);
+            List<Application> applications;
+            if (status == null || status.isBlank()) {
+                // 전체
+                applications = applicationRepository.findAllByJobId(postId);
+            } else if (status.equalsIgnoreCase("open")) {
+                applications = isClosed ? List.of() : applicationRepository.findAllByJobId(postId);
+            } else if (status.equalsIgnoreCase("closed")) {
+                applications = isClosed ? applicationRepository.findAllByJobId(postId) : List.of();
+            } else {
+                throw new ApplicationException(ApplicationErrorStatus.INVALID_STATUS);
+            }
+
+            // 지원자가 없어도 빈 리스트 반환 (404 에러 아님)
+            return applications.stream()
+                    .map(ApplicationConverter::toApplicantListResponseDTO)
+                    .collect(Collectors.toList());
+        } catch (ApplicationException e) {
+            throw e;
+        } catch (Exception e) {
+            // 예상치 못한 예외 발생 시 로그 기록 후 적절한 에러 응답
+            throw new ApplicationException(ApplicationErrorStatus.APPLICANTS_NOT_FOUND);
         }
-
-        return applications.stream()
-                .map(ApplicationConverter::toApplicantListResponseDTO)
-                .collect(Collectors.toList());
     }
 
 }

@@ -14,6 +14,7 @@ import com.umc.tomorrow.domain.application.dto.response.CreateApplicationRespons
 import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsResponseDTO;
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
 import com.umc.tomorrow.domain.application.service.command.ApplicationCommandService;
+import com.umc.tomorrow.domain.application.exception.ApplicationException;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
