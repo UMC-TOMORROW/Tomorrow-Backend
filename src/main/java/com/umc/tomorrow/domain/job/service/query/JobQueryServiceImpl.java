@@ -48,6 +48,7 @@ public class JobQueryServiceImpl implements JobQueryService {
 
     @Override
     public JobDetailResponseDTO getJobDetail(Long jobId) {
+
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
 
