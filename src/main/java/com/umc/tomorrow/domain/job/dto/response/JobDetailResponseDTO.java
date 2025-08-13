@@ -54,6 +54,9 @@ public class JobDetailResponseDTO {
             example = "12000")
     private Integer salary;
 
+    @Schema(description = "급여 협의", example = "false")
+    private Boolean isSalaryNegotiable = false;
+
     @Schema(description = "시설 이미지", example = "...")
     private String jobImageUrl;
 

@@ -56,9 +56,11 @@ public class JobRequestDTO {
     @Schema(description = "급여",
             example = "12000",
             requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "{job.salary.notnull}")
+//    @NotNull(message = "{job.salary.notnull}")
     @Min(value = 1, message = "{job.salary.min}")
     private Integer salary;
+
+    private Boolean isSalaryNegotiable = false;
 
     @Schema(description = "근무 설명", example = "음료 제조 및 서빙")
     private String jobDescription;
@@ -113,10 +115,10 @@ public class JobRequestDTO {
     @NotNull(message = "{job.longitude.notnull}")
     private BigDecimal longitude;
 
-    @Schema(description = "주소",
-            example = "서울특별시 종로구",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "{job.location.notblank}")
+//    @Schema(description = "주소",
+//            example = "서울특별시 종로구",
+//            requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+//    @NotBlank(message = "{job.location.notblank}")
     private String location;
 
     @Schema(description = "상시모집 여부",

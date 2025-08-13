@@ -46,7 +46,14 @@ public class S3Uploader {
     }
 
     public void delete(String fileUrl) {
-        String key = extractKeyFromUrl(fileUrl); // S3 키만 추출
+        String key = extractKeyFromUrl(fileUrl);
+
+        // 1) 존재 확인: 없으면 예외
+        if (!amazonS3.doesObjectExist(bucketName, key)) {
+            throw new RestApiException(GlobalErrorStatus._NOT_FOUND);
+        }
+
+        // 2) 있으면 삭제
         amazonS3.deleteObject(bucketName, key);
     }
 

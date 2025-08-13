@@ -10,11 +10,14 @@ package com.umc.tomorrow.domain.member.service;
 import com.umc.tomorrow.domain.member.dto.UserDTO;
 import com.umc.tomorrow.domain.member.dto.request.DeactivateUserRequest;
 import com.umc.tomorrow.domain.member.dto.response.DeactivateUserResponse;
+import com.umc.tomorrow.domain.member.dto.response.GetUserTypeResponse;
 import com.umc.tomorrow.domain.member.dto.response.RecoverUserResponse;
+import com.umc.tomorrow.domain.member.dto.response.UpdateUserTypeResponse;
+import com.umc.tomorrow.domain.member.entity.MemberType;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.enums.UserStatus;
 import com.umc.tomorrow.domain.member.exception.MemberException;
-import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
+import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.domain.member.dto.UserConverter;
 import com.umc.tomorrow.global.common.exception.RestApiException;
@@ -47,7 +50,7 @@ public class MemberService {
     @Transactional
     public UserDTO updateUser(UserDTO currentUser, UserDTO userDTO) {
         Long userId = currentUser.getId();
-        User user = userRepository.findById(userId).orElseThrow(() -> new MemberException(MemberStatus.MEMBER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
         UserConverter.updateEntity(user, userDTO);
         userRepository.save(user);
         return UserConverter.toDTO(user);
@@ -67,7 +70,7 @@ public class MemberService {
     @Transactional
     public DeactivateUserResponse deactivateUser(Long userId, DeactivateUserRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new MemberException(MemberStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
 
         if (user.getStatus() == UserStatus.DELETED) {
             throw new IllegalStateException("이미 탈퇴한 사용자입니다.");
@@ -94,11 +97,11 @@ public class MemberService {
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
         if (user.getStatus() != UserStatus.DELETED) {
-            throw new RestApiException(MemberStatus.NOT_DELETED_USER);
+            throw new RestApiException(MemberErrorStatus.NOT_DELETED_USER);
         }
 
         if (user.getInactiveAt().plusDays(14).isBefore(LocalDateTime.now())) {
-            throw new RestApiException(MemberStatus.INVALID_RECOVERY_PERIOD);
+            throw new RestApiException(MemberErrorStatus.INVALID_RECOVERY_PERIOD);
         }
 
         user.setStatus(UserStatus.ACTIVE);
@@ -116,7 +119,7 @@ public class MemberService {
     @Transactional
     public void updateResumeIdIfNull(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new MemberException(MemberStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
         
         if (user.getResumeId() == null) {
             // 사용자의 Resume을 찾아서 resumeId 업데이트
@@ -128,4 +131,29 @@ public class MemberService {
         }
     }
 
+    //유저 구인자인지 구직자인지 설정
+    @Transactional
+    public UpdateUserTypeResponse updateMemberType(Long userId, MemberType memberType) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
+
+        user.setMemberType(memberType);
+
+        return UpdateUserTypeResponse.builder()
+                .userId(user.getId())
+                .build();
+    }
+
+    //유저의 구인자 or 구직자 타입 조회
+    public GetUserTypeResponse getMemberType(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
+
+        return GetUserTypeResponse.builder()
+                .memberType(user.getMemberType())
+                .build();
+
+    }
 } 

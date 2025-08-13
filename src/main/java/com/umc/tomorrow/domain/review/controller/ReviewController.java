@@ -55,18 +55,17 @@ public class ReviewController {
     }
 
     /**
-     * 후기 조회(GET)
-     * @param user 인증된 사용자
-     * @param postId 일자리 ID
+     * 특정 공고에 대한 리뷰 목록 조회
+     * @param jobId 일자리 ID
+     * @param customOAuth2User 인증된 사용자
+     * @return 리뷰 목록
      */
-    @Operation(summary = "후기 조회", description = "공고에 대한 후기를 조회합니다.")
-    @GetMapping("/{postId}")
-    public ResponseEntity<BaseResponse<List<ReviewResponseDTO>>> getReviewsByPostId(
-            @PathVariable Long postId,
-            @AuthenticationPrincipal CustomOAuth2User user
-    ) {
-        Long userId = user.getUserDTO().getId();
-        List<ReviewResponseDTO> result = reviewService.getReviewsByPostId(postId, userId);
+    @GetMapping("/{jobId}")
+    public ResponseEntity<BaseResponse<List<ReviewResponseDTO>>> getReviewsByJobId(
+            @PathVariable Long jobId,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        Long userId = customOAuth2User.getUserDTO().getId();
+        List<ReviewResponseDTO> result = reviewService.getReviewsByJobId(jobId, userId);
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
 

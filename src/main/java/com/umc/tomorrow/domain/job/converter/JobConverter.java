@@ -88,7 +88,7 @@ public class JobConverter {
 
     public MyPostResponseDTO toMyPostResponseDto(Job job) {
         return MyPostResponseDTO.builder()
-                .postId(job.getId())
+                .jobId(job.getId())
                 .title(job.getTitle())
                 .status(job.getStatus().getDisplayValue())
                 .date(job.getDeadline().toLocalDate())

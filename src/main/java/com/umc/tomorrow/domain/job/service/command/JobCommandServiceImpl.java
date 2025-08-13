@@ -285,9 +285,9 @@ public class JobCommandServiceImpl implements JobCommandService {
     // PATCH 공고 모집완료/모집전 처리하기
     @Transactional
     @Override
-    public void updatePostStatus(Long userId, Long postId, String status) {
-        // 1. postId에 해당하는 공고가 존재하는지 확인
-        Job job = jobRepository.findById(postId)
+    public void updateJobStatus(Long userId, Long jobId, String status) {
+        // 1. jobId에 해당하는 공고가 존재하는지 확인
+        Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
 
         // 2. 권한 검증: 공고 등록자와 현재 요청한 사용자가 동일한지 확인

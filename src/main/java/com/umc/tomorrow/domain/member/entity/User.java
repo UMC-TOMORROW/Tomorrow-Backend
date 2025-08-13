@@ -56,6 +56,11 @@ public class User {
     private Boolean isOnboarded;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 20)  //구인 or 구직
+    private MemberType memberType;
+
+
+    @Enumerated(EnumType.STRING)
     @Column(length = 10, nullable = false)
     private Provider provider;
 

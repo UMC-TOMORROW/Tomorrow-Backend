@@ -51,7 +51,7 @@ public class S3Controller {
      */
     @DeleteMapping("/delete")
     @Operation(summary = "파일 삭제", description = "파일 url을 받아 삭제합니다.")
-    @ApiResponse(responseCode = "201", description = "파일 업로드 성공")
+    @ApiResponse(responseCode = "200", description = "파일 삭제 성공")
     public ResponseEntity<BaseResponse<String>> delete(@RequestParam("fileUrl") String fileUrl) {
         s3Uploader.delete(fileUrl);
         return ResponseEntity.ok(BaseResponse.onSuccess(fileUrl));

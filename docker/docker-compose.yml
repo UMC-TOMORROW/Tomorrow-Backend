@@ -97,7 +97,5 @@ volumes:
   redis-data:
     driver: local
   tomorrow-local-data: # mysql-local-data 볼륨 이름 변경
-    driver: local
-  tomorrow-local-data:
   ngrinder-controller-data:
 

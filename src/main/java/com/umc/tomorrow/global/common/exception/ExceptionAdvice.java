@@ -3,6 +3,7 @@ package com.umc.tomorrow.global.common.exception;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import com.umc.tomorrow.global.common.exception.code.BaseCode;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
+import com.umc.tomorrow.domain.application.exception.ApplicationException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -35,6 +36,16 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity<BaseResponse<String>> handleRestApiException(RestApiException e) {
         BaseCode errorCode = e.getErrorCode();
         log.error("An error occurred: {}", e.getMessage(), e);
+        return handleExceptionInternal(errorCode);
+    }
+
+    /*
+     * ApplicationException 에러 클래스에 대한 예외 처리
+     */
+    @ExceptionHandler(value = ApplicationException.class)
+    public ResponseEntity<BaseResponse<String>> handleApplicationException(ApplicationException e) {
+        BaseCode errorCode = e.getErrorCode();
+        log.error("Application error occurred: {}", e.getMessage(), e);
         return handleExceptionInternal(errorCode);
     }
 

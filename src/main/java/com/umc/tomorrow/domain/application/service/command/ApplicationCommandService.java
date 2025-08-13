@@ -20,6 +20,7 @@ import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusR
 import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
 import com.umc.tomorrow.domain.application.exception.code.ApplicationErrorStatus;
+import com.umc.tomorrow.domain.application.exception.ApplicationException;
 import com.umc.tomorrow.domain.application.repository.ApplicationRepository;
 import com.umc.tomorrow.domain.email.dto.request.EmailRequestDTO;
 import com.umc.tomorrow.domain.email.enums.EmailType;
@@ -60,20 +61,20 @@ public class ApplicationCommandService {
      */
     @Transactional
     public UpdateApplicationStatusResponseDTO updateApplicationStatus(
-            Long postId,
+            Long jobId,
             Long applicationId,
             UpdateApplicationStatusRequestDTO requestDTO
     ) {
-        // 지원서 조회
+        // 지원서 조회 (applicationId로 직접 조회, User와 Job은 별도로 조회)
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RestApiException(ApplicationErrorStatus.APPLICATION_NOT_FOUND));
-
-        // 공고 조회 및 검증
-        Job job = jobRepository.findById(postId)
+        
+        // 공고 조회 및 검증 (Job 엔티티 직접 조회)
+        Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
         
         // 지원서가 해당 공고에 대한 것인지 검증
-        if (!application.getJob().getId().equals(postId)) {
+        if (!application.getJob().getId().equals(jobId)) {
             throw new RestApiException(ApplicationErrorStatus.APPLICATION_JOB_MISMATCH);
         }
 
@@ -92,16 +93,21 @@ public class ApplicationCommandService {
      * 일자리에 지원하기
      *
      * @param userId     일자리에 지원하는 userId
+     * @param jobId      지원하고자 하는 job의 Id
      * @param requestDTO 일자리 지원 요청 DTO
      * @return 일자리 응답 DTO
      */
     @Transactional
-    public CreateApplicationResponseDTO createApplication(Long userId, CreateApplicationRequestDTO requestDTO) {
-        Job job = jobRepository.findById(requestDTO.getJobId())
+    public CreateApplicationResponseDTO createApplication(Long userId, Long jobId, CreateApplicationRequestDTO requestDTO) {
+        Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new JobException(JobErrorStatus.JOB_NOT_FOUND));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+
+        if (applicationRepository.existsByUserIdAndJobId(userId, job.getId())) {
+            throw new ApplicationException(ApplicationErrorStatus.APPLICATION_DUPLICATED);
+        }
 
         Application application;
 
@@ -114,6 +120,7 @@ public class ApplicationCommandService {
                     .job(job)
                     .user(user)
                     .resume(resume)
+                    .status(ApplicationStatus.REJECTED)
                     .appliedAt(LocalDateTime.now())
                     .build();
         } else {
@@ -121,6 +128,7 @@ public class ApplicationCommandService {
                     .content(requestDTO.getContent())
                     .job(job)
                     .user(user)
+                    .status(ApplicationStatus.REJECTED)
                     .appliedAt(LocalDateTime.now())
                     .build();
         }
@@ -140,11 +148,18 @@ public class ApplicationCommandService {
     }
 
     /*
-     * 개별 지원자 이력서 조회
+     * 개별 지원서 이력서 조회 (Application ID 기반)
      */
-    public ApplicationDetailsResponseDTO getApplicantResume(Long postId, Long applicantId) {
-        Application application = applicationRepository.findByJobIdAndUserIdWithResume(postId, applicantId)
-                .orElseThrow(() -> new RestApiException(ApplicationErrorStatus.APPLICATION_NOT_FOUND));
+    public ApplicationDetailsResponseDTO getApplicationResume(Long jobId, Long applicationId) {
+        // Application ID로 직접 조회
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new ApplicationException(ApplicationErrorStatus.APPLICATION_NOT_FOUND));
+        
+        // 해당 공고의 지원서인지 검증
+        if (!application.getJob().getId().equals(jobId)) {
+            throw new ApplicationException(ApplicationErrorStatus.APPLICATION_JOB_MISMATCH);
+        }
+        
         User user = application.getUser();
         // Resume 기본 정보만 가져오기 (Introduction은 별도 로드)
         Resume resume = resumeRepository.findFirstByUserIdOrderByCreatedAtDesc(user.getId())
@@ -171,32 +186,40 @@ public class ApplicationCommandService {
     private boolean isJobClosed(Job job) {
         LocalDateTime now = LocalDateTime.now();
         boolean deadlinePassed = job.getDeadline().isBefore(now);
-        boolean manuallyClosed = Boolean.FALSE.equals(job.getStatus() == PostStatus.CLOSED);
+        boolean manuallyClosed = job.getStatus() == PostStatus.CLOSED;
         return deadlinePassed || manuallyClosed;
     }
 
     @Transactional(readOnly = true)
-    public List<ApplicantListResponseDTO> getApplicantsByPostAndStatus(Long postId, String status) {
-        Job job = jobRepository.findById(postId)
-                .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
+    public List<ApplicantListResponseDTO> getApplicationsByJob(Long jobId, String status) {
+        try {
+            Job job = jobRepository.findById(jobId)
+                    .orElseThrow(() -> new ApplicationException(ApplicationErrorStatus.JOB_NOT_FOUND));
 
-        boolean isClosed = isJobClosed(job);
+            boolean isClosed = isJobClosed(job);
 
-        List<Application> applications;
-        if (status == null || status.isBlank()) {
-            // 전체
-            applications = applicationRepository.findAllByJobId(postId);
-        } else if (status.equalsIgnoreCase("open")) {
-            applications = isClosed ? List.of() : applicationRepository.findAllByJobId(postId);
-        } else if (status.equalsIgnoreCase("closed")) {
-            applications = isClosed ? applicationRepository.findAllByJobId(postId) : List.of();
-        } else {
-            throw new RestApiException(ApplicationErrorStatus.INVALID_STATUS);
+            List<Application> applications;
+            if (status == null || status.isBlank()) {
+                // 전체
+                applications = applicationRepository.findAllByJobId(jobId);
+            } else if (status.equalsIgnoreCase("open")) {
+                applications = isClosed ? List.of() : applicationRepository.findAllByJobId(jobId);
+            } else if (status.equalsIgnoreCase("closed")) {
+                applications = isClosed ? applicationRepository.findAllByJobId(jobId) : List.of();
+            } else {
+                throw new ApplicationException(ApplicationErrorStatus.INVALID_STATUS);
+            }
+
+            // 지원자가 없어도 빈 리스트 반환 (404 에러 아님)
+            return applications.stream()
+                    .map(ApplicationConverter::toApplicantListResponseDTO)
+                    .collect(Collectors.toList());
+        } catch (ApplicationException e) {
+            throw e;
+        } catch (Exception e) {
+            // 예상치 못한 예외 발생 시 로그 기록 후 적절한 에러 응답
+            throw new ApplicationException(ApplicationErrorStatus.APPLICANTS_NOT_FOUND);
         }
-
-        return applications.stream()
-                .map(ApplicationConverter::toApplicantListResponseDTO)
-                .collect(Collectors.toList());
     }
 
 }

@@ -36,7 +36,8 @@ public class Application extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private ApplicationStatus status;
+    @Builder.Default
+    private ApplicationStatus status = ApplicationStatus.REJECTED;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id")
@@ -56,6 +57,13 @@ public class Application extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime appliedAt;
+
+    /**
+     * 지원 상태 조회 (null인 경우 REJECTED 반환)
+     */
+    public ApplicationStatus getStatus() {
+        return this.status != null ? this.status : ApplicationStatus.REJECTED;
+    }
 
     /**
      * 합격/불합격 상태 업데이트

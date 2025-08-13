@@ -43,37 +43,33 @@ public class ApplicationConverter {
 
     /**
     * Application 엔티티를 지원 현황 리스트 응답 DTO로 변환하는 메서드
-    *
-    * @param application 변환 대상 Application 엔티티
-    * @return ApplicationStatusListResponseDTO - 지원 현황에 필요한 요약 정보
     */
     public static ApplicationStatusListResponseDTO toStatusListDTO(Application application) {
+        String statusLabel = application.getStatus() != null ? application.getStatus().getLabel() : "불합격";
         return ApplicationStatusListResponseDTO.builder()
                 .postTitle(application.getJob().getTitle())
-                .company(application.getJob().getCompanyName()) // Job에 필드가 있어야 함
-                .date(application.getAppliedAt().toLocalDate().toString()) // LocalDateTime → yyyy-MM-dd
-                .status(application.getStatus() == null ? ApplicationStatus.valueOf("미정") : application.getStatus())
+                .company(application.getJob().getCompanyName()) 
+                .date(application.getAppliedAt().toLocalDate().toString()) 
+                .status(application.getStatus())
                 .build();
     }
 
-    // 엔티티들을 ApplicantResumeResponseDTO로 변환하는 메서드
+    // 엔티티들을 ApplicantResumeResponseDTO로 변환
     public static ApplicationDetailsResponseDTO toApplicantResumeResponseDTO(
             Application application,
             User user,
             Resume resume
     ) {
-        String statusText = application.getStatus() == null
-                ? "미정"
-                : application.getStatus().getLabel();
+        String statusText = application.getStatus() != null ? application.getStatus().getLabel() : "불합격";
 
-        // 1. 사용자 프로필 정보 DTO 생성
+        String content = application.getContent();
+
         ApplicationDetailsResponseDTO.UserProfileDTO userProfile = ApplicationDetailsResponseDTO.UserProfileDTO.builder()
                 .userName(user.getName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .build();
 
-        // 2. 이력서 상세 정보 DTO 생성
         ApplicationDetailsResponseDTO.ResumeInfoDTO resumeInfo = null;
         if (resume != null) {
             // 경력과 경험을 하나로 합쳐서 처리
@@ -89,7 +85,6 @@ public class ApplicationConverter {
                     .map(certificate -> ApplicationConverter.toCertificationDTO(certificate))
                     .collect(Collectors.toList());
 
-            // Introduction이 null인 경우 빈 문자열로 처리
             String resumeContent = null;
             if (resume.getIntroduction() != null) {
                 resumeContent = resume.getIntroduction().getContent();
@@ -102,18 +97,15 @@ public class ApplicationConverter {
                     .build();
         }
 
-        // 3. 최종 응답 DTO 생성 및 반환
         return ApplicationDetailsResponseDTO.builder()
                 .applicantId(user.getId())
                 .status(statusText)
+                .content(content)
                 .userProfile(userProfile)
                 .resumeInfo(resumeInfo)
                 .build();
     }
 
-
-
-    // Certificate 엔티티를 CertificationDTO로 변환
     private static ApplicationDetailsResponseDTO.CertificationDTO toCertificationDTO(Certificate certificate) {
         return ApplicationDetailsResponseDTO.CertificationDTO.builder()
                 .certificationName(certificate.getName())
@@ -126,19 +118,22 @@ public class ApplicationConverter {
         return ApplicationDetailsResponseDTO.CareerDTO.builder()
                 .id(career.getId())
                 .company(career.getCompany())
-                .position(career.getWorkedPeriod().getLabel()) // WorkPeriodType의 라벨 사용
-                .duration(career.getWorkedYear() + "년") // workedYear를 문자열로 변환
+                .position(career.getWorkedPeriod().getLabel()) 
+                .duration(career.getWorkedYear() + "년") 
                 .description(career.getDescription())
                 .build();
     }
 
     public static ApplicantListResponseDTO toApplicantListResponseDTO(Application application) {
+        String statusLabel = application.getStatus() != null ? application.getStatus().getLabel() : "불합격";
         return ApplicantListResponseDTO.builder()
                 .applicantId(application.getUser().getId())
                 .userName(application.getUser().getName())
+                .phoneNumber(application.getUser().getPhoneNumber())
                 .applicationDate(application.getCreatedAt())
-                .status(application.getStatus().getLabel())
-                .resumeTitle(application.getResume() != null ? application.getResume().toString() : null) // 또는 "없음"
+                .status(statusLabel)
+                .resumeId(application.getResume() != null ? application.getResume().getId() : null) // 또는 "없음"
+                .content(application.getContent())
                 .build();
     }
 }
