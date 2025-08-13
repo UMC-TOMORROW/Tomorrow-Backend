@@ -13,7 +13,9 @@ import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.job.entity.PersonalRegistration;
 import com.umc.tomorrow.domain.job.entity.WorkEnvironment;
 import com.umc.tomorrow.domain.job.enums.PostStatus;
+import com.umc.tomorrow.domain.job.exception.JobException;
 import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
+import com.umc.tomorrow.domain.job.repository.JobRecommendationJpaRepository;
 import com.umc.tomorrow.domain.job.repository.JobRepository;
 import com.umc.tomorrow.domain.kakaoMap.service.KakaoMapService;
 import com.umc.tomorrow.domain.member.entity.User;
@@ -27,15 +29,10 @@ import com.umc.tomorrow.domain.review.repository.ReviewRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -43,12 +40,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class JobCommandServiceImpl implements JobCommandService {
 
     private static final String JOB_SESSION_KEY = "job_session";
+
     private final JobConverter jobConverter;
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
     private final ReviewRepository reviewRepository;
     private final PreferenceRepository preferenceRepository;
     private final KakaoMapService kakaoMapService;
+    private final JobRecommendationJpaRepository jobRecommendationJpaRepository;
 
     //일자리 정보 세션 임시 저장
     @Override
@@ -79,9 +78,7 @@ public class JobCommandServiceImpl implements JobCommandService {
             throw new RestApiException(GlobalErrorStatus._BAD_REQUEST);
         }
 
-        //위도, 경도 기반 주소 조회 및 세팅
-        String personalAddress = kakaoMapService.getAddressFromCoord(requestDTO.getLatitude(),
-                requestDTO.getLongitude());
+        String personalAddress = kakaoMapService.getAddressFromCoord(requestDTO.getLatitude(), requestDTO.getLongitude());
         requestDTO.setAddress(personalAddress);
 
         PersonalRegistration personalRegistration = jobConverter.toPersonal(requestDTO);
@@ -106,14 +103,11 @@ public class JobCommandServiceImpl implements JobCommandService {
     @Override
     public JobCreateResponseDTO createJobWithExistingBusiness(Long userId, HttpSession session) {
         User user = getUser(userId);
-
         if (user.getBusinessVerification() == null) {
             throw new RestApiException(GlobalErrorStatus._BAD_REQUEST);
         }
 
         JobRequestDTO jobDTO = getJobFromSession(session);
-
-        //위도, 경도 기반 주소 조회 및 세팅
         String jobAddress = kakaoMapService.getAddressFromCoord(jobDTO.getLatitude(), jobDTO.getLongitude());
         jobDTO.setLocation(jobAddress);
 
@@ -136,7 +130,6 @@ public class JobCommandServiceImpl implements JobCommandService {
         User user = getUser(userId);
         JobRequestDTO jobDTO = getJobFromSession(session);
 
-        //위도, 경도 기반 주소 조회 및 세팅
         String jobAddress = kakaoMapService.getAddressFromCoord(jobDTO.getLatitude(), jobDTO.getLongitude());
         jobDTO.setLocation(jobAddress);
 
@@ -156,7 +149,7 @@ public class JobCommandServiceImpl implements JobCommandService {
                 .build();
     }
 
-    // 권한 검증
+    //권한 검증
     private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
@@ -174,88 +167,77 @@ public class JobCommandServiceImpl implements JobCommandService {
     @Override
     public void saveBusinessVerification(Long userId, BusinessRequestDTO requestDTO) {
         User user = getUser(userId);
-
         BusinessVerification businessVerification = jobConverter.toBusiness(requestDTO);
         user.setBusinessVerification(businessVerification);
         userRepository.save(user);
     }
 
-    //내일 추천
+    // 내일 추천
     @Override
     public GetRecommendationListResponse getTomorrowRecommendations(Long userId, Long cursorJobId, int size) {
 
+        // 1) 유저 & 선호도 가져오기
         User user = getUser(userId);
-
-        Preference preference = preferenceRepository.findByUserId(userId)
+        Preference pref = preferenceRepository.findByUserId(userId)
                 .orElseThrow(() -> new PreferenceException(PreferenceErrorStatus.PREFERENCE_NOT_FOUND));
 
-        Set<PreferenceType> preferenceTypes = preference.getPreferences();
+        Set<PreferenceType> positives = pref.getPreferences(); // 유저가 true로 고른 항목들
+        boolean hasHuman    = positives.contains(PreferenceType.HUMAN);
+        boolean hasDelivery = positives.contains(PreferenceType.DELIVERY);
+        boolean hasPhysical = positives.contains(PreferenceType.PHYSICAL);
+        boolean hasSit      = positives.contains(PreferenceType.SIT);
+        boolean hasStand    = positives.contains(PreferenceType.STAND);
 
+        // 전부 false면 추천 x
+        if (!(hasHuman || hasDelivery || hasPhysical || hasSit || hasStand)) {
+            return GetRecommendationListResponse.builder()
+                    .recommendationList(List.of())
+                    .hasNext(false)
+                    .build();
+        }
 
-        List<Job> matchingJobs = jobRepository.findAll();
+        // 2) 커서 점수 계산: 기존 API는 cursorJobId만 주니까, 그 공고의 score를 동일 기준으로 계산
+        Integer cursorScore = null;
+        if (cursorJobId != null) {
+            Job cursorJob = jobRepository.findById(cursorJobId)
+                    .orElseThrow(() -> new JobException(JobErrorStatus.JOB_NOT_FOUND));
 
-        // 2. 점수 부여 및 정렬
-        List<JobWithScore> sortedJobs = matchingJobs.stream()
-                .map(job -> {
-                    WorkEnvironment env = job.getWorkEnvironment();
-                    int score = calculateMatchScore(env, preferenceTypes);
-                    return new JobWithScore(job, score);
-                })
-                .filter(j -> j.score > 0)
-                .sorted(Comparator.comparing(JobWithScore::getScore).reversed()
-                        .thenComparing(j -> j.job.getId(), Comparator.reverseOrder()))
-                .toList();
+            if (cursorJob != null && cursorJob.getWorkEnvironment() != null) {
+                cursorScore = computeCursorScore(cursorJob.getWorkEnvironment(), hasHuman, hasDelivery, hasPhysical, hasSit, hasStand);
+            }
+        }
 
-        // 3. 커서 페이징 처리
-        List<JobWithScore> paged = applyCursorPaging(sortedJobs, cursorJobId, size);
+        // 3) DB에서 바로 필터/스코어/정렬/키셋 처리
+        var page = jobRecommendationJpaRepository.findRecommendedByUser(
+                userId,
+                hasHuman, hasDelivery, hasPhysical, hasSit, hasStand,
+                cursorScore, cursorJobId,
+                size
+        );
 
-        List<GetRecommendationResponse> responseList = paged.stream()
-                .map(j -> jobConverter.toRecommendationResponse(j.job, reviewRepository.countByJobId(j.job.getId())))
+        // 4) 결과 변환
+        List<GetRecommendationResponse> responseList = page.stream()
+                .map(j -> jobConverter.toRecommendationResponse(
+                        j.getJob(), reviewRepository.countByJobId(j.getJob().getId())))
                 .toList();
 
         return GetRecommendationListResponse.builder()
                 .recommendationList(responseList)
-                .hasNext(paged.size() == size)
+                .hasNext(page.size() == size)
                 .build();
     }
 
-    private int calculateMatchScore(WorkEnvironment env, Set<PreferenceType> preferences) {
+    /**
+     * JPQL의 scoreExpr과 동일한 기준으로 커서 공고의 점수를 자바에서 계산
+     */
+    private int computeCursorScore(WorkEnvironment env, boolean hasHuman, boolean hasDelivery, boolean hasPhysical, boolean hasSit, boolean hasStand) {
         int score = 0;
-
-        if (preferences.contains(PreferenceType.HUMAN) && env.isCanCommunicate()) score++;
-        if (preferences.contains(PreferenceType.DELIVERY) && env.isCanCarryObjects()) score++;
-        if (preferences.contains(PreferenceType.PHYSICAL) && env.isCanMoveActively()) score++;
-        if (preferences.contains(PreferenceType.SIT) && env.isCanWorkSitting()) score++;
-        if (preferences.contains(PreferenceType.STAND) && env.isCanWorkStanding()) score++;
-
+        if (hasHuman    && env.isCanCommunicate())  score++;
+        if (hasDelivery && env.isCanCarryObjects()) score++;
+        if (hasPhysical && env.isCanMoveActively()) score++;
+        if (hasSit      && env.isCanWorkSitting())  score++;
+        if (hasStand    && env.isCanWorkStanding()) score++;
         return score;
-    }
-
-
-    @Getter
-    @AllArgsConstructor
-    private static class JobWithScore {
-        private final Job job;
-        private final int score;
-    }
-
-    private List<JobWithScore> applyCursorPaging(List<JobWithScore> jobs, Long cursorJobId, int size) {
-        if (cursorJobId == null) {
-            return jobs.stream().limit(size).toList();
-        }
-
-        boolean startAdding = false;
-        List<JobWithScore> result = new ArrayList<>();
-        for (JobWithScore j : jobs) {
-            if (startAdding) {
-                result.add(j);
-                if (result.size() == size) break;
-            }
-            if (j.job.getId().equals(cursorJobId)) {
-                startAdding = true;
-            }
-        }
-        return result;
     }
 
     // PATCH 공고 모집완료/모집전 처리하기
