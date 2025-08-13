@@ -86,7 +86,7 @@ public class MemberController {
             summary = "내 역할(구인자/구직자) 설정",
             description = "현재 로그인한 회원의 역할을 설정/변경합니다. (EMPLOYER | JOB_SEEKER)"
     )
-    @PatchMapping("/me/member-type")
+    @PatchMapping("/member-type")
     public ResponseEntity<BaseResponse<UpdateUserTypeResponse>> updateMyMemberType(
             @Parameter(hidden = true) @AuthenticationPrincipal CustomOAuth2User user,
             @RequestBody UpdateMemberTypeRequestDTO request
@@ -99,7 +99,7 @@ public class MemberController {
             summary = "내 역할 조회",
             description = "현재 로그인한 회원의 역할(EMPLOYER | JOB_SEEKER)을 조회합니다."
     )
-    @GetMapping("/me/member-type")
+    @GetMapping("/member-type")
     public ResponseEntity<BaseResponse<GetUserTypeResponse>> getMemberType(
             @Parameter(hidden = true) @AuthenticationPrincipal CustomOAuth2User user) {
 
