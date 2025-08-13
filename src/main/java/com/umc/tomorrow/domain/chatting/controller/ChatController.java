@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -48,29 +49,22 @@ public class ChatController {
    @MessageMapping("/chats/send")
     public void sendMessage(
             Principal principal,
-            CreateChatMessageRequestDTO request
+            @Payload CreateChatMessageRequestDTO request
     ) {
-        if (principal instanceof UsernamePasswordAuthenticationToken authentication) {
-            Object principalObj = authentication.getPrincipal();
-            if (principalObj instanceof CustomOAuth2User user) {
-                Long userId = user.getUserDTO().getId();
+       Long userId = Long.valueOf(principal.getName());
 
-                // 1. 저장 (동기)
-                Message message = chatCommandService.saveMessage(request, userId);
+
+       // 1. 저장
+       Message message = chatCommandService.saveMessage(request, userId);
 
                 // 2. 응답 DTO 생성
-                CreateChatMessageResponseDTO response = CreateChatMessageResponseDTO.builder()
-                        .messageId(message.getId())
-                        .build();
+       CreateChatMessageResponseDTO response = CreateChatMessageResponseDTO.builder()
+               .messageId(message.getId())
+               .build();
 
                 // 3. 비동기 broadcast
-                chatBroadcastService.broadcast(request.getChattingRoomId(), response);
-            } else {
-                throw new IllegalStateException("Principal is not CustomOAuth2User");
-            }
-        } else {
-            throw new IllegalStateException("Principal is not UsernamePasswordAuthenticationToken");
-        }
+       chatBroadcastService.broadcast(request.getChattingRoomId(), response);
+
     }
 
 
