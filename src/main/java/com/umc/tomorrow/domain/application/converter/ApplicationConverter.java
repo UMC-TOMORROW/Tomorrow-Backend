@@ -99,6 +99,7 @@ public class ApplicationConverter {
 
         return ApplicationDetailsResponseDTO.builder()
                 .applicantId(user.getId())
+                .applicationId(application.getId())
                 .status(statusText)
                 .content(content)
                 .userProfile(userProfile)
@@ -128,6 +129,7 @@ public class ApplicationConverter {
         String statusLabel = application.getStatus() != null ? application.getStatus().getLabel() : "불합격";
         return ApplicantListResponseDTO.builder()
                 .applicantId(application.getUser().getId())
+                .applicationId(application.getId())
                 .userName(application.getUser().getName())
                 .phoneNumber(application.getUser().getPhoneNumber())
                 .applicationDate(application.getCreatedAt())
