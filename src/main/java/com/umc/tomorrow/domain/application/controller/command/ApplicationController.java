@@ -35,7 +35,7 @@ import java.util.List;
 @Validated
 @Tag(name = "Application", description = "지원서 관련 API")
 @RestController
-@RequestMapping("/api/v1/posts")
+@RequestMapping("/api/v1/jobs")
 @RequiredArgsConstructor
 public class ApplicationController {
     
@@ -45,10 +45,10 @@ public class ApplicationController {
         summary = "지원서 상태 업데이트", 
         description = "지원자의 합격/불합격 상태를 업데이트합니다."
     )
-    @PatchMapping("/{postId}/applications/{applicationId}/status")
+    @PatchMapping("/{jobId}/applications/{applicationId}/status")
     public ResponseEntity<BaseResponse<UpdateApplicationStatusResponseDTO>> updateApplicationStatus(
             @Parameter(description = "공고 ID", example = "301")
-            @PathVariable @Min(1) Long postId,
+            @PathVariable @Min(1) Long jobId,
             
             @Parameter(description = "지원서 ID", example = "101")
             @PathVariable @Min(1) Long applicationId,
@@ -56,7 +56,7 @@ public class ApplicationController {
             @Valid @RequestBody UpdateApplicationStatusRequestDTO requestDTO
     ) {
         UpdateApplicationStatusResponseDTO result = applicationCommandService.updateApplicationStatus(
-                postId, applicationId, requestDTO
+                jobId, applicationId, requestDTO
         );
         
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
@@ -64,39 +64,39 @@ public class ApplicationController {
 
     /**
      * 일자리 지원하기 API(POST)
-     * @param postId 지원하고자 하는 일자리ID
+     * @param jobId 지원하고자 하는 일자리ID
      * @param user 지원하는 유저
      * @param requestDto 일자리 지원 요청 DTO
      * @return 일자리 지원 응답 DTO
      */
     @Operation(summary = "일자리 지원하기", description = "로그인한 사용자가 해당 일자리에 지원합니다.")
     @ApiResponse(responseCode = "201", description = "일자리 지원 성공")
-    @PostMapping("/{postId}/applications")
+    @PostMapping("/{jobId}/applications")
     public ResponseEntity<BaseResponse<CreateApplicationResponseDTO>> createApplication(
-            @PathVariable Long postId,
+            @PathVariable Long jobId,
             @AuthenticationPrincipal CustomOAuth2User user,
             @Valid @RequestBody CreateApplicationRequestDTO requestDto
     ) {
-        CreateApplicationResponseDTO result = applicationCommandService.createApplication(user.getUserDTO().getId(), postId, requestDto);
+        CreateApplicationResponseDTO result = applicationCommandService.createApplication(user.getUserDTO().getId(), jobId, requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.onSuccessCreate(result));
     }
 
     @Operation(
-            summary = "개별 지원자 이력서 조회",
+            summary = "개별 지원서 이력서 조회",
             description = "특정 공고에 지원한 개별 지원자의 이력서 정보를 조회합니다."
     )
-    @GetMapping("/{postId}/applicants/{applicantId}/resume")
-    public ResponseEntity<BaseResponse<ApplicationDetailsResponseDTO>> getApplicantResume(
-            @Parameter(description = "공고 ID", example = "301")
-            @PathVariable @Min(1) Long postId,
+    @GetMapping("/{jobId}/applications/{applicationId}/resume")
+    public ResponseEntity<BaseResponse<ApplicationDetailsResponseDTO>> getApplicationResume(
+            @Parameter(description = "공고 ID", example = "17")
+            @PathVariable @Min(1) Long jobId,
 
-            @Parameter(description = "지원자 ID", example = "101")
-            @PathVariable @Min(1) Long applicantId
+            @Parameter(description = "지원서 ID", example = "10")
+            @PathVariable @Min(1) Long applicationId
     ) {
-        // 여기서는 Path Variable만 사용하여 조회하도록 구현
-        ApplicationDetailsResponseDTO result = applicationCommandService.getApplicantResume(
-                postId,
-                applicantId
+        // Application ID로 조회하도록 수정
+        ApplicationDetailsResponseDTO result = applicationCommandService.getApplicationResume(
+                jobId,
+                applicationId
         );
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
@@ -105,15 +105,15 @@ public class ApplicationController {
             summary = "지원자 목록 조회 (공고 기준)",
             description = "`status`가 없으면 전체, `status=open` 또는 `status=closed`로 필터링합니다."
     )
-    @GetMapping("/{postId}/applicants")
-    public ResponseEntity<BaseResponse<List<ApplicantListResponseDTO>>> getApplicantsByPost(
-            @Parameter(description = "공고 ID", example = "301")
-            @PathVariable @Min(1) Long postId,
+    @GetMapping("/{jobId}/applications")
+    public ResponseEntity<BaseResponse<List<ApplicantListResponseDTO>>> getApplicationsByJob(
+            @Parameter(description = "공고 ID", example = "17")
+            @PathVariable @Min(1) Long jobId,
 
             @Parameter(description = "지원 상태 필터 (생략 시 전체 조회)", example = "closed")
             @RequestParam(required = false) String status
     ) {
-        List<ApplicantListResponseDTO> result = applicationCommandService.getApplicantsByPostAndStatus(postId, status);
+        List<ApplicantListResponseDTO> result = applicationCommandService.getApplicationsByJob(jobId, status);
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
 } 
