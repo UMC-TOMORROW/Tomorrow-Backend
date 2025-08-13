@@ -81,6 +81,7 @@ public class JobCommandServiceImpl implements JobCommandService {
         }
 
         // 등록자 유형 확인
+        
         if (jobDTO.getRegistrantType() != RegistrantType.PERSONAL) {
             throw new RestApiException(JobErrorStatus.INVALID_REGISTRANT_TYPE);
         }
