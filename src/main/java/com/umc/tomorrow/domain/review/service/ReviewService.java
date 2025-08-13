@@ -15,9 +15,10 @@ public interface ReviewService {
     void saveReview(Long userId, ReviewRequestDTO dto);
 
     /**
-     * 특정 공고의 후기 목록 조회
-     * @param postId 공고 ID
-     * @param userId 로그인한 유저 ID
+     * 특정 공고에 대한 리뷰 목록 조회
+     * @param userId 사용자 ID
+     * @param jobId 공고 ID
+     * @return 리뷰 목록
      */
-    List<ReviewResponseDTO> getReviewsByPostId( Long userId, Long postId);
+    List<ReviewResponseDTO> getReviewsByJobId(Long userId, Long jobId);
 }

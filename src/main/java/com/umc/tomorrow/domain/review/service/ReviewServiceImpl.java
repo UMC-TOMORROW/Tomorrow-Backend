@@ -56,8 +56,8 @@ public class ReviewServiceImpl implements ReviewService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
-        Job post = jobRepository.findById(dto.getPostId())
-                .orElseThrow(()-> new JobException(JobErrorStatus.JOB_NOT_FOUND));
+        Job post = jobRepository.findById(dto.getJobId())
+                .orElseThrow(() -> new JobException(JobErrorStatus.JOB_NOT_FOUND));
 
         Review review = Review.builder()
                 .job(post)
@@ -69,17 +69,17 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     /**
-     * 후기 조회
-     * @param userId 회원 ID
-     * @param postId 일자리 ID
+     * 특정 공고에 대한 리뷰 목록 조회
+     * @param jobId 일자리 ID
+     * @param userId 사용자 ID
+     * @return 리뷰 목록
      */
     @Override
-    public List<ReviewResponseDTO> getReviewsByPostId(Long postId, Long userId) {
+    public List<ReviewResponseDTO> getReviewsByJobId(Long jobId, Long userId) {
+        // 사용자 권한 확인 (선택사항)
+        // TODO: 사용자가 해당 공고에 지원했는지, 또는 공고 등록자인지 확인
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
-
-        List<Review> reviews = reviewRepository.findByJobId(postId);
+        List<Review> reviews = reviewRepository.findByJobId(jobId);
 
         return reviews.stream()
                 .map(r -> new ReviewResponseDTO(r.getStars(), r.getReview(), r.getCreatedAt()))

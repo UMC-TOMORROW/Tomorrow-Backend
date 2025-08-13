@@ -15,8 +15,8 @@ import lombok.*;
 @Getter
 @Builder
 public class ReviewRequestDTO {
-    @NotNull(message = "{review.postId.notnull}")
-    private final Long postId;
+    @NotNull(message = "{review.jobId.notnull}")
+    private final Long jobId;
 
     @NotNull(message = "{review.stars.notnull}")
     @Min(value = 0, message = "{review.stars.min}")

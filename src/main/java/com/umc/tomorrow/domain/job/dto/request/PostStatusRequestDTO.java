@@ -1,6 +1,6 @@
 /**
  * 공고 상태(모집중,처리완료) 를 위한 dto
- * PATCH /api/v1/posts/{postId}/status
+ * PATCH /api/v1/posts/{jobId}/status
  * 작성자: 정여진
  * 생성일: 2025-08-05
  */
