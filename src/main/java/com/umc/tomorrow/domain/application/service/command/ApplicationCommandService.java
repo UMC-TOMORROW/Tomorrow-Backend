@@ -85,6 +85,15 @@ public class ApplicationCommandService {
         application.updateStatus(status);
         applicationRepository.save(application);
         
+        // 지원 결과에 따른 메일 발송
+        EmailType emailType = status == ApplicationStatus.ACCEPTED ? EmailType.JOB_ACCEPTED : EmailType.JOB_REJECTED;
+        EmailRequestDTO emailRequestDTO = EmailRequestDTO.builder()
+                .jobId(job.getId())
+                .type(emailType)
+                .build();
+        
+        emailService.sendEmail(application.getUser().getId(), emailRequestDTO);
+        
         return UpdateApplicationStatusResponseDTO.builder()
                 .applicationId(applicationId)
                 .status(requestDTO.getStatus())

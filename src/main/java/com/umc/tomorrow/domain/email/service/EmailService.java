@@ -62,7 +62,7 @@ public class EmailService {
 
             helper.setTo(email);
             helper.setSubject(subject);
-            helper.setText(content, false);
+            helper.setText(content, true); // HTML 메일을 위해 true로 설정
 
             javaMailSender.send(mimeMessage);
 

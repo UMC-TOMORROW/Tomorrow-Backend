@@ -6,5 +6,7 @@
 package com.umc.tomorrow.domain.email.enums;
 
 public enum EmailType {
-    JOB_APPLY, JOB_RESULT
+    JOB_APPLY, 
+    JOB_ACCEPTED, 
+    JOB_REJECTED
 }
