@@ -36,6 +36,7 @@ public class CertificateQueryServiceImpl implements CertificateQueryService {
                 .map(cert -> CertificateResponse.builder()
                         .id(cert.getId())
                         .fileUrl(cert.getFileUrl())
+                        .filename(cert.getName())
                         .build())
                 .collect(Collectors.toList());
     }
