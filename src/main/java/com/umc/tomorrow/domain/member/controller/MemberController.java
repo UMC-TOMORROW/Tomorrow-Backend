@@ -10,8 +10,11 @@ package com.umc.tomorrow.domain.member.controller;
 
 import com.umc.tomorrow.domain.member.dto.UserDTO;
 import com.umc.tomorrow.domain.member.dto.request.DeactivateUserRequest;
+import com.umc.tomorrow.domain.member.dto.request.UpdateMemberTypeRequestDTO;
 import com.umc.tomorrow.domain.member.dto.response.DeactivateUserResponse;
+import com.umc.tomorrow.domain.member.dto.response.GetUserTypeResponse;
 import com.umc.tomorrow.domain.member.dto.response.RecoverUserResponse;
+import com.umc.tomorrow.domain.member.dto.response.UpdateUserTypeResponse;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +24,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
+import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 
 @Tag(name = "member-controller", description = "회원 관련 API")
 @RestController
@@ -67,7 +70,7 @@ public class MemberController {
             @RequestBody DeactivateUserRequest request
     ) {
         DeactivateUserResponse result = memberService.deactivateUser(memberId, request);
-        return ResponseEntity.ok(BaseResponse.of(MemberStatus.MEMBER_DEACTIVATED, result));
+        return ResponseEntity.ok(BaseResponse.of(MemberErrorStatus.MEMBER_DEACTIVATED, result));
     }
     @Operation(summary = "회원 복구", description = "14일 내에 탈퇴한 회원만 복구 가능합니다.")
     @PatchMapping("/{memberId}/recover")
@@ -75,6 +78,33 @@ public class MemberController {
             @PathVariable("memberId") Long memberId
     ) {
         RecoverUserResponse result = memberService.recoverUser(memberId);
-        return ResponseEntity.ok(BaseResponse.of(MemberStatus.MEMBER_RECOVERED, result));
+        return ResponseEntity.ok(BaseResponse.of(MemberErrorStatus.MEMBER_RECOVERED, result));
     }
+
+    @Operation(
+            summary = "내 역할(구인자/구직자) 설정",
+            description = "현재 로그인한 회원의 역할을 설정/변경합니다. (EMPLOYER | JOB_SEEKER)"
+    )
+    @PatchMapping("/me/member-type")
+    public ResponseEntity<BaseResponse<UpdateUserTypeResponse>> updateMyMemberType(
+            @AuthenticationPrincipal CustomOAuth2User user,
+            @RequestBody UpdateMemberTypeRequestDTO request
+    ){
+        UpdateUserTypeResponse updated = memberService.updateMemberType(user.getUserDTO().getId(), request.getMemberType());
+        return ResponseEntity.ok(BaseResponse.onSuccess(updated));
+    }
+
+    @Operation(
+            summary = "내 역할 조회",
+            description = "현재 로그인한 회원의 역할(EMPLOYER | JOB_SEEKER)을 조회합니다."
+    )
+    @GetMapping("/me/member-type")
+    public ResponseEntity<BaseResponse<GetUserTypeResponse>> getMemberType(
+            @AuthenticationPrincipal CustomOAuth2User user) {
+
+        GetUserTypeResponse getUserTypeResponse = memberService.getMemberType(user.getUserDTO().getId());
+        return ResponseEntity.ok(BaseResponse.onSuccess(getUserTypeResponse));
+    }
+
+
 }
