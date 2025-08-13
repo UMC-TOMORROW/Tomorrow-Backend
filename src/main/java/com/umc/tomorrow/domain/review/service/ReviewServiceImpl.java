@@ -78,8 +78,11 @@ public class ReviewServiceImpl implements ReviewService {
     public List<ReviewResponseDTO> getReviewsByJobId(Long jobId, Long userId) {
         // 사용자 권한 확인 (선택사항)
         // TODO: 사용자가 해당 공고에 지원했는지, 또는 공고 등록자인지 확인
+    jobRepository.findById(jobId)
+            .orElseThrow(() -> new JobException(JobErrorStatus.JOB_NOT_FOUND));
 
-        List<Review> reviews = reviewRepository.findByJobId(jobId);
+    List<Review> reviews = reviewRepository.findByJobId(jobId);
+
 
         return reviews.stream()
                 .map(r -> new ReviewResponseDTO(r.getStars(), r.getReview(), r.getCreatedAt()))

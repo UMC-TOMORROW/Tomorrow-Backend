@@ -1,4 +1,4 @@
-package com.umc.tomorrow.domain.introduction.service.command;
+package com.umc.tomorrow.domain.introduction.service;
 
 import com.umc.tomorrow.domain.introduction.dto.request.IntroductionCreateRequestDTO;
 import com.umc.tomorrow.domain.introduction.dto.request.IntroductionUpdateRequestDTO;

@@ -5,11 +5,8 @@ import com.umc.tomorrow.domain.introduction.dto.request.IntroductionCreateReques
 import com.umc.tomorrow.domain.introduction.dto.request.IntroductionUpdateRequestDTO;
 import com.umc.tomorrow.domain.introduction.dto.response.GetIntroductionResponseDTO;
 import com.umc.tomorrow.domain.introduction.dto.response.IntroductionResponseDTO;
-import com.umc.tomorrow.domain.introduction.service.command.IntroductionCommandService;
+import com.umc.tomorrow.domain.introduction.service.IntroductionCommandService;
 import com.umc.tomorrow.domain.introduction.service.query.IntroductionQueryService;
-import com.umc.tomorrow.domain.job.dto.response.JobStepResponseDTO;
-import com.umc.tomorrow.domain.job.service.command.JobCommandService;
-import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
