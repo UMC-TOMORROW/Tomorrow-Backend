@@ -7,6 +7,8 @@ package com.umc.tomorrow.domain.certificate.service.query;
 
 import com.umc.tomorrow.domain.certificate.dto.response.CertificateResponse;
 import com.umc.tomorrow.domain.certificate.entity.Certificate;
+import com.umc.tomorrow.domain.certificate.exception.CertificateException;
+import com.umc.tomorrow.domain.certificate.exception.code.CertificateErrorStatus;
 import com.umc.tomorrow.domain.certificate.repository.CertificateRepository;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.exception.ResumeException;
@@ -30,12 +32,15 @@ public class CertificateQueryServiceImpl implements CertificateQueryService {
         Resume resume = resumeRepository.findById(resumeId)
                 .orElseThrow(() -> new ResumeException(ResumeErrorStatus.RESUME_NOT_FOUND));
 
-        List<Certificate> certificates = certificateRepository.findByResumeId(resumeId);
+        List<Certificate> certificates = certificateRepository.findByResumeId(resumeId)
+                .orElseThrow(()-> new CertificateException(CertificateErrorStatus.CERTIFICATE_NOT_FOUND));
+
 
         return certificates.stream()
                 .map(cert -> CertificateResponse.builder()
                         .id(cert.getId())
                         .fileUrl(cert.getFileUrl())
+                        .filename(cert.getFilename())
                         .build())
                 .collect(Collectors.toList());
     }
