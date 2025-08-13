@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum MemberStatus implements BaseCodeInterface {
+public enum MemberErrorStatus implements BaseCodeInterface {
 
     // 200번대 성공
     MEMBER_DEACTIVATED(HttpStatus.OK, true, "MEMBER2002", "회원 탈퇴가 완료되었습니다."),

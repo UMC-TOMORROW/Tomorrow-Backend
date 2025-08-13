@@ -14,7 +14,7 @@ import com.umc.tomorrow.domain.jobbookmark.entity.JobBookmark;
 import com.umc.tomorrow.domain.jobbookmark.exception.code.JobBookmarkErrorStatus;
 import com.umc.tomorrow.domain.jobbookmark.repository.JobBookmarkRepository;
 import com.umc.tomorrow.domain.member.entity.User;
-import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
+import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import jakarta.transaction.Transactional;
@@ -41,7 +41,7 @@ public class JobBookmarkCommandServiceImpl implements JobBookmarkCommandService 
     public JobBookmarkResponseDTO save(Long userId, Long jobId) {
         // 1. User와 Job 엔티티를 데이터베이스에서 조회
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RestApiException(MemberStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(MemberErrorStatus.MEMBER_NOT_FOUND));
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
 
