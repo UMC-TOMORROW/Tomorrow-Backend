@@ -192,22 +192,19 @@ public class JobCommandController {
     }
 
     /**
-     * 모집글 상태 변경(PATCH)
-     * @param postId 변경할 모집글 ID
-     * @param requestDTO 변경할 상태 정보 DTO
-     * @return 성공 응답
+     * 공고 모집완료/모집전 처리
+     * @param jobId 변경할 모집글 ID
+     * @param requestDTO 상태 변경 요청 DTO
+     * @param customOAuth2User 인증된 사용자
+     * @return 상태 변경 결과
      */
-    @Operation(summary = "모집글 상태 변경", description = "특정 모집글의 상태를 변경합니다.")
-    @PatchMapping("/{postId}/status")
-    public ResponseEntity<BaseResponse<Void>> updatePostStatus(
-            @AuthenticationPrincipal CustomOAuth2User user,
-            @PathVariable Long postId,
-            @Valid @RequestBody PostStatusRequestDTO requestDTO
-    ) {
-        Long userId = user.getUserDTO().getId();
-
-        // jobCommandService 안에있는 함수 호출
-        jobCommandService.updatePostStatus(userId, postId, requestDTO.getStatus());
+    @PatchMapping("/{jobId}/status")
+    public ResponseEntity<BaseResponse<Void>> updateJobStatus(
+            @PathVariable Long jobId,
+            @Valid @RequestBody PostStatusRequestDTO requestDTO,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        Long userId = customOAuth2User.getUserDTO().getId();
+        jobCommandService.updateJobStatus(userId, jobId, requestDTO.getStatus());
 
         return ResponseEntity.ok(BaseResponse.onSuccess(null));
     }

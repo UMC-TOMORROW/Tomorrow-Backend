@@ -13,6 +13,7 @@ import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.job.entity.PersonalRegistration;
 import com.umc.tomorrow.domain.job.entity.WorkEnvironment;
 import com.umc.tomorrow.domain.job.enums.PostStatus;
+import com.umc.tomorrow.domain.job.enums.RegistrantType;
 import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
 import com.umc.tomorrow.domain.job.repository.JobRepository;
 import com.umc.tomorrow.domain.kakaoMap.service.KakaoMapService;
@@ -76,7 +77,12 @@ public class JobCommandServiceImpl implements JobCommandService {
 
         JobRequestDTO jobDTO = (JobRequestDTO) session.getAttribute(JOB_SESSION_KEY);
         if (jobDTO == null) {
-            throw new RestApiException(GlobalErrorStatus._BAD_REQUEST);
+            throw new RestApiException(JobErrorStatus.JOB_DATA_NOT_FOUND);
+        }
+
+        // 등록자 유형 확인
+        if (jobDTO.getRegistrantType() != RegistrantType.PERSONAL) {
+            throw new RestApiException(JobErrorStatus.INVALID_REGISTRANT_TYPE);
         }
 
         //위도, 경도 기반 주소 조회 및 세팅
@@ -112,7 +118,16 @@ public class JobCommandServiceImpl implements JobCommandService {
             throw new RestApiException(GlobalErrorStatus._BAD_REQUEST);
         }
 
-        JobRequestDTO jobDTO = getJobFromSession(session);
+        JobRequestDTO jobDTO = (JobRequestDTO) session.getAttribute(JOB_SESSION_KEY);
+        if (jobDTO == null) {
+            throw new RestApiException(JobErrorStatus.JOB_DATA_NOT_FOUND);
+        }
+//        JobRequestDTO jobDTO = getJobFromSession(session);
+
+        // 등록자 유형 확인
+        if (jobDTO.getRegistrantType() != RegistrantType.BUSINESS) {
+            throw new RestApiException(JobErrorStatus.INVALID_REGISTRANT_TYPE);
+        }
 
         //위도, 경도 기반 주소 조회 및 세팅
         String jobAddress = kakaoMapService.getAddressFromCoord(jobDTO.getLatitude(), jobDTO.getLongitude());
@@ -135,7 +150,16 @@ public class JobCommandServiceImpl implements JobCommandService {
     public JobCreateResponseDTO registerBusinessAndCreateJob(Long userId, BusinessRequestDTO requestDTO,
                                                              HttpSession session) {
         User user = getUser(userId);
-        JobRequestDTO jobDTO = getJobFromSession(session);
+//        JobRequestDTO jobDTO = getJobFromSession(session);
+        JobRequestDTO jobDTO = (JobRequestDTO) session.getAttribute(JOB_SESSION_KEY);
+        if (jobDTO == null) {
+            throw new RestApiException(JobErrorStatus.JOB_DATA_NOT_FOUND);
+        }
+
+        // 등록자 유형 확인
+        if (jobDTO.getRegistrantType() != RegistrantType.BUSINESS) {
+            throw new RestApiException(JobErrorStatus.INVALID_REGISTRANT_TYPE);
+        }
 
         //위도, 경도 기반 주소 조회 및 세팅
         String jobAddress = kakaoMapService.getAddressFromCoord(jobDTO.getLatitude(), jobDTO.getLongitude());
@@ -262,9 +286,9 @@ public class JobCommandServiceImpl implements JobCommandService {
     // PATCH 공고 모집완료/모집전 처리하기
     @Transactional
     @Override
-    public void updatePostStatus(Long userId, Long postId, String status) {
-        // 1. postId에 해당하는 공고가 존재하는지 확인
-        Job job = jobRepository.findById(postId)
+    public void updateJobStatus(Long userId, Long jobId, String status) {
+        // 1. jobId에 해당하는 공고가 존재하는지 확인
+        Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
 
         // 2. 권한 검증: 공고 등록자와 현재 요청한 사용자가 동일한지 확인

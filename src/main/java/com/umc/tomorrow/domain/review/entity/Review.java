@@ -35,6 +35,7 @@ public class Review extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_id")
+    //@JoinColumn(name = "job_id")
+    @JoinColumn(name = "post_id", nullable = false)
     private Job job;
 }

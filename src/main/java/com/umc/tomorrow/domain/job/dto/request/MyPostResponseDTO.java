@@ -19,8 +19,7 @@ import java.util.List;
 @Schema(description = "내 공고 조회 응답 DTO")
 public class MyPostResponseDTO {
 
-    @Schema(description = "공고 ID", example = "301")
-    private Long postId;
+    private Long jobId;
 
     @Schema(description = "공고 제목", example = "도서 정리 및 대출 보조")
     private String title;
