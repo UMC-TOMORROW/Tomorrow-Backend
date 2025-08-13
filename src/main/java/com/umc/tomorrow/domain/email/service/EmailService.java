@@ -1,5 +1,6 @@
 /**
- *  EmailService 클래스 (이미지 메일만 발송, 불필요 기능 제거)
+ *  EmailService 클래스
+ *  이메일을 전송하는 서비스 로직
  *  작성자: 이승주
  *  작성일: 2025-07-27
  */
@@ -56,7 +57,7 @@ public class EmailService {
         // 1-1) 지원 상태 검증
         Application application = applicationRepository.findByJobIdAndUserId(dto.getJobId(), userId)
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
-        
+
         // 이메일 타입에 따른 지원 상태 검증
         validateEmailTypeWithApplicationStatus(dto.getType(), application.getStatus());
 
@@ -69,7 +70,7 @@ public class EmailService {
         String companyName = job.getCompanyName() != null ? job.getCompanyName().trim() : "회사명 없음";
         String submittedAt = ZonedDateTime.now(ZoneId.of("Asia/Seoul"))
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        
+
         // 디버깅용 로그
         log.info("[이메일 발송] jobTitle: '{}', companyName: '{}'", jobTitle, companyName);
 
@@ -82,7 +83,7 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
 
             helper.setTo(to);
-            
+
             // 제목과 내용을 안전하게 가져오기
             String subject;
             String textContent;
@@ -94,7 +95,7 @@ public class EmailService {
                 subject = "[내일] 지원서 접수 완료";
                 textContent = "정상적으로 지원이 완료되었습니다.";
             }
-            
+
             helper.setSubject(subject);
 
             // HTML 본문: 카드 이미지와 이메일 내용 함께 표시
@@ -109,14 +110,14 @@ public class EmailService {
                   </p>
                 </div>
                 """;
-            
+
             // % 문자를 이스케이프 처리하고 템플릿 치환
             String safeContent = textContent.replace("%", "%%");
             String html = htmlTemplate.replace("{{CONTENT}}", safeContent);
-            
+
             // 디버깅용 로그
             log.info("[이메일 발송] textContent: '{}', safeContent: '{}'", textContent, safeContent);
-            
+
             helper.setText(html, true);
 
             // ★ 인라인 이미지 첨부 (PNG)
@@ -132,7 +133,7 @@ public class EmailService {
                 .to(to)
                 .build();
     }
-    
+
     /**
      * 이메일 타입과 지원 상태 검증
      */

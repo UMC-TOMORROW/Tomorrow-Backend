@@ -17,7 +17,7 @@ public enum EmailContentType implements EmailContentProvider {
             return "정상적으로 지원이 완료되었습니다.";
         }
     },
-    
+
     JOB_ACCEPTED {
         @Override
         public String getSubject(User user, Job job) {
@@ -29,7 +29,7 @@ public enum EmailContentType implements EmailContentProvider {
             return "축하합니다! 이번 전형에서 합격하셨습니다.";
         }
     },
-    
+
     JOB_REJECTED {
         @Override
         public String getSubject(User user, Job job) {
