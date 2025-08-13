@@ -11,7 +11,7 @@ import com.umc.tomorrow.domain.jobbookmark.dto.response.GetJobBookmarkListRespon
 import com.umc.tomorrow.domain.jobbookmark.dto.response.JobBookmarkResponseDTO;
 import com.umc.tomorrow.domain.jobbookmark.entity.JobBookmark;
 import com.umc.tomorrow.domain.jobbookmark.repository.JobBookmarkRepository;
-import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
+import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class JobBookmarkQueryServiceImpl implements JobBookmarkQueryService {
     @Override
     public GetJobBookmarkListResponseDTO getList(Long userId, Long cursor, int size) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new RestApiException(MemberStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(MemberErrorStatus.MEMBER_NOT_FOUND));
 
         PageRequest pageRequest = PageRequest.of(0, size);
 
