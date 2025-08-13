@@ -65,3 +65,4 @@ public class EmailTemplateUtil {
         return result;
     }
 }
+
