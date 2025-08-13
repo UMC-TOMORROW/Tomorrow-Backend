@@ -51,22 +51,26 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor acc = StompHeaderAccessor.wrap(message);
 
-                // Handshake에서 올려둔 Authentication 그대로 사용
+                // 1) Handshake 인터셉터가 세션에 넣어둔 user 복원
                 if (acc.getSessionAttributes() != null) {
                     Object u = acc.getSessionAttributes().get("user");
 
-                    // (중요) Authentication(=Principal)인 경우만 setUser
                     if (u instanceof org.springframework.security.core.Authentication auth) {
+                        // 이미 Authentication이면 그대로 사용
                         acc.setUser(auth);
+
+                    } else if (u instanceof com.umc.tomorrow.domain.auth.security.CustomOAuth2User cou) {
+                        // ✅ CustomOAuth2User → userId 추출해 name=userid 로 정규화
+                        Long userId = cou.getUserDTO().getId();
+                        org.springframework.security.core.Authentication auth2 =
+                                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                                        String.valueOf(userId), null, java.util.Collections.emptyList()
+                                );
+                        acc.setUser(auth2);
                     }
-                    // 아래처럼 CustomOAuth2User를 다시 래핑하는 분기는 제거해야 함
-                    // else if (u instanceof CustomOAuth2User cou) {
-                    //    Authentication auth = new UsernamePasswordAuthenticationToken(
-                    //            cou, null, Collections.emptyList()
-                    //    );
-                    //    acc.setUser(auth);
-                    // }
                 }
+
+                // (옵션) CONNECT 헤더 Authorization 처리도 유지하고 싶으면 여기서 토큰 파싱해 acc.setUser(...) 추가
 
                 return message;
             }
