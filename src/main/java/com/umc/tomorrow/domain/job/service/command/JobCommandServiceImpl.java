@@ -85,6 +85,7 @@ public class JobCommandServiceImpl implements JobCommandService {
         requestDTO.setAddress(personalAddress);
 
         PersonalRegistration personalRegistration = jobConverter.toPersonal(requestDTO);
+
         Job job = jobConverter.toJob(jobDTO).toBuilder()
                 .user(user)
                 .personalRegistration(personalRegistration)

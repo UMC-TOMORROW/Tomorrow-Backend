@@ -6,8 +6,12 @@
  */
 package com.umc.tomorrow.domain.preferences.service;
 
+import com.umc.tomorrow.domain.member.exception.MemberException;
+import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.preferences.dto.PreferencesDTO;
 import com.umc.tomorrow.domain.preferences.entity.Preference;
+import com.umc.tomorrow.domain.preferences.exception.PreferenceException;
+import com.umc.tomorrow.domain.preferences.exception.code.PreferenceErrorStatus;
 import com.umc.tomorrow.domain.preferences.repository.PreferenceRepository;
 import com.umc.tomorrow.domain.preferences.converter.PreferenceConverter;
 import com.umc.tomorrow.domain.member.entity.User;
@@ -48,9 +52,11 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Transactional
     public PreferencesDTO updatePreferences(Long userId, PreferencesDTO dto) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+            .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
+
         Preference entity = preferenceRepository.findByUser(user)
-            .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+            .orElseThrow(() -> new PreferenceException(PreferenceErrorStatus.PREFERENCE_NOT_FOUND));
+
         PreferenceConverter.updateEntity(entity, dto);
         preferenceRepository.save(entity);
         return PreferenceConverter.toDTO(entity);
