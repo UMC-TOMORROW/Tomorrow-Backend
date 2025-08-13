@@ -7,7 +7,7 @@ public enum EmailContentType implements EmailContentProvider {
     JOB_APPLY {
         @Override
         public String getSubject(User user, Job job) {
-            return "[지원 완료] " + user.getName() + "님이 " + job.getTitle() + "에 지원했습니다.";
+            return "[내일] " + user.getName() + "님이 " + job.getTitle() + "에 지원했습니다.";
         }
 
         @Override
