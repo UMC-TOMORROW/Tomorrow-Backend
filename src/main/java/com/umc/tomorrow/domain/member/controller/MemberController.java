@@ -17,6 +17,7 @@ import com.umc.tomorrow.domain.member.dto.response.RecoverUserResponse;
 import com.umc.tomorrow.domain.member.dto.response.UpdateUserTypeResponse;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -87,7 +88,7 @@ public class MemberController {
     )
     @PatchMapping("/me/member-type")
     public ResponseEntity<BaseResponse<UpdateUserTypeResponse>> updateMyMemberType(
-            @AuthenticationPrincipal CustomOAuth2User user,
+            @Parameter(hidden = true) @AuthenticationPrincipal CustomOAuth2User user,
             @RequestBody UpdateMemberTypeRequestDTO request
     ){
         UpdateUserTypeResponse updated = memberService.updateMemberType(user.getUserDTO().getId(), request.getMemberType());
@@ -100,7 +101,7 @@ public class MemberController {
     )
     @GetMapping("/me/member-type")
     public ResponseEntity<BaseResponse<GetUserTypeResponse>> getMemberType(
-            @AuthenticationPrincipal CustomOAuth2User user) {
+            @Parameter(hidden = true) @AuthenticationPrincipal CustomOAuth2User user) {
 
         GetUserTypeResponse getUserTypeResponse = memberService.getMemberType(user.getUserDTO().getId());
         return ResponseEntity.ok(BaseResponse.onSuccess(getUserTypeResponse));
