@@ -26,6 +26,10 @@ import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
+import com.umc.tomorrow.domain.member.exception.MemberException;
+import com.umc.tomorrow.domain.member.repository.UserRepository;
+import com.umc.tomorrow.domain.member.dto.UserConverter;
+import com.umc.tomorrow.domain.member.entity.User;
 
 @Tag(name = "member-controller", description = "회원 관련 API")
 @RestController
@@ -35,6 +39,9 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Operation(summary = "내 정보 조회", description = "현재 로그인한 회원의 정보를 조회합니다.")
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getMe(@AuthenticationPrincipal CustomOAuth2User user) {
@@ -42,11 +49,17 @@ public class MemberController {
             return ResponseEntity.status(401).build();
         }
         
-        // resumeId가 null인 경우 업데이트
-        memberService.updateResumeIdIfNull(user.getUserDTO().getId());
+        Long userId = user.getUserDTO().getId();
         
-        UserDTO userDTO = user.getUserDTO();
-        return ResponseEntity.ok(userDTO);
+        // resumeId가 null인 경우 업데이트
+        memberService.updateResumeIdIfNull(userId);
+        
+        // 업데이트된 사용자 정보를 다시 조회
+        User updatedUser = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
+        
+        UserDTO updatedUserDTO = UserConverter.toDTO(updatedUser);
+        return ResponseEntity.ok(updatedUserDTO);
     }
 
     /**

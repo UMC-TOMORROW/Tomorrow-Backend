@@ -1,34 +1,36 @@
 package com.umc.tomorrow.domain.auth.security;
 
-import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.enums.Provider;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
+import com.umc.tomorrow.domain.resume.entity.Resume;
+import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
+import com.umc.tomorrow.domain.introduction.entity.Introduction;
+import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Iterator;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
-
-    @Autowired
-    public CustomSuccessHandler(JWTUtil jwtUtil, UserRepository userRepository) {
-        this.jwtUtil = jwtUtil;
-        this.userRepository = userRepository;
-    }
+    private final ResumeRepository resumeRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -47,6 +49,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         User user = userRepository.findByProviderAndProviderUserId(provider, providerUserId);
         if (user == null) {
+            // 새로운 사용자 생성
             user = new User();
             user.setName(customUserDetails.getName());
             user.setCreatedAt(java.time.LocalDateTime.now());
@@ -58,13 +61,54 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                     ? providerStr + "_" + providerUserId : null;
             user.setUsername(usernameToUseForTokens);
             user.setEmail(customUserDetails.getUserDTO().getEmail());
+            
+            // 사용자 저장
+            user = userRepository.save(user);
+            
+            // 기본 이력서 생성
+            Resume defaultResume = Resume.builder()
+                    .user(user)
+                    .build();
+            
+            // 기본 자기소개 생성
+            Introduction defaultIntroduction = Introduction.builder()
+                    .content("안녕하세요! 저는 " + user.getName() + "입니다.")
+                    .resume(defaultResume)
+                    .build();
+            
+            defaultResume.setIntroduction(defaultIntroduction);
+            
+            // 이력서 저장
+            Resume savedResume = resumeRepository.save(defaultResume);
+            
+            // 사용자의 resumeId 업데이트
+            user.setResumeId(savedResume.getId());
             userRepository.save(user);
+            
         } else {
             usernameToUseForTokens = user.getUsername();
             if (usernameToUseForTokens == null) {
                 usernameToUseForTokens = (providerStr != null && providerUserId != null)
                         ? providerStr + "_" + providerUserId : null;
                 user.setUsername(usernameToUseForTokens);
+                userRepository.save(user);
+            }
+            
+            // 기존 사용자이지만 resumeId가 없는 경우 기본 이력서 생성
+            if (user.getResumeId() == null) {
+                Resume defaultResume = Resume.builder()
+                        .user(user)
+                        .build();
+                
+                Introduction defaultIntroduction = Introduction.builder()
+                        .content("안녕하세요! 저는 " + user.getName() + "입니다.")
+                        .resume(defaultResume)
+                        .build();
+                
+                defaultResume.setIntroduction(defaultIntroduction);
+                
+                Resume savedResume = resumeRepository.save(defaultResume);
+                user.setResumeId(savedResume.getId());
                 userRepository.save(user);
             }
         }
