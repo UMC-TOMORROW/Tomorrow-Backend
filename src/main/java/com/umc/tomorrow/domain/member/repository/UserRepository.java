@@ -10,6 +10,10 @@ package com.umc.tomorrow.domain.member.repository;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.enums.Provider;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
   
@@ -21,4 +25,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByUsername(String username);
 
     User findByProviderAndProviderUserId(Provider provider, String providerUserId);
+    
+    /**
+     * resumeId가 null인 사용자들을 조회합니다.
+     * @return resumeId가 null인 사용자 목록
+     */
+    List<User> findByResumeIdIsNull();
+    
+    /**
+     * 특정 resumeId를 가진 사용자를 조회합니다.
+     * @param resumeId 이력서 ID
+     * @return 해당 resumeId를 가진 사용자
+     */
+    User findByResumeId(Long resumeId);
 }
