@@ -30,7 +30,7 @@ public class ResumeSaveRequestDTO {
     public static class CareerSaveRequest {
         private final String company;
         private final String description;
-        private final int workedYear;
+        private final Integer workedYear;
         private WorkPeriodType workedPeriod;
     }
 
