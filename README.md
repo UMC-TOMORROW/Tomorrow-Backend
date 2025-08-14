@@ -1,6 +1,80 @@
-# 🛠️ Tomorrow Backend
+# 🌱 내일 - 당신의 더 나은 '내일'을 위해 '내 일' 찾기
 
-DDD 기반으로 설계된 Tomorrow 서비스의 백엔드 레포지토리입니다.
+> 🧑‍🦳 건강 상태에 딱 맞는 맞춤형 일자리 추천 서비스
+
+![스크린샷](https://github.com/user-attachments/assets/69f8ff8b-bf45-4e6c-8679-1095b2bad4a6)
+
+## 📋 서비스 소개
+
+**내일**은 중장년층의 건강 상태와 생활 패턴을 고려한 건강 맞춤 온보딩 기능을 통해무리가 가지 않는 직무를 추천하고, 정서적·신체적 부담을 줄여 지속적인 사회 참여와 경제 활동을 돕는 서비스입니다.
+이를 통해 삶의 만족도와 자존감을 높이고, 건강한 노후를 준비할 수 있습니다.
+
+
+### ✨ 주요 기능
+
+#### 💪 건강 맞춤 온보딩
+
+* 5가지의 온보딩을 통해 개인의 건강 상태와 생활 패턴을 반영하여 무리가 없는 직무를 추천하는 맞춤형 초기 진단 기능
+* 중장년층도 쉽게 사용할 수 있는 직관적 UI/UX로 접근성과 편의성을 강화
+
+#### 📋 맞춤형 일자리 추천 & 후기 공유
+* 온보딩 결과와 건강 조건을 기반으로 한 최적의 일자리 매칭 시스템
+* 실제 근무자의 생생한 후기 공유를 통해 직무 이해도와 선택의 정확도를 높임
+
+#### 💬 커리어 정보 제공 & 실시간 소통 💬
+* 다양한 업종·직무별 커리어 정보와 취업 준비 자료를 한 곳에서 제공
+* 실제 커리어 경험자와의 실시간 채팅을 통해 현장감 있는 조언과 정보를 실시간으로 획득
+
+##  👥 팀원 소개
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 🛠️ 기술 스택
+
+### ⚙️ Backend  
+![Java](https://img.shields.io/badge/Java-007396?style=flat&logo=openjdk&logoColor=white)  
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=flat&logo=spring-boot&logoColor=white)  
+![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?style=flat&logo=spring-security&logoColor=white)  
+![JPA](https://img.shields.io/badge/JPA-59666C?style=flat&logo=hibernate&logoColor=white)  
+
+### 💾 DB  
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white)  
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white)  
+
+### ☁️ Infra  
+![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat&logo=amazon-aws&logoColor=white)  
+![S3](https://img.shields.io/badge/Amazon%20S3-569A31?style=flat&logo=amazon-s3&logoColor=white)  
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)  
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=flat&logo=nginx&logoColor=white)  
+![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat&logo=github-actions&logoColor=white)  
+
+### 📡 API  
+![Kakao API](https://img.shields.io/badge/Kakao%20API-FFCD00?style=flat&logo=kakao&logoColor=black)  
+![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=flat&logo=swagger&logoColor=black)  
+![JavaMail](https://img.shields.io/badge/JavaMail-007396?style=flat&logo=java&logoColor=white)  
+
+### 🧰 ETC  
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)  
+![Notion](https://img.shields.io/badge/Notion-000000?style=flat&logo=notion&logoColor=white)  
+![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ-000000?style=flat&logo=intellijidea&logoColor=white)  
+![Slack](https://img.shields.io/badge/Slack-4A154B?style=flat&logo=slack&logoColor=white)  
+![Discord](https://img.shields.io/badge/Discord-5865F2?style=flat&logo=discord&logoColor=white)  
+![ERDCloud](https://img.shields.io/badge/ERDCloud-00C389?style=flat&logo=data&logoColor=white)  
+
 
 ## 프로젝트 구조
 ```
@@ -38,42 +112,6 @@ tomorrow
 └── README.md
 ```
 
-## 코드 컨벤션
-
-### 1. 패키지 구조
-
-- **도메인형 패키지 구조**: 기능이 아닌 도메인(비즈니스 영역)별로 패키지를 구성합니다.
-  - `domain`: 각 도메인별 비즈니스 로직이 위치합니다.
-  - `global`: 프로젝트 전반에서 사용되는 공통 요소들이 위치합니다.
-
-### 2. 도메인 패키지 내부 구조
-
-각 도메인 패키지는 다음과 같은 내부 구조를 가집니다:
-- `controller`: 해당 도메인의 API 엔드포인트를 관리합니다.
-- `entity`: JPA 엔티티 클래스들이 위치합니다.
-- `repository`: 데이터 접근 계층 인터페이스가 위치합니다.
-- `service`: 비즈니스 로직이 구현되는 서비스 클래스들이 위치합니다.
-  - `command`: 데이터 변경(CUD)을 담당하는 서비스를 구현합니다.
-  - `query`: 데이터 조회(R)를 담당하는 서비스를 구현합니다.
-  - 
-### 3. 네이밍 컨벤션
-
-- **클래스명**: 파스칼 케이스(PascalCase)를 사용합니다. 예: `MemberService`
-- **메소드명, 변수명**: 카멜 케이스(camelCase)를 사용합니다. 예: `getUserById`
-- **상수**: 대문자 스네이크 케이스(SNAKE_CASE)를 사용합니다. 예: `MAX_USER_COUNT`
-- **패키지명**: 소문자만 사용합니다. 예: `com.umc.foody.domain.member`
-
-## 4. 예외 처리
-
-- 글로벌 예외 처리를 사용하여 일관된 응답 형식을 유지합니다.
-- 커스텀 예외 클래스를 사용하여 비즈니스 로직에 관련된 예외를 명확히 구분합니다.
-
-### 5. Lombok 사용
-
-- 반복적인 코드를 줄이기 위해 Lombok을 적극적으로 활용합니다.
-- 주로 사용하는 어노테이션: `@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor`, `@Builder`
-
-
 
 ## 🌱 Git 브랜치 전략
 
@@ -107,58 +145,6 @@ refactor/#10-entity-rename
 - 하나의 이슈에 대해 여러 개의 세부 작업 PR을 쪼개서 관리
 - PR 본문: 작업 목적, 주요 변경점, 테스트 여부 등 명확히 기술
 
-
-
----
-
-## ✅ 커밋 컨벤션 (선택 시)
-
-```md
-feat: 기능 추가
-fix: 버그 수정
-docs: 문서 수정
-refactor: 리팩토링
-test: 테스트 코드 작성
-chore: 빌드 설정, 패키지 추가 등
-
-## 주요 디렉토리 설명
-
-### domain
-
-비즈니스 로직을 담당하는 도메인 계층입니다. 각 도메인은 독립적인 기능 단위로 구성됩니다.
-
-#### member
-
-사용자 관련 기능을 구현하는 도메인입니다.
-- `controller`: 사용자 API 엔드포인트
-- `entity`: 사용자 관련 엔티티 클래스
-- `repository`: 사용자 데이터 접근 인터페이스
-- `service/command`: 사용자 정보 생성/수정/삭제 서비스
-- `service/query`: 사용자 정보 조회 서비스
-
-### global
-
-프로젝트 전반에서 사용되는 공통 모듈입니다.
-
-#### common
-
-- `base`: 공통으로 사용되는 기본 클래스들
-  - `BaseEntity`: 생성일자, 수정일자, 삭제일자를 관리하는 JPA 엔티티 기본 클래스
-  - `BaseResponse`: API 응답의 일관성을 위한 응답 래퍼 클래스
-- `exception`: 예외 처리 관련 클래스들
-  - `code`: 에러 코드와 메시지를 정의하는 인터페이스와 구현체
-  - `ExceptionAdvice`: 전역 예외 처리기
-  - `RestApiException`: 사용자 정의 예외 클래스
-
-## 기술 스택
-
-- Java 17
-- Spring Boot 3.5.3
-- Spring Data JPA
-- Spring Security
-- MySQL
-- Gradle
-- Lombok
 
 
 
