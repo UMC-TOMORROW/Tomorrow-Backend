@@ -59,7 +59,7 @@ public class JobCommandController {
      * @return 성공 응답
      */
     @Operation(summary = "일자리 등록 폼 작성", description = "검증된 사용자가 일자리 폼을 작성합니다.")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<BaseResponse<JobStepResponseDTO>> saveJobStepOne(
             @AuthenticationPrincipal CustomOAuth2User user,
             @RequestPart("jobRequest") String jobRequestJson,
@@ -177,18 +177,6 @@ public class JobCommandController {
         jobCommandService.saveBusinessVerification(userId, requestDTO);
         return ResponseEntity.ok(BaseResponse.onSuccess(null));
 
-    }
-    @GetMapping("recommendations")
-    @Operation(summary = "내일 추천 게시글 목록 조회 (무한 스크롤)", description = "내일 추천 게시글 목록을 무한 스크롤 방식으로 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "내일 추천 목록 조회 성공")
-    public ResponseEntity<BaseResponse<GetRecommendationListResponse>> getTomorrowRecommendations(
-            @AuthenticationPrincipal CustomOAuth2User user,
-            @Positive @RequestParam(required = false) Long cursor,
-            @Positive @RequestParam(defaultValue = "8") int size
-    ){
-        Long userId = user.getUserDTO().getId();
-        GetRecommendationListResponse result = jobCommandService.getTomorrowRecommendations(userId, cursor,size);
-        return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
 
     /**

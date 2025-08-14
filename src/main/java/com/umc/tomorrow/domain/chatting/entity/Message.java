@@ -35,9 +35,6 @@ public class Message extends BaseEntity {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_part_id")
     private ChatPart chatPart;

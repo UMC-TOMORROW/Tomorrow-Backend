@@ -2,16 +2,13 @@ package com.umc.tomorrow.global.config;
 
 import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
-import java.security.Principal;
-import java.util.Collections;
-
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,12 +17,16 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import java.security.Principal;
+import java.util.Collections;
+
+@Slf4j
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final JWTUtil jwtUtil;
+    private final JWTUtil jwtUtil; // 현재 직접 쓰진 않지만 생성자 주입 유지
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -48,45 +49,62 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor acc = StompHeaderAccessor.wrap(message);
 
-                //  1) 프론트가 STOMP CONNECT 헤더로 보낸 토큰 처리
-                if (acc.getCommand() == StompCommand.CONNECT) {
-                    String authz = acc.getFirstNativeHeader("Authorization");
-                    if (authz == null) authz = acc.getFirstNativeHeader("authorization");
-                    if (authz != null && authz.startsWith("Bearer ")) {
-                        String token = authz.substring(7);
+                // 기본 프레임 정보 로깅
+                String cmd = acc.getCommand() != null ? acc.getCommand().name() : "UNKNOWN";
+                String sid = acc.getSessionId();
+                Principal beforeUser = acc.getUser();
+                log.info("[WS-IN] cmd={}, sessionId={}, beforeUser={}({})",
+                        cmd, sid,
+                        beforeUser != null ? beforeUser.getName() : "null",
+                        beforeUser != null ? beforeUser.getClass().getSimpleName() : "null"
+                );
 
-                        // 너희 유틸은 validateToken이 아니라 isExpired 사용
-                        if (!jwtUtil.isExpired(token)) {
-                            Long userId = jwtUtil.getUserId(token);
+                // 1) Handshake에서 세션에 넣어둔 user 확인
+                Object u = (acc.getSessionAttributes() != null)
+                        ? acc.getSessionAttributes().get("user")
+                        : null;
 
-                            // name = userId 로 넣어두면 Principal.getName()으로 꺼내기 쉬움
-                            Authentication auth = new UsernamePasswordAuthenticationToken(
-                                    String.valueOf(userId), null, Collections.emptyList()
-                            );
+                if (u == null) {
+                    log.warn("[WS-IN] sessionId={} no 'user' attribute in sessionAttributes", sid);
+                } else {
+                    log.info("[WS-IN] sessionId={} session.user type={}", sid, u.getClass().getName());
 
-                            acc.setUser(auth); // Authentication은 Principal 구현 → OK
-                            if (acc.getSessionAttributes() != null) {
-                                acc.getSessionAttributes().put("user", auth); // Map<String,Object>라 OK
-                            }
-                        } else {
-                            throw new RuntimeException("Invalid/Expired JWT");
-                        }
-                    }
-                }
-
-                // ✅ 2) Handshake 인터셉터가 세션에 올려둔 값도 함께 커버
-                if (acc.getSessionAttributes() != null) {
-                    Object u = acc.getSessionAttributes().get("user");
-                    if (u instanceof Principal p) {
-                        acc.setUser(p);
-                    } else if (u instanceof CustomOAuth2User cou) {
-                        // getAuthorities()가 없을 수도 있으니 빈 권한으로 래핑
-                        Authentication auth = new UsernamePasswordAuthenticationToken(
-                                cou, null, Collections.emptyList()
-                        );
+                    if (u instanceof Authentication auth) {
+                        // 이미 Authentication이면 그대로 사용
+                        log.info("[WS-IN] sessionId={} using Authentication(name={}) from session", sid, auth.getName());
                         acc.setUser(auth);
+
+                    } else if (u instanceof CustomOAuth2User cou) {
+                        // CustomOAuth2User → userId로 정규화
+                        Long userId = cou.getUserDTO().getId();
+                        log.info("[WS-IN] sessionId={} found CustomOAuth2User(name={}, id={}), normalizing to userId",
+                                sid, cou.getUserDTO().getName(), userId);
+
+                        Authentication normalized = new UsernamePasswordAuthenticationToken(
+                                String.valueOf(userId), null, Collections.emptyList()
+                        );
+                        acc.setUser(normalized);
+                        log.info("[WS-IN] sessionId={} setUser -> name={}", sid, normalized.getName());
+                    } else {
+                        log.warn("[WS-IN] sessionId={} unexpected session.user type: {}", sid, u.getClass().getName());
                     }
                 }
+
+                // 최종 setUser 상태 출력
+                Principal afterUser = acc.getUser();
+                log.info("[WS-IN] cmd={}, sessionId={}, afterUser={}({})",
+                        cmd, sid,
+                        afterUser != null ? afterUser.getName() : "null",
+                        afterUser != null ? afterUser.getClass().getSimpleName() : "null"
+                );
+
+                // (옵션) CONNECT 네이티브 헤더 Authorization 존재 여부만 참고용으로 찍기 (값은 노출 안 함)
+                try {
+                    var authz = acc.getFirstNativeHeader("Authorization");
+                    if (authz != null) {
+                        log.info("[WS-IN] sessionId={} CONNECT native 'Authorization' header present", sid);
+                    }
+                } catch (Exception ignore) { /* no-op */ }
 
                 return message;
             }

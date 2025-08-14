@@ -24,8 +24,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,45 +48,78 @@ public class ChatController {
     private final ChatQueryService chatQueryService;
     private final ChatBroadcastService chatBroadcastService;
 
-   @MessageMapping("/chats/send")
+    // 프론트 publish: /pub/chats/send  (ApplicationDestinationPrefixes="/pub")
+    @MessageMapping("/chats/send")
     public void sendMessage(
             Principal principal,
-            CreateChatMessageRequestDTO request
+            @Payload CreateChatMessageRequestDTO request
     ) {
-        if (principal instanceof UsernamePasswordAuthenticationToken authentication) {
-            Object principalObj = authentication.getPrincipal();
-            if (principalObj instanceof CustomOAuth2User user) {
-                Long userId = user.getUserDTO().getId();
+        // ✅ 어떤 형태로 Principal이 들어와도 userId를 안전하게 복원
+        Long userId = resolveUserId(principal);
 
-                // 1. 저장 (동기)
-                Message message = chatCommandService.saveMessage(request, userId);
+        // 1) 저장
+        Message message = chatCommandService.saveMessage(request, userId);
 
-                // 2. 응답 DTO 생성
-                CreateChatMessageResponseDTO response = CreateChatMessageResponseDTO.builder()
-                        .messageId(message.getId())
-                        .build();
+        // 2) 응답 DTO
+        CreateChatMessageResponseDTO response = CreateChatMessageResponseDTO.builder()
+                .messageId(message.getId())
+                .build();
 
-                // 3. 비동기 broadcast
-                chatBroadcastService.broadcast(request.getChattingRoomId(), response);
-            } else {
-                throw new IllegalStateException("Principal is not CustomOAuth2User");
-            }
-        } else {
-            throw new IllegalStateException("Principal is not UsernamePasswordAuthenticationToken");
-        }
+        // 3) 브로드캐스트
+        chatBroadcastService.broadcast(request.getChattingRoomId(), response);
     }
 
+    // === Principal → userId 복원 유틸 ===
+    private Long resolveUserId(Principal principal) {
+        // a) UsernamePasswordAuthenticationToken인 경우
+        if (principal instanceof UsernamePasswordAuthenticationToken auth) {
+            Object p = auth.getPrincipal();
+
+            // 우리가 인바운드에서 심어둔 형태: principal = "14" (문자열 숫자)
+            if (p instanceof String s && s.chars().allMatch(Character::isDigit)) {
+                return Long.valueOf(s);
+            }
+            // 소셜 기본 형태: principal = CustomOAuth2User
+            if (p instanceof CustomOAuth2User cou) {
+                return cou.getUserDTO().getId();
+            }
+            // 혹시 다른 타입이어도 숫자 문자열이면 처리
+            if (p != null) {
+                String s = p.toString();
+                if (s.chars().allMatch(Character::isDigit)) return Long.valueOf(s);
+            }
+        }
+
+        // b) 그냥 name()이 숫자인 경우
+        if (principal != null && principal.getName() != null
+                && principal.getName().chars().allMatch(Character::isDigit)) {
+            return Long.valueOf(principal.getName());
+        }
+
+        // c) 마지막 보루: SecurityContext에서 다시 시도
+        Authentication ctx = SecurityContextHolder.getContext().getAuthentication();
+        if (ctx instanceof UsernamePasswordAuthenticationToken ctxAuth) {
+            Object p = ctxAuth.getPrincipal();
+            if (p instanceof CustomOAuth2User cou) {
+                return cou.getUserDTO().getId();
+            }
+            if (p instanceof String s && s.chars().allMatch(Character::isDigit)) {
+                return Long.valueOf(s);
+            }
+        }
+
+        throw new IllegalStateException("userId를 Principal에서 복원할 수 없습니다: " + principal);
+    }
 
     @PostMapping("{chattingRoomId}/join")
     @Operation(summary = "채팅방 참여", description = "유저가 채팅룸 id에 해당하는 채팅방에 참여합니다.")
     @ApiResponse(responseCode = "201", description = "채팅방 참여 성공")
     public ResponseEntity<BaseResponse<Void>> joinChatRoom(
-        @NotNull @Positive @PathVariable Long chattingRoomId,
-        @AuthenticationPrincipal CustomOAuth2User user
+            @NotNull @Positive @PathVariable Long chattingRoomId,
+            @AuthenticationPrincipal CustomOAuth2User user
     ){
         Long userId = user.getUserDTO().getId();
         chatCommandService.joinChatRoom(chattingRoomId, userId);
-
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(BaseResponse.onSuccessCreate(null));
@@ -100,5 +136,4 @@ public class ChatController {
         GetChatMessageListResponseDTO response = chatQueryService.getMessages(chattingRoomId, cursor, size);
         return ResponseEntity.ok(BaseResponse.onSuccess(response));
     }
-
 }

@@ -26,8 +26,6 @@ public interface JobCommandService {
     //사업자 등록
     void saveBusinessVerification(Long userId, BusinessRequestDTO requestDTO);
 
-    GetRecommendationListResponse getTomorrowRecommendations(Long userId, Long cursor, int size);
-
     // PATCH 공고 모집완료/모집전 처리하기
     @Transactional
     void updateJobStatus(Long userId, Long jobId, String status);

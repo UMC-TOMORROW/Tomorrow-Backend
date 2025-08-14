@@ -128,7 +128,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //
 //        response.addCookie(createCookie("RefreshToken", refreshToken, (int)refreshTokenExpiredSeconds));
 //        response.addHeader("RefreshToken", refreshToken);
-//        response.sendRedirect("http://localhost:5173/onboarding");
+//        response.sendRedirect("https://umctomorrow.shop/onboarding");
 //        //response.sendRedirect("/success");//로컬 테스트 확인용
     }
 

@@ -2,17 +2,21 @@ package com.umc.tomorrow.domain.job.controller.query;
 
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.job.dto.request.MyPostResponseDTO;
+import com.umc.tomorrow.domain.job.dto.response.GetRecommendationListResponse;
 import com.umc.tomorrow.domain.job.dto.response.JobDetailResponseDTO;
 import com.umc.tomorrow.domain.job.service.query.JobQueryService;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -49,6 +53,19 @@ public class JobQueryController {
             @PathVariable Long jobId) {
         JobDetailResponseDTO result = jobQueryService.getJobDetail(jobId);
 
+        return ResponseEntity.ok(BaseResponse.onSuccess(result));
+    }
+
+    @GetMapping("recommendations")
+    @Operation(summary = "내일 추천 게시글 목록 조회 (무한 스크롤)", description = "내일 추천 게시글 목록을 무한 스크롤 방식으로 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "내일 추천 목록 조회 성공")
+    public ResponseEntity<BaseResponse<GetRecommendationListResponse>> getTomorrowRecommendations(
+            @AuthenticationPrincipal CustomOAuth2User user,
+            @Positive @RequestParam(required = false) Long cursor,
+            @Positive @RequestParam(defaultValue = "8") int size
+    ){
+        Long userId = user.getUserDTO().getId();
+        GetRecommendationListResponse result = jobQueryService.getTomorrowRecommendations(userId, cursor,size);
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
 
