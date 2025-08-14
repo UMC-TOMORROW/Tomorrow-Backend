@@ -5,7 +5,9 @@
 이를 통해 삶의 만족도와 자존감을 높이고, 건강한 노후를 준비할 수 있습니다.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/69f8ff8b-bf45-4e6c-8679-1095b2bad4a6" width="500" alt="스크린샷"/>
+  <img src="https://github.com/user-attachments/assets/24bfb68f-7363-46f1-858f-74b753680489" 
+       alt="프로젝트 미리보기"
+       style="max-width: 800px; height: auto; border-radius: 12px;">
 </p>
 
 
