@@ -15,8 +15,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ResumeErrorStatus implements BaseCodeInterface {
 
-    RESUME_NOT_FOUND(HttpStatus.NOT_FOUND, "RESUME404", "이력서를 찾을 수 없습니다."),
-    RESUME_FORBIDDEN(HttpStatus.FORBIDDEN, "RESUME403", "해당 이력서에 접근할 권한이 없습니다.");
+    RESUME_NOT_FOUND(HttpStatus.NOT_FOUND, "RESUME401", "이력서를 찾을 수 없습니다."),
+    RESUME_FORBIDDEN(HttpStatus.FORBIDDEN, "RESUME402", "해당 이력서에 접근할 권한이 없습니다.");
     private final HttpStatus httpStatus;
     private final boolean isSuccess = false;
     private final String code;

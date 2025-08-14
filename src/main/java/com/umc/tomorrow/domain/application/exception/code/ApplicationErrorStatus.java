@@ -15,13 +15,13 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ApplicationErrorStatus implements BaseCodeInterface {
 
-    APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "APPLICATION404", "지원서를 찾을 수 없습니다."),
-    APPLICATION_ALREADY_PROCESSED(HttpStatus.BAD_REQUEST, "APPLICATION4001", "이미 처리된 지원서입니다."),
-    APPLICATION_JOB_MISMATCH(HttpStatus.BAD_REQUEST, "APPLICATION4002", "해당 공고의 지원서가 아닙니다."),
-    INVALID_STATUS(HttpStatus.BAD_REQUEST, "APPLICATION_4005", "지원서 상태는 '합격' 또는 '불합격'이어야 합니다."),
-    APPLICATION_DUPLICATED(HttpStatus.BAD_REQUEST, "APPLICATION_4006", "이미 해당 공고에 지원했습니다."),
-    APPLICANTS_NOT_FOUND(HttpStatus.NOT_FOUND, "APPLICATION4003", "해당 공고의 지원자를 찾을 수 없습니다."),
-    JOB_NOT_FOUND(HttpStatus.NOT_FOUND, "APPLICATION4004", "해당 공고를 찾을 수 없습니다.");
+    APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "APPLICATION401", "지원서를 찾을 수 없습니다."),
+    APPLICATION_ALREADY_PROCESSED(HttpStatus.BAD_REQUEST, "APPLICATION402", "이미 처리된 지원서입니다."),
+    APPLICATION_JOB_MISMATCH(HttpStatus.BAD_REQUEST, "APPLICATION403", "해당 공고의 지원서가 아닙니다."),
+    INVALID_STATUS(HttpStatus.BAD_REQUEST, "APPLICATION404", "지원서 상태는 '합격' 또는 '불합격'이어야 합니다."),
+    APPLICATION_DUPLICATED(HttpStatus.BAD_REQUEST, "APPLICATION405", "이미 해당 공고에 지원했습니다."),
+    APPLICANTS_NOT_FOUND(HttpStatus.NOT_FOUND, "APPLICATION406", "해당 공고의 지원자를 찾을 수 없습니다."),
+    JOB_NOT_FOUND(HttpStatus.NOT_FOUND, "APPLICATION407", "해당 공고를 찾을 수 없습니다.");
 
 
     private final HttpStatus httpStatus;

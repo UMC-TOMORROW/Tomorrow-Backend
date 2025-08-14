@@ -15,11 +15,11 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ReviewErrorStatus implements BaseCodeInterface {
 
-    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW404", "리뷰를 찾을 수 없습니다."),
-    INVALID_STARS_RANGE(HttpStatus.BAD_REQUEST, "REVIEW4001", "별점은 0-5 사이여야 합니다."),
-    JOB_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW4002", "해당 공고를 찾을 수 없습니다."),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW4003", "사용자를 찾을 수 없습니다."),
-    APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW4004", "지원 내역을 찾을 수 없습니다.");
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW401", "리뷰를 찾을 수 없습니다."),
+    INVALID_STARS_RANGE(HttpStatus.BAD_REQUEST, "REVIEW402", "별점은 0-5 사이여야 합니다."),
+    JOB_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW403", "해당 공고를 찾을 수 없습니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW404", "사용자를 찾을 수 없습니다."),
+    APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW405", "지원 내역을 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final boolean isSuccess = false;

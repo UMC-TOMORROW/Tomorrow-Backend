@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum PreferenceErrorStatus implements BaseCodeInterface {
 
-    PREFERENCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PREFERENCE404", "온보딩을 찾을 수 없습니다.");
+    PREFERENCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PREFERENCE401", "온보딩을 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final boolean isSuccess = false;

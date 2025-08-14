@@ -5,6 +5,10 @@ import com.umc.tomorrow.global.common.exception.code.BaseCode;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import com.umc.tomorrow.domain.application.exception.ApplicationException;
 import com.umc.tomorrow.domain.review.exception.ReviewException;
+import com.umc.tomorrow.domain.preferences.exception.PreferenceException;
+import com.umc.tomorrow.domain.job.exception.JobException;
+import com.umc.tomorrow.domain.resume.exception.ResumeException;
+import com.umc.tomorrow.domain.careertalk.exception.CareertalkException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -57,6 +61,46 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity<BaseResponse<String>> handleReviewException(ReviewException e) {
         BaseCode errorCode = e.getErrorCode();
         log.error("Review error occurred: {}", e.getMessage(), e);
+        return handleExceptionInternal(errorCode);
+    }
+
+    /*
+     * PreferenceException 에러 클래스에 대한 예외 처리
+     */
+    @ExceptionHandler(value = PreferenceException.class)
+    public ResponseEntity<BaseResponse<String>> handlePreferenceException(PreferenceException e) {
+        BaseCode errorCode = e.getErrorCode();
+        log.error("Preference error occurred: {}", e.getMessage(), e);
+        return handleExceptionInternal(errorCode);
+    }
+
+    /*
+     * JobException 에러 클래스에 대한 예외 처리
+     */
+    @ExceptionHandler(value = JobException.class)
+    public ResponseEntity<BaseResponse<String>> handleJobException(JobException e) {
+        BaseCode errorCode = e.getErrorCode();
+        log.error("Job error occurred: {}", e.getMessage(), e);
+        return handleExceptionInternal(errorCode);
+    }
+
+    /*
+     * ResumeException 에러 클래스에 대한 예외 처리
+     */
+    @ExceptionHandler(value = ResumeException.class)
+    public ResponseEntity<BaseResponse<String>> handleResumeException(ResumeException e) {
+        BaseCode errorCode = e.getErrorCode();
+        log.error("Resume error occurred: {}", e.getMessage(), e);
+        return handleExceptionInternal(errorCode);
+    }
+
+    /*
+     * CareertalkException 에러 클래스에 대한 예외 처리
+     */
+    @ExceptionHandler(value = CareertalkException.class)
+    public ResponseEntity<BaseResponse<String>> handleCareertalkException(CareertalkException e) {
+        BaseCode errorCode = e.getErrorCode();
+        log.error("Careertalk error occurred: {}", e.getMessage(), e);
         return handleExceptionInternal(errorCode);
     }
 

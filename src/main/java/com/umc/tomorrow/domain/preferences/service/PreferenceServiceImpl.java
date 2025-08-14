@@ -16,8 +16,7 @@ import com.umc.tomorrow.domain.preferences.repository.PreferenceRepository;
 import com.umc.tomorrow.domain.preferences.converter.PreferenceConverter;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
-import com.umc.tomorrow.global.common.exception.RestApiException;
-import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +35,7 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Transactional
     public PreferencesDTO savePreferences(Long userId, PreferencesDTO dto) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
+            .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
         Preference entity = Preference.builder()
             .user(user)
             .preferences(dto.getPreferences())
