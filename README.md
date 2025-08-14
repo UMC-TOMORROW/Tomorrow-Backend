@@ -159,9 +159,9 @@ Refactor/entity-rename#10
 
 
 
-## 🎥 시연 영상
+## 🎥 시연 영상 및 배포 주소
 
-
+> https://umctomorrow.shop/
 [!(https://www.youtube.com/watch?v=90jnHS6DWto&feature=youtu.be)]
 
 
