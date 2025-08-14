@@ -18,7 +18,7 @@ public class Introduction extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = true, length = 100)
     private String content;
 
     //연관관계
