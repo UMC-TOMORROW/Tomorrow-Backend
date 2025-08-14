@@ -8,8 +8,8 @@ RUN apt-get update \
  && fc-cache -f \
  && rm -rf /var/lib/apt/lists/*
 
-# JVM 옵션: 헤드리스 + 타임존(서울)
-ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true -Duser.timezone=Asia/Seoul"
+# JVM 옵션: 헤드리스 + 타임존(서울) + UTF-8 인코딩
+ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true -Duser.timezone=Asia/Seoul -Dfile.encoding=UTF-8"
 
 # 앱 작업 디렉토리
 WORKDIR /app

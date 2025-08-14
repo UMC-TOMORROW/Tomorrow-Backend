@@ -19,6 +19,8 @@ import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -68,7 +70,7 @@ public class MemberController {
      */
     @Operation(summary = "내 정보 수정", description = "현재 로그인한 회원의 정보를 수정합니다.")
     @PutMapping("/me")
-    public ResponseEntity<UserDTO> updateMe(@AuthenticationPrincipal CustomOAuth2User user, @RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> updateMe(@AuthenticationPrincipal CustomOAuth2User user, @Valid @RequestBody UserDTO userDTO) {
         if (user == null) {
             return ResponseEntity.status(401).build();
         }

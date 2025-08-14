@@ -14,6 +14,7 @@ import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,7 +43,7 @@ public class PreferenceController {
     @PatchMapping
     public ResponseEntity<BaseResponse> updatePreferences(
             @AuthenticationPrincipal CustomOAuth2User user,
-            @RequestBody PreferencesDTO dto) {
+            @Valid @RequestBody PreferencesDTO dto) {
         // 실제 DB에 희망 조건 업데이트
         Long userId = user.getUserDTO().getId();
         preferenceService.updatePreferences(userId, dto);

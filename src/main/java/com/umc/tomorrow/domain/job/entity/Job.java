@@ -37,7 +37,7 @@ public class Job extends BaseEntity {
     @Column(nullable = false)
     private Boolean isActive;
 
-    @Lob
+    @Column(length = 1000)
     private String jobDescription;
 
     @Enumerated(EnumType.STRING)
