@@ -81,7 +81,6 @@ public class JobCommandServiceImpl implements JobCommandService {
         }
 
         // 등록자 유형 확인
-        
         if (jobDTO.getRegistrantType() != RegistrantType.PERSONAL) {
             throw new RestApiException(JobErrorStatus.INVALID_REGISTRANT_TYPE);
         }
@@ -98,9 +97,12 @@ public class JobCommandServiceImpl implements JobCommandService {
                 .personalRegistration(personalRegistration)
                 .build();
 
-        personalRegistration = personalRegistration.toBuilder()
-                .job(job)
-                .build();
+        System.out.println("세션 location 값: " + jobDTO.getLocation());
+
+
+//        personalRegistration = personalRegistration.toBuilder()
+//                .job(job)
+//                .build();
 
         Job savedJob = jobRepository.save(job);
         session.removeAttribute(JOB_SESSION_KEY);

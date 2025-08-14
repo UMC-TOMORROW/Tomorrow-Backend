@@ -47,6 +47,6 @@ public class PersonalRequestDTO {
 
     @Schema(description = "주소",
             example = "인천광역시 부평구 부평동",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String address;
 }

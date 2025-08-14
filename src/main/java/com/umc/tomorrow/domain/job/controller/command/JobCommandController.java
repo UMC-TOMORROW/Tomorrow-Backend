@@ -59,42 +59,14 @@ public class JobCommandController {
      * @return 성공 응답
      */
     @Operation(summary = "일자리 등록 폼 작성", description = "검증된 사용자가 일자리 폼을 작성합니다.")
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping
     public ResponseEntity<BaseResponse<JobStepResponseDTO>> saveJobStepOne(
             @AuthenticationPrincipal CustomOAuth2User user,
-            @RequestPart("jobRequest") String jobRequestJson,
-            @RequestPart(value = "image", required = false) MultipartFile image,
+            @Valid @RequestBody JobRequestDTO requestDTO,
             HttpSession session
     ) {
         Long userId = user.getUserDTO().getId();
 
-        // JSON 파싱
-        ObjectMapper objectMapper = new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-        JobRequestDTO requestDTO;
-        try {
-            requestDTO = objectMapper.readValue(jobRequestJson, JobRequestDTO.class);
-        } catch (Exception e) {
-            throw new RestApiException(GlobalErrorStatus._BAD_REQUEST);
-        }
-
-        // 유효성 검증
-        Set<ConstraintViolation<JobRequestDTO>> violations = validator.validate(requestDTO);
-        if (!violations.isEmpty()) {
-            String errorMessage = violations.iterator().next().getMessage();
-            throw new RestApiException(GlobalErrorStatus._VALIDATION_ERROR, errorMessage);
-        }
-
-
-        // 이미지 업로드
-        if (image != null && !image.isEmpty()) {
-            String imageUrl = s3Uploader.upload(image, "job-images");
-            requestDTO.setJobImageUrl(imageUrl);
-        }
-
-        // 서비스 호출
         JobStepResponseDTO result = jobCommandService.saveInitialJobStep(userId, requestDTO, session);
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
