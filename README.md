@@ -141,11 +141,7 @@ tomorrow
 - 접두어/작업내용#이슈번호 형태로 작성합니다.
 - 하위 작업은 숫자로 나누어 관리할 수 있습니다.
 
-### Ex
-
-Feat/image-create#24
-Fix/token-expire#78
-Refactor/entity-rename#10
+**예시**Feat/image-create#24, Fix/token-expire#78, Refactor/entity-rename#10
 
 ---
 
