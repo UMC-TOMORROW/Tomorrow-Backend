@@ -84,6 +84,8 @@ dependencies {
 	//웹소켓 채팅
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 test {

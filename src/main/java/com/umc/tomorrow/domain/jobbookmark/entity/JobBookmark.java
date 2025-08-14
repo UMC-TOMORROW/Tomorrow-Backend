@@ -17,7 +17,7 @@ import lombok.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class JobBookmark  extends BaseEntity {
+public class JobBookmark extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

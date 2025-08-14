@@ -9,6 +9,7 @@
 package com.umc.tomorrow.domain.member.dto;
 
 import jakarta.persistence.EntityListeners;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Builder
+@Valid
 public class UserDTO {
     private final Long id; // 회원 고유 ID
     private final String role; // 권한 (예: ROLE_USER, ROLE_ADMIN)

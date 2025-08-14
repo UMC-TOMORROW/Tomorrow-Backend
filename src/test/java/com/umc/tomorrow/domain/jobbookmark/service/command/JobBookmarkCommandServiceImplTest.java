@@ -8,7 +8,7 @@ import com.umc.tomorrow.domain.jobbookmark.entity.JobBookmark;
 import com.umc.tomorrow.domain.jobbookmark.exception.code.JobBookmarkErrorStatus;
 import com.umc.tomorrow.domain.jobbookmark.repository.JobBookmarkRepository;
 import com.umc.tomorrow.domain.member.entity.User;
-import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
+import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import org.junit.jupiter.api.DisplayName;
@@ -68,7 +68,7 @@ class JobBookmarkCommandServiceImplTest {
                     .id(bookmarkId)
                     .user(bookmark.getUser())
                     .job(bookmark.getJob())
-                    .createdAt(LocalDateTime.now())
+
                     .build();
         };
         when(jobBookmarkRepository.save(any(JobBookmark.class))).thenAnswer(returnsWithId);
@@ -100,7 +100,7 @@ class JobBookmarkCommandServiceImplTest {
         RestApiException exception = assertThrows(RestApiException.class, 
             () -> service.save(userId, jobId));
 
-        assertEquals(MemberStatus.MEMBER_NOT_FOUND, exception.getBaseCode());
+        assertEquals(MemberErrorStatus.MEMBER_NOT_FOUND, exception.getErrorCode().getCode());
         verifyNoInteractions(jobRepository, jobBookmarkRepository);
     }
 
@@ -114,7 +114,7 @@ class JobBookmarkCommandServiceImplTest {
         RestApiException exception = assertThrows(RestApiException.class, 
             () -> service.save(userId, jobId));
 
-        assertEquals(JobErrorStatus.JOB_NOT_FOUND, exception.getBaseCode());
+        assertEquals(JobErrorStatus.JOB_NOT_FOUND, exception.getErrorCode().getCode());
         verifyNoInteractions(jobBookmarkRepository);
     }
 
@@ -131,7 +131,7 @@ class JobBookmarkCommandServiceImplTest {
         RestApiException exception = assertThrows(RestApiException.class, 
             () -> service.save(userId, jobId));
 
-        assertEquals(JobBookmarkErrorStatus.JOB_BOOKMARK_ALREADY_EXISTS, exception.getBaseCode());
+        assertEquals(JobBookmarkErrorStatus.JOB_BOOKMARK_ALREADY_EXISTS, exception.getErrorCode().getCode());
         verifyNoInteractions(jobBookmarkRepository);
     }
 
@@ -167,7 +167,7 @@ class JobBookmarkCommandServiceImplTest {
         RestApiException exception = assertThrows(RestApiException.class, 
             () -> service.delete(userId, jobId));
 
-        assertEquals(JobBookmarkErrorStatus.JOB_BOOKMARK_NOT_FOUND, exception.getBaseCode());
+        assertEquals(JobBookmarkErrorStatus.JOB_BOOKMARK_NOT_FOUND, exception.getErrorCode().getCode());
         verify(jobBookmarkRepository, never()).delete(any());
     }
 

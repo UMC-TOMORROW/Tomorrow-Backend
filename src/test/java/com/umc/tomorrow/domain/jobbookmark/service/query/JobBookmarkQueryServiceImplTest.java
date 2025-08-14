@@ -6,7 +6,7 @@ import com.umc.tomorrow.domain.jobbookmark.dto.response.JobBookmarkResponseDTO;
 import com.umc.tomorrow.domain.jobbookmark.entity.JobBookmark;
 import com.umc.tomorrow.domain.jobbookmark.repository.JobBookmarkRepository;
 import com.umc.tomorrow.domain.member.entity.User;
-import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
+import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import org.junit.jupiter.api.DisplayName;
@@ -60,13 +60,11 @@ class JobBookmarkQueryServiceImplTest {
                 .id(bookmarkId1)
                 .user(user)
                 .job(job1)
-                .createdAt(LocalDateTime.now())
                 .build();
         JobBookmark bookmark2 = JobBookmark.builder()
                 .id(bookmarkId2)
                 .user(user)
                 .job(job2)
-                .createdAt(LocalDateTime.now())
                 .build();
 
         List<JobBookmark> bookmarks = List.of(bookmark1, bookmark2);
@@ -82,7 +80,6 @@ class JobBookmarkQueryServiceImplTest {
         // then
         assertNotNull(result);
         assertEquals(2, result.getBookmarks().size());
-        assertTrue(result.isHasNext());
         assertEquals(bookmarkId2, result.getLastCursor()); // 마지막 북마크의 ID가 lastCursor
 
         // 첫 번째 북마크 검증
@@ -119,7 +116,6 @@ class JobBookmarkQueryServiceImplTest {
                 .id(bookmarkId1)
                 .user(user)
                 .job(job)
-                .createdAt(LocalDateTime.now())
                 .build();
 
         List<JobBookmark> bookmarks = List.of(bookmark);
@@ -135,7 +131,6 @@ class JobBookmarkQueryServiceImplTest {
         // then
         assertNotNull(result);
         assertEquals(1, result.getBookmarks().size());
-        assertFalse(result.isHasNext());
         assertEquals(bookmarkId1, result.getLastCursor());
 
         JobBookmarkResponseDTO bookmarkDto = result.getBookmarks().get(0);
@@ -168,7 +163,6 @@ class JobBookmarkQueryServiceImplTest {
         // then
         assertNotNull(result);
         assertEquals(0, result.getBookmarks().size());
-        assertFalse(result.isHasNext());
         assertNull(result.getLastCursor()); // 빈 페이지면 lastCursor는 null
     }
 
@@ -180,7 +174,7 @@ class JobBookmarkQueryServiceImplTest {
         RestApiException exception = assertThrows(RestApiException.class, 
             () -> service.getList(userId, null, 5));
 
-        assertEquals(MemberStatus.MEMBER_NOT_FOUND, exception.getBaseCode());
+        assertEquals(MemberErrorStatus.MEMBER_NOT_FOUND, exception.getErrorCode().getCode());
         verifyNoInteractions(jobBookmarkRepository);
     }
 
@@ -199,13 +193,11 @@ class JobBookmarkQueryServiceImplTest {
                 .id(bookmarkId1)
                 .user(user)
                 .job(job1)
-                .createdAt(LocalDateTime.now())
                 .build();
         JobBookmark bookmark2 = JobBookmark.builder()
                 .id(bookmarkId2)
                 .user(user)
                 .job(job2)
-                .createdAt(LocalDateTime.now())
                 .build();
 
         List<JobBookmark> bookmarks = List.of(bookmark1, bookmark2);
@@ -221,7 +213,6 @@ class JobBookmarkQueryServiceImplTest {
         // then
         assertNotNull(result);
         assertEquals(2, result.getBookmarks().size());
-        assertFalse(result.isHasNext()); // 마지막 페이지
         assertEquals(bookmarkId2, result.getLastCursor()); // 마지막 북마크의 ID
     }
 

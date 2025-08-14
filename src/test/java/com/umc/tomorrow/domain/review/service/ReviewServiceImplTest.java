@@ -199,7 +199,6 @@ class ReviewServiceImplTest {
                 .stars(5)
                 .review("정말 좋았습니다!")
                 .user(user1)
-                .createdAt(LocalDateTime.now())
                 .build();
         
         Review review2 = Review.builder()
@@ -207,7 +206,6 @@ class ReviewServiceImplTest {
                 .stars(4)
                 .review("괜찮았습니다")
                 .user(user2)
-                .createdAt(LocalDateTime.now())
                 .build();
         
         List<Review> reviews = Arrays.asList(review1, review2);
