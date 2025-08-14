@@ -23,8 +23,33 @@
 * 다양한 업종·직무별 커리어 정보와 취업 준비 자료를 한 곳에서 제공
 * 실제 커리어 경험자와의 실시간 채팅을 통해 현장감 있는 조언과 정보를 실시간으로 획득
 
-##  👥 팀원 소개
+##  👥 팀원 소개(백엔드)
 
+<table>
+  <tr>
+    <td align="center" width="33%">
+       <img width="300" height="400" alt="Image" src="https://github.com/user-attachments/assets/245fc11a-a37b-4962-9b91-613b2d93d6cd"/><br/>
+      <strong>이승주</strong><br/>
+      Team Lead<br/>
+      <a href="https://github.com/Leeseung-joo">📧 GitHub</a><br/>
+      <sub>커리어톡 및 채팅<br/>내일 추천 기능<br/>인프라, S3</sub>
+    </td>
+    <td align="center" width="33%">
+      <img width="300" height="400" alt="Image" src=""/><br/>
+      <strong>정여진</strong><br/>
+      Backend Develope<br/>
+      <a href="https://github.com/jnyn0314">📧 GitHub</a><br/>
+      <sub>마이페이지<br/>소셜로그인 및 메일 발송<br/>인프라,erd 설계</sub>
+    </td>
+    <td align="center" width="33%">
+      <img width="300" height="400" alt="Image" src="" /><br/>
+      <strong>한지혜</strong><br/>
+      Backend Developer<br/>
+      <a href="https://github.com/hanfihei">📧 GitHub</a><br/>
+      <sub>일자리 등록 및 카카오 지도<br/>소셜로그인<br/>인프라,프로젝트 설계</sub>
+    </td>
+  </tr>
+</table>
 
 
 
