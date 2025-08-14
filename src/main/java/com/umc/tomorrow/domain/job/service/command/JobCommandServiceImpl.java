@@ -14,7 +14,9 @@ import com.umc.tomorrow.domain.job.entity.PersonalRegistration;
 import com.umc.tomorrow.domain.job.entity.WorkEnvironment;
 import com.umc.tomorrow.domain.job.enums.PostStatus;
 import com.umc.tomorrow.domain.job.enums.RegistrantType;
+import com.umc.tomorrow.domain.job.exception.JobException;
 import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
+import com.umc.tomorrow.domain.job.repository.JobRecommendationJpaRepository;
 import com.umc.tomorrow.domain.job.repository.JobRepository;
 import com.umc.tomorrow.domain.kakaoMap.service.KakaoMapService;
 import com.umc.tomorrow.domain.member.entity.User;
@@ -28,15 +30,10 @@ import com.umc.tomorrow.domain.review.repository.ReviewRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -44,11 +41,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class JobCommandServiceImpl implements JobCommandService {
 
     private static final String JOB_SESSION_KEY = "job_session";
+
     private final JobConverter jobConverter;
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
-    private final ReviewRepository reviewRepository;
-    private final PreferenceRepository preferenceRepository;
     private final KakaoMapService kakaoMapService;
 
     //일자리 정보 세션 임시 저장
@@ -81,14 +77,12 @@ public class JobCommandServiceImpl implements JobCommandService {
         }
 
         // 등록자 유형 확인
-        
+
         if (jobDTO.getRegistrantType() != RegistrantType.PERSONAL) {
             throw new RestApiException(JobErrorStatus.INVALID_REGISTRANT_TYPE);
         }
 
-        //위도, 경도 기반 주소 조회 및 세팅
-        String personalAddress = kakaoMapService.getAddressFromCoord(requestDTO.getLatitude(),
-                requestDTO.getLongitude());
+        String personalAddress = kakaoMapService.getAddressFromCoord(requestDTO.getLatitude(), requestDTO.getLongitude());
         requestDTO.setAddress(personalAddress);
 
         PersonalRegistration personalRegistration = jobConverter.toPersonal(requestDTO);
@@ -182,7 +176,7 @@ public class JobCommandServiceImpl implements JobCommandService {
                 .build();
     }
 
-    // 권한 검증
+    //권한 검증
     private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
@@ -204,84 +198,6 @@ public class JobCommandServiceImpl implements JobCommandService {
         BusinessVerification businessVerification = jobConverter.toBusiness(requestDTO);
         user.setBusinessVerification(businessVerification);
         userRepository.save(user);
-    }
-
-    //내일 추천
-    @Override
-    public GetRecommendationListResponse getTomorrowRecommendations(Long userId, Long cursorJobId, int size) {
-
-        User user = getUser(userId);
-
-        Preference preference = preferenceRepository.findByUserId(userId)
-                .orElseThrow(() -> new PreferenceException(PreferenceErrorStatus.PREFERENCE_NOT_FOUND));
-
-        Set<PreferenceType> preferenceTypes = preference.getPreferences();
-
-
-        List<Job> matchingJobs = jobRepository.findAll();
-
-        // 2. 점수 부여 및 정렬
-        List<JobWithScore> sortedJobs = matchingJobs.stream()
-                .map(job -> {
-                    WorkEnvironment env = job.getWorkEnvironment();
-                    int score = calculateMatchScore(env, preferenceTypes);
-                    return new JobWithScore(job, score);
-                })
-                .filter(j -> j.score > 0)
-                .sorted(Comparator.comparing(JobWithScore::getScore).reversed()
-                        .thenComparing(j -> j.job.getId(), Comparator.reverseOrder()))
-                .toList();
-
-        // 3. 커서 페이징 처리
-        List<JobWithScore> paged = applyCursorPaging(sortedJobs, cursorJobId, size);
-
-        List<GetRecommendationResponse> responseList = paged.stream()
-                .map(j -> jobConverter.toRecommendationResponse(j.job, reviewRepository.countByJobId(j.job.getId())))
-                .toList();
-
-        return GetRecommendationListResponse.builder()
-                .recommendationList(responseList)
-                .hasNext(paged.size() == size)
-                .build();
-    }
-
-    private int calculateMatchScore(WorkEnvironment env, Set<PreferenceType> preferences) {
-        int score = 0;
-
-        if (preferences.contains(PreferenceType.HUMAN) && env.isCanCommunicate()) score++;
-        if (preferences.contains(PreferenceType.DELIVERY) && env.isCanCarryObjects()) score++;
-        if (preferences.contains(PreferenceType.PHYSICAL) && env.isCanMoveActively()) score++;
-        if (preferences.contains(PreferenceType.SIT) && env.isCanWorkSitting()) score++;
-        if (preferences.contains(PreferenceType.STAND) && env.isCanWorkStanding()) score++;
-
-        return score;
-    }
-
-
-    @Getter
-    @AllArgsConstructor
-    private static class JobWithScore {
-        private final Job job;
-        private final int score;
-    }
-
-    private List<JobWithScore> applyCursorPaging(List<JobWithScore> jobs, Long cursorJobId, int size) {
-        if (cursorJobId == null) {
-            return jobs.stream().limit(size).toList();
-        }
-
-        boolean startAdding = false;
-        List<JobWithScore> result = new ArrayList<>();
-        for (JobWithScore j : jobs) {
-            if (startAdding) {
-                result.add(j);
-                if (result.size() == size) break;
-            }
-            if (j.job.getId().equals(cursorJobId)) {
-                startAdding = true;
-            }
-        }
-        return result;
     }
 
     // PATCH 공고 모집완료/모집전 처리하기
