@@ -35,7 +35,7 @@
       <sub>커리어톡 및 채팅<br/>내일 추천 기능<br/>인프라, S3</sub>
     </td>
     <td align="center" width="33%">
-      <img width="300" height="400" alt="Image" src=""/><br/>
+      <img width="300" height="400" alt="Image" src="https://github.com/user-attachments/assets/a5eed6d6-3891-4ccf-99de-b0a98525406f"/><br/>
       <strong>정여진</strong><br/>
       Backend Developer<br/>
       <a href="https://github.com/jnyn0314">📧 GitHub</a><br/>
