@@ -25,10 +25,10 @@ public class Career extends BaseEntity {
     private String description;
 
     @Column(nullable = false)
-    private int workedYear;
+    private Integer workedYear;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private WorkPeriodType workedPeriod;
 
     //연관관계
