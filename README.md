@@ -42,7 +42,7 @@
       <strong>정여진</strong><br/>
       Backend Developer<br/>
       <a href="https://github.com/jnyn0314">📧 GitHub</a><br/>
-      <sub>마이페이지<br/>소셜로그인 및 메일 발송<br/>인프라 구축,erd 설계</sub>
+      <sub>마이페이지 및 온보딩<br/>소셜로그인 및 메일 발송<br/>인프라 구축,erd 설계</sub>
     </td>
     <td align="center" width="33%">
       <img width="300" height="400" alt="Image" src="" /><br/>
