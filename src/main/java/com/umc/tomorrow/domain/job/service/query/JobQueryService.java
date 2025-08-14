@@ -6,6 +6,7 @@
 package com.umc.tomorrow.domain.job.service.query;
 
 import com.umc.tomorrow.domain.job.dto.request.MyPostResponseDTO;
+import com.umc.tomorrow.domain.job.dto.response.GetRecommendationListResponse;
 import com.umc.tomorrow.domain.job.dto.response.JobDetailResponseDTO;
 
 import java.util.List;
@@ -20,4 +21,6 @@ public interface JobQueryService {
      */
     List<MyPostResponseDTO> getMyPosts(Long userId, String status);
     JobDetailResponseDTO getJobDetail(Long jobId);
+
+    GetRecommendationListResponse getTomorrowRecommendations(Long userId, Long cursorJobId, int size);
 }
