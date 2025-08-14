@@ -162,7 +162,7 @@ refactor/entity-rename#10
 ## 🎥 시연 영상
 
 
-[![시연 영상 바로가기](https://www.youtube.com/watch?v=90jnHS6DWto&feature=youtu.be)
+[!(https://www.youtube.com/watch?v=90jnHS6DWto&feature=youtu.be)]
 
 
 
