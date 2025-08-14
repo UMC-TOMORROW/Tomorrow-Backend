@@ -1,5 +1,7 @@
 package com.umc.tomorrow.domain.searchAndFilter.dto.response;
 
+import com.umc.tomorrow.domain.job.dto.request.WorkDaysRequestDTO;
+import com.umc.tomorrow.domain.job.entity.WorkDays;
 import com.umc.tomorrow.domain.job.enums.JobCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -38,4 +40,8 @@ public class JobSearchResponseDTO {
 
     @Schema(description = "업무유형", example = "SERVING")
     private JobCategory jobCategory;
+
+    @Schema(description = "근무요일", example = "mon")
+    private WorkDaysDTO workDays;
+
 }
