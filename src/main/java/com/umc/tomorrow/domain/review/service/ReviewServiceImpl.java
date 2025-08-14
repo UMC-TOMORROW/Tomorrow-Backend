@@ -17,6 +17,8 @@ import com.umc.tomorrow.domain.resume.exception.ResumeException;
 import com.umc.tomorrow.domain.review.dto.ReviewRequestDTO;
 import com.umc.tomorrow.domain.review.dto.ReviewResponseDTO;
 import com.umc.tomorrow.domain.review.entity.Review;
+import com.umc.tomorrow.domain.review.exception.ReviewException;
+import com.umc.tomorrow.domain.review.exception.code.ReviewErrorStatus;
 import com.umc.tomorrow.domain.review.repository.ReviewRepository;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
@@ -53,6 +55,11 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     @Override
     public void saveReview(Long userId, ReviewRequestDTO dto) {
+        // 별점 범위 검증 (0-5)
+        if (dto.getStars() < 0 || dto.getStars() > 5) {
+            throw new ReviewException(ReviewErrorStatus.INVALID_STARS_RANGE);
+        }
+        
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
