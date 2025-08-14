@@ -47,7 +47,7 @@
       <sub>마이페이지 및 온보딩<br/>소셜로그인 및 메일 발송<br/>인프라 구축,erd 설계</sub>
     </td>
     <td align="center" width="33%">
-      <img width="300" height="400" alt="Image" src="" /><br/>
+      <img width="300" height="400" alt="Image" src="https://github.com/user-attachments/assets/65666847-066f-4985-bf10-bb494daeefeb" /><br/>
       <strong>한지혜</strong><br/>
       Backend Developer<br/>
       <a href="https://github.com/hanfihei">📧 GitHub</a><br/>
