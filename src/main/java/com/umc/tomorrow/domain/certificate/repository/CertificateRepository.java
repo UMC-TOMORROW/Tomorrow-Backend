@@ -8,8 +8,9 @@ package com.umc.tomorrow.domain.certificate.repository;
 
 import com.umc.tomorrow.domain.certificate.entity.Certificate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CertificateRepository extends JpaRepository<Certificate, Long> {
-    List<Certificate> findByResumeId(Long resumeId);
+    Optional<List<Certificate>> findByResumeId(Long resumeId);
 } 

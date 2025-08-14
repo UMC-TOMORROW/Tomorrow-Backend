@@ -9,8 +9,7 @@ import com.umc.tomorrow.domain.member.enums.UserStatus;
 import com.umc.tomorrow.domain.preferences.entity.Preference;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -23,6 +22,9 @@ import java.util.List;
 @EntityListeners(org.springframework.data.jpa.domain.support.AuditingEntityListener.class) // auditing 활성화
 @Getter
 @Setter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@Builder
 public class User {
 
     @Id
@@ -52,6 +54,11 @@ public class User {
     private LocalDateTime inactiveAt;
 
     private Boolean isOnboarded;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)  //구인 or 구직
+    private MemberType memberType;
+
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10, nullable = false)
@@ -91,5 +98,15 @@ public class User {
     private Preference preference;
 
     // Resume 관계 매핑 제거 (resumeId 필드만 사용)
+
+    //JUnit테스트용
+    public User(String name, String email, Provider provider, String providerUserId, String username) {
+        this.name = name;
+        this.email = email;
+        this.provider = provider;
+        this.providerUserId = providerUserId;
+        this.username = username;
+    }
+
 
 }

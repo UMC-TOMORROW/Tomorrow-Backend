@@ -17,6 +17,8 @@ import com.umc.tomorrow.domain.resume.exception.ResumeException;
 import com.umc.tomorrow.domain.review.dto.ReviewRequestDTO;
 import com.umc.tomorrow.domain.review.dto.ReviewResponseDTO;
 import com.umc.tomorrow.domain.review.entity.Review;
+import com.umc.tomorrow.domain.review.exception.ReviewException;
+import com.umc.tomorrow.domain.review.exception.code.ReviewErrorStatus;
 import com.umc.tomorrow.domain.review.repository.ReviewRepository;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
@@ -53,11 +55,16 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     @Override
     public void saveReview(Long userId, ReviewRequestDTO dto) {
+        // 별점 범위 검증 (0-5)
+        if (dto.getStars() < 0 || dto.getStars() > 5) {
+            throw new ReviewException(ReviewErrorStatus.INVALID_STARS_RANGE);
+        }
+        
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
-        Job post = jobRepository.findById(dto.getPostId())
-                .orElseThrow(()-> new JobException(JobErrorStatus.JOB_NOT_FOUND));
+        Job post = jobRepository.findById(dto.getJobId())
+                .orElseThrow(() -> new JobException(JobErrorStatus.JOB_NOT_FOUND));
 
         Review review = Review.builder()
                 .job(post)
@@ -69,17 +76,20 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     /**
-     * 후기 조회
-     * @param userId 회원 ID
-     * @param postId 일자리 ID
+     * 특정 공고에 대한 리뷰 목록 조회
+     * @param jobId 일자리 ID
+     * @param userId 사용자 ID
+     * @return 리뷰 목록
      */
     @Override
-    public List<ReviewResponseDTO> getReviewsByPostId(Long postId, Long userId) {
+    public List<ReviewResponseDTO> getReviewsByJobId(Long jobId, Long userId) {
+        // 사용자 권한 확인 (선택사항)
+        // TODO: 사용자가 해당 공고에 지원했는지, 또는 공고 등록자인지 확인
+    jobRepository.findById(jobId)
+            .orElseThrow(() -> new JobException(JobErrorStatus.JOB_NOT_FOUND));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+    List<Review> reviews = reviewRepository.findByJobId(jobId);
 
-        List<Review> reviews = reviewRepository.findByJobId(postId);
 
         return reviews.stream()
                 .map(r -> new ReviewResponseDTO(r.getStars(), r.getReview(), r.getCreatedAt()))

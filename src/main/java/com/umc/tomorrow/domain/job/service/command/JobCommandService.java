@@ -28,5 +28,5 @@ public interface JobCommandService {
 
     // PATCH 공고 모집완료/모집전 처리하기
     @Transactional
-    void updatePostStatus(Long userId, Long postId, String status);
+    void updateJobStatus(Long userId, Long jobId, String status);
 }

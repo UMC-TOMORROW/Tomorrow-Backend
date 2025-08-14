@@ -11,11 +11,17 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Builder
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "커리어톡 채팅방 메시지 생성 요청 DTO")
 public class CreateChatMessageRequestDTO {
 
@@ -34,8 +40,4 @@ public class CreateChatMessageRequestDTO {
     )
     @NotBlank @Size(max = 255, message = "careertalk.chatting.content")
     private String content;
-
-    @Schema(description = "메시지 전송 시각 (ISO-8601)", example = "2025-08-06T10:12:34")
-    @NotNull
-    private LocalDateTime sentAt;
 }

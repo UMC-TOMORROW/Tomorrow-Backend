@@ -19,7 +19,9 @@ public enum JobErrorStatus implements BaseCodeInterface {
     JOB_ALREADY_CLOSED(HttpStatus.BAD_REQUEST, "JOB401", "마감된 공고입니다."),
     JOB_ALREADY_OPEN(HttpStatus.BAD_REQUEST, "JOB401", "아직 마감 안 된 공고입니다."),
     POST_STATUS_INVALID(HttpStatus.BAD_REQUEST, "JOB400", "잘못된 공고 상태입니다."),
-    JOB_FORBIDDEN(HttpStatus.FORBIDDEN, "JOB403", "공고에 대한 권한이 없습니다.");
+    JOB_FORBIDDEN(HttpStatus.FORBIDDEN, "JOB403", "공고에 대한 권한이 없습니다."),
+    JOB_DATA_NOT_FOUND(HttpStatus.BAD_REQUEST, "JOB405", "일자리 정보 등록 데이터가 존재하지 않습니다."),
+    INVALID_REGISTRANT_TYPE(HttpStatus.BAD_REQUEST, "JOB406", "등록 유형에 맞지 않는 접근 입니다.");
 
     private final HttpStatus httpStatus;
     private final boolean isSuccess = false;

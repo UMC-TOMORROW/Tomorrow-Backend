@@ -46,7 +46,8 @@ public class S3Uploader {
     }
 
     public void delete(String fileUrl) {
-        String key = extractKeyFromUrl(fileUrl); // S3 키만 추출
+        String key = extractKeyFromUrl(fileUrl);
+        // S3 delete는 대상이 없어도 성공 처리됨 (idempotent)
         amazonS3.deleteObject(bucketName, key);
     }
 

@@ -31,8 +31,6 @@ import com.umc.tomorrow.domain.job.exception.JobException;
 import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
 import com.umc.tomorrow.domain.job.repository.JobRepository;
 import com.umc.tomorrow.domain.member.entity.User;
-import com.umc.tomorrow.domain.member.exception.MemberException;
-import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.exception.ResumeException;
@@ -63,20 +61,20 @@ public class ApplicationCommandService {
      */
     @Transactional
     public UpdateApplicationStatusResponseDTO updateApplicationStatus(
-            Long postId,
+            Long jobId,
             Long applicationId,
             UpdateApplicationStatusRequestDTO requestDTO
     ) {
-        // 지원서 조회
+        // 지원서 조회 (applicationId로 직접 조회, User와 Job은 별도로 조회)
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RestApiException(ApplicationErrorStatus.APPLICATION_NOT_FOUND));
-
-        // 공고 조회 및 검증
-        Job job = jobRepository.findById(postId)
+        
+        // 공고 조회 및 검증 (Job 엔티티 직접 조회)
+        Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
         
         // 지원서가 해당 공고에 대한 것인지 검증
-        if (!application.getJob().getId().equals(postId)) {
+        if (!application.getJob().getId().equals(jobId)) {
             throw new RestApiException(ApplicationErrorStatus.APPLICATION_JOB_MISMATCH);
         }
 
@@ -95,13 +93,13 @@ public class ApplicationCommandService {
      * 일자리에 지원하기
      *
      * @param userId     일자리에 지원하는 userId
-     * @param postId      지원하고자 하는 post의 Id
+     * @param jobId      지원하고자 하는 job의 Id
      * @param requestDTO 일자리 지원 요청 DTO
      * @return 일자리 응답 DTO
      */
     @Transactional
-    public CreateApplicationResponseDTO createApplication(Long userId, Long postId, CreateApplicationRequestDTO requestDTO) {
-        Job job = jobRepository.findById(postId)
+    public CreateApplicationResponseDTO createApplication(Long userId, Long jobId, CreateApplicationRequestDTO requestDTO) {
+        Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new JobException(JobErrorStatus.JOB_NOT_FOUND));
 
         User user = userRepository.findById(userId)
@@ -150,11 +148,18 @@ public class ApplicationCommandService {
     }
 
     /*
-     * 개별 지원자 이력서 조회
+     * 개별 지원서 이력서 조회 (Application ID 기반)
      */
-    public ApplicationDetailsResponseDTO getApplicantResume(Long postId, Long applicantId) {
-        Application application = applicationRepository.findByJobIdAndUserIdWithResume(postId, applicantId)
+    public ApplicationDetailsResponseDTO getApplicationResume(Long jobId, Long applicationId) {
+        // Application ID로 직접 조회
+        Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ApplicationException(ApplicationErrorStatus.APPLICATION_NOT_FOUND));
+        
+        // 해당 공고의 지원서인지 검증
+        if (!application.getJob().getId().equals(jobId)) {
+            throw new ApplicationException(ApplicationErrorStatus.APPLICATION_JOB_MISMATCH);
+        }
+        
         User user = application.getUser();
         // Resume 기본 정보만 가져오기 (Introduction은 별도 로드)
         Resume resume = resumeRepository.findFirstByUserIdOrderByCreatedAtDesc(user.getId())
@@ -186,9 +191,9 @@ public class ApplicationCommandService {
     }
 
     @Transactional(readOnly = true)
-    public List<ApplicantListResponseDTO> getApplicantsByPostAndStatus(Long postId, String status) {
+    public List<ApplicantListResponseDTO> getApplicationsByJob(Long jobId, String status) {
         try {
-            Job job = jobRepository.findById(postId)
+            Job job = jobRepository.findById(jobId)
                     .orElseThrow(() -> new ApplicationException(ApplicationErrorStatus.JOB_NOT_FOUND));
 
             boolean isClosed = isJobClosed(job);
@@ -196,11 +201,11 @@ public class ApplicationCommandService {
             List<Application> applications;
             if (status == null || status.isBlank()) {
                 // 전체
-                applications = applicationRepository.findAllByJobId(postId);
+                applications = applicationRepository.findAllByJobId(jobId);
             } else if (status.equalsIgnoreCase("open")) {
-                applications = isClosed ? List.of() : applicationRepository.findAllByJobId(postId);
+                applications = isClosed ? List.of() : applicationRepository.findAllByJobId(jobId);
             } else if (status.equalsIgnoreCase("closed")) {
-                applications = isClosed ? applicationRepository.findAllByJobId(postId) : List.of();
+                applications = isClosed ? applicationRepository.findAllByJobId(jobId) : List.of();
             } else {
                 throw new ApplicationException(ApplicationErrorStatus.INVALID_STATUS);
             }

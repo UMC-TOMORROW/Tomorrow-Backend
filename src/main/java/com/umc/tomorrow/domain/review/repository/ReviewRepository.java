@@ -18,7 +18,7 @@ import org.springframework.data.repository.query.Param;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("SELECT r FROM Review r WHERE r.job.id = :jobId")
-    List<Review> findByJobId(@Param("jobId") Long postId);
+    List<Review> findByJobId(@Param("jobId") Long jobId);
     @Query("SELECT COUNT(r) FROM Review r WHERE r.job.id = :jobId")
     long countByJobId(@Param("jobId") Long jobId);
 }

@@ -7,7 +7,7 @@
 package com.umc.tomorrow.domain.resume.service;
 
 import com.umc.tomorrow.domain.member.exception.MemberException;
-import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
+import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.resume.dto.request.ResumeSaveRequestDTO;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
@@ -38,7 +38,7 @@ public class ResumeService {
     @Transactional
     public Resume saveResume(Long userId, ResumeSaveRequestDTO dto) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new MemberException(MemberStatus.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
         Resume resume = ResumeConverter.toEntity(dto, user);
         Resume savedResume = resumeRepository.save(resume);
         

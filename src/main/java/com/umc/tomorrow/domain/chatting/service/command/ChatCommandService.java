@@ -19,9 +19,11 @@ import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -45,12 +47,17 @@ public class ChatCommandService {
         ChatPart chatPart = chatPartRepository.findByUserIdAndChattingRoomId(user.getId(), room.getId())
                 .orElseThrow(() -> new ChatException(ChatErrorStatus.CHATPART_NOT_FOUND));
 
-        return messageRepository.save(Message.builder()
+
+        Message saved = messageRepository.save(Message.builder()
                 .chatPart(chatPart)
                 .chattingRoom(room)
                 .content(request.getContent())
-                .createdAt(request.getSentAt())
                 .build());
+
+
+        log.info("[CHAT] saved messageId={} userId={}", saved.getId(), userId);
+
+        return saved;
     }
 
     /*
