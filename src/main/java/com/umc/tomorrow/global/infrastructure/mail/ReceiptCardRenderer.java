@@ -110,9 +110,14 @@ public class ReceiptCardRenderer {
     }
 
     private void drawWrapped(Graphics2D g, String text, Rectangle area, Font font, int maxLines, boolean ellipsis) {
-        if (text == null) text = "";
+        // null 체크 강화 및 빈 문자열 처리
+        if (text == null || text.trim().isEmpty()) {
+            text = "정보 없음"; // 기본값 설정
+        }
+        
         g.setFont(font);
 
+        // 빈 문자열이 아닌 경우에만 AttributedString 생성
         AttributedString att = new AttributedString(text);
         att.addAttribute(TextAttribute.FONT, font);
         LineBreakMeasurer lbm = new LineBreakMeasurer(att.getIterator(), g.getFontRenderContext());
