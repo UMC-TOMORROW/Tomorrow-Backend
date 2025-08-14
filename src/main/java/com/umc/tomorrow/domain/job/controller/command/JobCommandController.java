@@ -59,7 +59,7 @@ public class JobCommandController {
      * @return 성공 응답
      */
     @Operation(summary = "일자리 등록 폼 작성", description = "검증된 사용자가 일자리 폼을 작성합니다.")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<BaseResponse<JobStepResponseDTO>> saveJobStepOne(
             @AuthenticationPrincipal CustomOAuth2User user,
             @RequestPart("jobRequest") String jobRequestJson,
