@@ -10,6 +10,7 @@
 
 
 ### ✨ 주요 기능
+---
 
 #### 💪 건강 맞춤 온보딩
 
@@ -33,21 +34,21 @@
       <strong>이승주</strong><br/>
       Team Lead<br/>
       <a href="https://github.com/Leeseung-joo">📧 GitHub</a><br/>
-      <sub>커리어톡 및 채팅<br/>내일 추천 기능<br/>인프라, S3</sub>
+      <sub>커리어톡 및 채팅<br/>내일 추천 기능<br/>nginx 및 도메인 설정, S3</sub>
     </td>
     <td align="center" width="33%">
       <img width="300" height="400" alt="Image" src="https://github.com/user-attachments/assets/a5eed6d6-3891-4ccf-99de-b0a98525406f"/><br/>
       <strong>정여진</strong><br/>
       Backend Developer<br/>
       <a href="https://github.com/jnyn0314">📧 GitHub</a><br/>
-      <sub>마이페이지<br/>소셜로그인 및 메일 발송<br/>인프라,erd 설계</sub>
+      <sub>마이페이지<br/>소셜로그인 및 메일 발송<br/>인프라 구축,erd 설계</sub>
     </td>
     <td align="center" width="33%">
       <img width="300" height="400" alt="Image" src="" /><br/>
       <strong>한지혜</strong><br/>
       Backend Developer<br/>
       <a href="https://github.com/hanfihei">📧 GitHub</a><br/>
-      <sub>일자리 등록 및 카카오 지도<br/>소셜로그인<br/>인프라,프로젝트 설계</sub>
+      <sub>일자리 등록 및 카카오 지도<br/>소셜로그인<br/>CI/CD,프로젝트 설계</sub>
     </td>
   </tr>
 </table>
