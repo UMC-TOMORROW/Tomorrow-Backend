@@ -16,10 +16,9 @@ import com.umc.tomorrow.domain.job.enums.PostStatus;
 import com.umc.tomorrow.domain.job.exception.JobException;
 import com.umc.tomorrow.domain.job.repository.JobRecommendationJpaRepository;
 import com.umc.tomorrow.domain.job.repository.JobRepository;
-import com.umc.tomorrow.domain.job.service.query.JobQueryService;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.exception.MemberException;
-import com.umc.tomorrow.domain.member.exception.code.MemberStatus;
+import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.domain.preferences.entity.Preference;
 import com.umc.tomorrow.domain.preferences.entity.PreferenceType;
@@ -28,14 +27,7 @@ import com.umc.tomorrow.domain.preferences.exception.code.PreferenceErrorStatus;
 import com.umc.tomorrow.domain.preferences.repository.PreferenceRepository;
 import com.umc.tomorrow.domain.review.repository.ReviewRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
-import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
@@ -86,7 +78,7 @@ public class JobQueryServiceImpl implements JobQueryService {
 
         // 1) 유저 & 선호도 가져오기
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new MemberException(MemberStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
 
         Preference pref = preferenceRepository.findByUserId(userId)
                 .orElseThrow(() -> new PreferenceException(PreferenceErrorStatus.PREFERENCE_NOT_FOUND));
