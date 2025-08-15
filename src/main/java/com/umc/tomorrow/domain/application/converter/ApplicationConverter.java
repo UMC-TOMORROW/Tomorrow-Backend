@@ -109,7 +109,7 @@ public class ApplicationConverter {
 
     private static ApplicationDetailsResponseDTO.CertificationDTO toCertificationDTO(Certificate certificate) {
         return ApplicationDetailsResponseDTO.CertificationDTO.builder()
-                .certificationName(certificate.getName())
+                .certificationName(certificate.getFilename())
                 .fileUrl(certificate.getFileUrl())
                 .build();
     }

@@ -46,7 +46,7 @@ public class CertificateCommandServiceImpl implements CertificateCommandService 
         String filename = file.getOriginalFilename();
 
         Certificate certificate = Certificate.builder()
-                .name(filename)
+                .filename(filename)
                 .fileUrl(fileUrl)
                 .resume(resume)
                 .build();
@@ -56,7 +56,7 @@ public class CertificateCommandServiceImpl implements CertificateCommandService 
         return CertificateResponse.builder()
                 .id(saved.getId())
                 .fileUrl(saved.getFileUrl())
-                .filename(saved.getName())
+                .filename(saved.getFilename())
                 .build();
     }
 
@@ -78,7 +78,7 @@ public class CertificateCommandServiceImpl implements CertificateCommandService 
         return CertificateResponse.builder()
                 .id(certificate.getId())
                 .fileUrl(certificate.getFileUrl())
-                .filename(certificate.getName())
+                .filename(certificate.getFilename())
                 .build();
     }
 }
