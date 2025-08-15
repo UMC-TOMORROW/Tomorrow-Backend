@@ -50,7 +50,7 @@ public class ApplicationConverter {
                 .postTitle(application.getJob().getTitle())
                 .jobId(application.getJob().getId())
                 .company(application.getJob().getCompanyName())
-                .date(application.getAppliedAt().toLocalDate().toString()) 
+                .date(application.getAppliedAt().toLocalDate().toString())
                 .status(application.getStatus())
                 .build();
     }
