@@ -33,7 +33,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final ResumeRepository resumeRepository;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
 
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
         String usernameToUseForTokens;
@@ -61,30 +62,30 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                     ? providerStr + "_" + providerUserId : null;
             user.setUsername(usernameToUseForTokens);
             user.setEmail(customUserDetails.getUserResponseDTO().getEmail());
-            
+
             // 사용자 저장
             user = userRepository.save(user);
-            
+
             // 기본 이력서 생성
             Resume defaultResume = Resume.builder()
                     .user(user)
                     .build();
-            
+
             // 기본 자기소개 생성
             Introduction defaultIntroduction = Introduction.builder()
                     .content("안녕하세요! 저는 " + user.getName() + "입니다.")
                     .resume(defaultResume)
                     .build();
-            
+
             defaultResume.setIntroduction(defaultIntroduction);
-            
+
             // 이력서 저장
             Resume savedResume = resumeRepository.save(defaultResume);
-            
+
             // 사용자의 resumeId 업데이트
             user.setResumeId(savedResume.getId());
             userRepository.save(user);
-            
+
         } else {
             usernameToUseForTokens = user.getUsername();
             if (usernameToUseForTokens == null) {
@@ -93,20 +94,20 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 user.setUsername(usernameToUseForTokens);
                 userRepository.save(user);
             }
-            
+
             // 기존 사용자이지만 resumeId가 없는 경우 기본 이력서 생성
             if (user.getResumeId() == null) {
                 Resume defaultResume = Resume.builder()
                         .user(user)
                         .build();
-                
+
                 Introduction defaultIntroduction = Introduction.builder()
                         .content("안녕하세요! 저는 " + user.getName() + "입니다.")
                         .resume(defaultResume)
                         .build();
-                
+
                 defaultResume.setIntroduction(defaultIntroduction);
-                
+
                 Resume savedResume = resumeRepository.save(defaultResume);
                 user.setResumeId(savedResume.getId());
                 userRepository.save(user);
@@ -140,37 +141,35 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         boolean isLocal = request.getServerName().equals("localhost");
         boolean secureFlag = !isLocal;
 
-        // 쿠키 설정
-        String accessCookie = String.format(
-                "Authorization=%s; Max-Age=%d; Path=/; HttpOnly; Secure=%b; SameSite=None",
-                accessToken, (int) accessTokenExpiredSeconds, secureFlag
-        );
-        response.addHeader("Set-Cookie", accessCookie);
+// 쿠키 설정 (Secure=%b 대신 조건부 추가)
+        StringBuilder accessCookieBuilder = new StringBuilder();
+        accessCookieBuilder.append("Authorization=").append(accessToken)
+                .append("; Max-Age=").append((int) accessTokenExpiredSeconds)
+                .append("; Path=/; HttpOnly; SameSite=None; ");
+        if (secureFlag) {
+            accessCookieBuilder.append("Secure; ");
+        }
+        response.addHeader("Set-Cookie", accessCookieBuilder.toString().trim());
 
-        String refreshCookie = String.format(
-                "RefreshToken=%s; Max-Age=%d; Path=/; HttpOnly; Secure=%b; SameSite=None",
-                refreshToken, (int) refreshTokenExpiredSeconds, secureFlag
-        );
-        response.addHeader("Set-Cookie", refreshCookie);
+        StringBuilder refreshCookieBuilder = new StringBuilder();
+        refreshCookieBuilder.append("RefreshToken=").append(refreshToken)
+                .append("; Max-Age=").append((int) refreshTokenExpiredSeconds)
+                .append("; Path=/; HttpOnly; SameSite=None; ");
+        if (secureFlag) {
+            refreshCookieBuilder.append("Secure; ");
+        }
+        response.addHeader("Set-Cookie", refreshCookieBuilder.toString().trim());
 
-        // 헤더 추가
+// 헤더 추가
         response.addHeader("Authorization", "Bearer " + accessToken);
         response.addHeader("RefreshToken", refreshToken);
 
-        // 리다이렉트 URL
+// 리다이렉트 URL
         String redirectUrl = isLocal
                 ? "http://localhost:5173/onboarding"
                 : "https://umctomorrow.shop/onboarding";
 
         response.sendRedirect(redirectUrl);
-    }
 
-    private Cookie createCookie(String key, String value, int maxAge, boolean secureFlag) {
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(maxAge);
-        cookie.setSecure(secureFlag);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        return cookie;
     }
 }
