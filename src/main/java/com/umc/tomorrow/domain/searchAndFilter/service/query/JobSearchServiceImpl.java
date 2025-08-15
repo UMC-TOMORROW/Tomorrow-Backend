@@ -1,6 +1,7 @@
 package com.umc.tomorrow.domain.searchAndFilter.service.query;
 
 import com.umc.tomorrow.domain.job.entity.Job;
+import com.umc.tomorrow.domain.job.enums.PostStatus;
 import com.umc.tomorrow.domain.job.repository.JobRepository;
 import com.umc.tomorrow.domain.searchAndFilter.converter.JobSearchConverter;
 import com.umc.tomorrow.domain.searchAndFilter.dto.request.JobSearchRequestDTO;
@@ -50,7 +51,8 @@ public class JobSearchServiceImpl implements JobSearchService {
      */
     @Override
     public List<JobSearchResponseDTO> getAllActiveJobs() {
-        List<Job> jobs = jobJpaRepository.findByIsActiveTrue(); // 필터 없는 전체 조회
+        List<Job> jobs = jobJpaRepository.findByStatus(PostStatus.OPEN);
+
         return jobs.stream()
                 .map(converter::toResponseDTO)
                 .collect(Collectors.toList());
