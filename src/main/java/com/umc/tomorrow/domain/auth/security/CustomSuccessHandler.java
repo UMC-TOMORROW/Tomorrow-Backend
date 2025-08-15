@@ -164,12 +164,22 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addHeader("Authorization", "Bearer " + accessToken);
         response.addHeader("RefreshToken", refreshToken);
 
-// 리다이렉트 URL
-        String redirectUrl = isLocal
-                ? "http://localhost:5173/onboarding"
-                : "https://umctomorrow.shop/onboarding";
+// 리다이렉트 URL 분기
+        boolean isOnboarded = Boolean.TRUE.equals(user.getIsOnboarded());
+
+        String redirectUrl;
+        if (isLocal) {
+            redirectUrl = isOnboarded
+                    ? "http://localhost:5173"       // 온보딩 완료 유저
+                    : "http://localhost:5173/onboarding"; // 온보딩 필요 유저
+        } else {
+            redirectUrl = isOnboarded
+                    ? "https://umctomorrow.shop"
+                    : "https://umctomorrow.shop/onboarding";
+        }
 
         response.sendRedirect(redirectUrl);
+
 
     }
 }

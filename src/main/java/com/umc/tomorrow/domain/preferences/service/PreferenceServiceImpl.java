@@ -53,6 +53,7 @@ public class PreferenceServiceImpl implements PreferenceService {
         }
         
         preferenceRepository.save(entity);
+        user.setIsOnboarded(true);
         return PreferenceConverter.toDTO(entity);
     }
 
