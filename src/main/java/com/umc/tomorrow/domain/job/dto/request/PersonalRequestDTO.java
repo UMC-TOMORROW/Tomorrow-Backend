@@ -3,6 +3,8 @@ package com.umc.tomorrow.domain.job.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -33,10 +35,10 @@ public class PersonalRequestDTO {
     @NotNull(message = "{personal.longitude.notnull}")
     private BigDecimal longitude;
 
-    @Schema(description = "전화번호",
-            example = "010-1234-5678",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "{personal.contact.notnull}")
+    @NotBlank(message = "{user.phoneNumber.notblank}")
+    @Pattern(regexp = "^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$",
+            message = "{user.phoneNumber.pattern}")
+    @Size(max = 20, message = "{user.phoneNumber.size}")
     private String contact;
 
     @Schema(description = "등록목적",
