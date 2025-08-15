@@ -53,7 +53,7 @@ public class ApplicationConverter {
                 .jobId(application.getJob().getId())
                 .company(application.getJob().getCompanyName()) // Job에 필드가 있어야 함
                 .date(application.getAppliedAt().toLocalDate().toString()) // LocalDateTime → yyyy-MM-dd
-                .status(application.getStatus() == null ? ApplicationStatus.valueOf("미정") : application.getStatus())
+                .status(application.getStatus() == null ? ApplicationStatus.REJECTED : application.getStatus())
                 .build();
     }
 
@@ -120,6 +120,8 @@ public class ApplicationConverter {
     // Certificate 엔티티를 CertificationDTO로 변환
     private static ApplicationDetailsResponseDTO.CertificationDTO toCertificationDTO(Certificate certificate) {
         return ApplicationDetailsResponseDTO.CertificationDTO.builder()
+                .certificationName(certificate.getFilename())
+                .fileUrl(certificate.getFileUrl())
                 .build();
     }
 }
