@@ -6,15 +6,12 @@
 package com.umc.tomorrow.global.infrastructure.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import java.io.IOException;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class S3Uploader {
 
-    private AmazonS3 amazonS3;
+    private final AmazonS3 amazonS3;
     private final String bucketName;
 
     public S3Uploader(AmazonS3 amazonS3,
@@ -39,13 +36,12 @@ public class S3Uploader {
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
 
-            //권한설정 추가
-            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead);
+            // ACL 설정 제거 - 버킷 정책으로만 접근 제어
+            PutObjectRequest putObjectRequest =
+                    new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata);
 
             amazonS3.putObject(putObjectRequest);
 
-            //amazonS3.putObject(bucketName, fileName, file.getInputStream(), metadata);
         } catch (IOException e) {
             throw new RestApiException(GlobalErrorStatus._S3_UPLOAD_ERROR);
         }
@@ -63,5 +59,4 @@ public class S3Uploader {
         String bucketUrl = amazonS3.getUrl(bucketName, "").toString(); // ex: https://bucket.s3.amazonaws.com/
         return fileUrl.replace(bucketUrl, "");
     }
-
 }
