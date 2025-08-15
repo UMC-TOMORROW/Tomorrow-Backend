@@ -43,7 +43,7 @@ public class ResumeController {
     public ResponseEntity<BaseResponse<Map<String, Long>>> saveResume(
             @AuthenticationPrincipal CustomOAuth2User user,
             @Valid @RequestBody ResumeSaveRequestDTO dto) {
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
         Resume saved = resumeService.saveResume(userId, dto);
         return ResponseEntity.ok(
             BaseResponse.onSuccess(Map.of("resumeId", saved.getId()))

@@ -37,7 +37,7 @@ public class ResumeSummaryController {
     @GetMapping("/summary")
     public ResponseEntity<BaseResponse<ResumeSummaryResponseDTO>> getResumeSummary(
             @AuthenticationPrincipal CustomOAuth2User user) {
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
         ResumeSummaryResponseDTO result = resumeSummaryService.getResumeSummary(userId);
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
