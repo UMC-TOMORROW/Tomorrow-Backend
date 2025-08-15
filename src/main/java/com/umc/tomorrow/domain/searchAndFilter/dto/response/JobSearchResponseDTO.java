@@ -48,7 +48,7 @@ public class JobSearchResponseDTO {
     @Schema(description = "이미지", example = "...")
     private String jobImageUrl;
 
-    @Schema(description = "급여타입", example = "   HOURLY")
+    @Schema(description = "급여타입", example = "HOURLY")
     private PaymentType paymentType;
 
 }

@@ -20,6 +20,7 @@ import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import com.umc.tomorrow.global.infrastructure.s3.S3Uploader;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
@@ -58,7 +59,7 @@ public class JobCommandController {
      * @param session 세션 사용
      * @return 성공 응답
      */
-    @Operation(summary = "일자리 등록 폼 작성", description = "검증된 사용자가 일자리 폼을 작성합니다.")
+    @Operation(summary = "일자리 등록 폼 작성", description = "검증된 사용자가 일자리 폼을 작성합니다.",security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<BaseResponse<JobStepResponseDTO>> saveJobStepOne(
             @AuthenticationPrincipal CustomOAuth2User user,
