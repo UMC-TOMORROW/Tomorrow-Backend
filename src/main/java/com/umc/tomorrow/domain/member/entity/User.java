@@ -80,6 +80,10 @@ public class User {
     @Column(length = 512)
     private String refreshToken;
 
+    /** 프로필 사진 URL */
+    @Column(length = 500)
+    private String profileImageUrl;
+
     /** 사용자명(로그인 ID 또는 소셜 ID) */
     @Column(length = 50, unique = true, nullable = false)
     private String username;

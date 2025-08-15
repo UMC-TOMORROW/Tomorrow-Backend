@@ -32,6 +32,7 @@ import com.umc.tomorrow.domain.member.exception.MemberException;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.domain.member.dto.UserConverter;
 import com.umc.tomorrow.domain.member.entity.User;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "member-controller", description = "회원 관련 API")
 @RestController
@@ -52,11 +53,9 @@ public class MemberController {
         }
         
         Long userId = user.getUserDTO().getId();
-        
-        // resumeId가 null인 경우 업데이트
+
         memberService.updateResumeIdIfNull(userId);
-        
-        // 업데이트된 사용자 정보를 다시 조회
+
         User updatedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
         
@@ -64,17 +63,46 @@ public class MemberController {
         return ResponseEntity.ok(updatedUserDTO);
     }
 
-    /**
-     * 내 정보 수정
-     * 실제로 DB에 회원 정보가 반영되도록 MemberService를 호출
-     */
-    @Operation(summary = "내 정보 수정", description = "현재 로그인한 회원의 정보를 수정합니다.")
-    @PutMapping("/me")
-    public ResponseEntity<UserDTO> updateMe(@AuthenticationPrincipal CustomOAuth2User user, @Valid @RequestBody UserDTO userDTO) {
+    @Operation(summary = "내 정보 수정", description = "현재 로그인한 회원의 정보를 수정합니다. 이미지 파일도 함께 업로드할 수 있습니다.")
+    @PutMapping(value = "/me", consumes = {"application/json", "multipart/form-data"})
+    public ResponseEntity<UserDTO> updateMe(
+            @AuthenticationPrincipal CustomOAuth2User user, 
+            @Valid @RequestPart(value = "userInfo", required = false) UserDTO userDTO,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
+        
         if (user == null) {
             return ResponseEntity.status(401).build();
         }
-        // 실제 DB에 회원 정보 업데이트
+        
+        if (imageFile != null) {
+            try {
+                String imageUrl = memberService.uploadProfileImage(user.getUserDTO().getId(), imageFile);
+                if (userDTO == null) {
+                    userDTO = new UserDTO();
+                }
+                // 이미지 URL을 userDTO에 설정
+                userDTO = new UserDTO(
+                        userDTO.getId(),
+                        userDTO.getRole(),
+                        userDTO.getUsername(),
+                        userDTO.getEmail(),
+                        userDTO.getName(),
+                        userDTO.getGender(),
+                        userDTO.getPhoneNumber(),
+                        userDTO.getAddress(),
+                        userDTO.getStatus(),
+                        userDTO.getInactiveAt(),
+                        userDTO.getIsOnboarded(),
+                        userDTO.getProvider(),
+                        userDTO.getProviderUserId(),
+                        userDTO.getResumeId(),
+                        imageUrl
+                );
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        
         UserDTO updated = memberService.updateUser(user.getUserDTO(), userDTO);
         return ResponseEntity.ok(updated);
     }
@@ -122,5 +150,24 @@ public class MemberController {
         return ResponseEntity.ok(BaseResponse.onSuccess(getUserTypeResponse));
     }
 
+    @Operation(
+            summary = "프로필 이미지 삭제",
+            description = "프로필 이미지만 삭제합니다."
+    )
+    @DeleteMapping("/profile-image")
+    public ResponseEntity<String> deleteProfileImage(
+            @Parameter(hidden = true) @AuthenticationPrincipal CustomOAuth2User user) {
+        
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        
+        try {
+            memberService.deleteProfileImage(user.getUserDTO().getId());
+            return ResponseEntity.ok("프로필 이미지가 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("프로필 이미지 삭제에 실패했습니다: " + e.getMessage());
+        }
+    }
 
 }
