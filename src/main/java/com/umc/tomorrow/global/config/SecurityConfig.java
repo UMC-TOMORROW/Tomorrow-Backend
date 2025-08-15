@@ -6,6 +6,7 @@ import com.umc.tomorrow.domain.auth.security.CustomSuccessHandler;
 import com.umc.tomorrow.domain.auth.service.CustomOAuth2UserService;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -65,8 +66,17 @@ public class SecurityConfig {
         http
                 .cors(cors -> {})
                 .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(auth -> auth.disable())
-                .httpBasic(auth -> auth.disable())
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 인증 실패시 401 JSON 응답
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint((req, res, ex) -> {
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.setContentType("application/json;charset=UTF-8");
+                            res.getWriter().write("{\"code\":\"AUTH401\",\"message\":\"Unauthorized\"}");
+                        })
+                )
                 .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(endpoint -> endpoint.userService(customOAuth2UserService))
@@ -86,8 +96,8 @@ public class SecurityConfig {
                                 "/login"
                         ).permitAll()
                         .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                );
+
 
         return http.build();
     }
