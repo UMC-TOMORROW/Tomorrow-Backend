@@ -90,6 +90,10 @@
 ![ERDCloud](https://img.shields.io/badge/ERDCloud-00C389?style=flat&logo=data&logoColor=white)
 
 
+### ☁️ 서버 아키텍처
+![스크린샷](https://github.com/user-attachments/assets/03ae536b-fd6a-41b2-9310-18fe5930cca9)
+
+
 ## 프로젝트 구조
 ```
 tomorrow
@@ -171,6 +175,60 @@ tomorrow
 ## ⚠️ 트러블슈팅 기록 (Troubleshooting)
 
 ---
+🔐 JWT Refresh Token 처리 방식 개선 과정
+1. 기존 구조의 한계
+
+구조: refreshToken을 Client 쿠키에 저장하고, 서버에서 쿠키를 직접 추출
+
+문제점
+
+API 테스트 도구 사용 불편
+
+Swagger, Postman 등에서 Cookie 전달이 번거로움
+
+보안 취약성
+
+초기 구현 시 HttpOnly 없이 저장 → XSS 공격 위험
+
+환경 차이
+
+로컬 개발 환경에서는 편리했으나, 실제 서비스 환경과 테스트 환경 모두에서 불편 발생
+
+2. 1차 개선 – Header 방식 수신
+
+변경 내용:
+
+@RequestHeader("RefreshToken")으로 refresh token을 받는 구조로 수정
+
+장점
+
+Swagger / Postman 등에서 손쉽게 테스트 가능
+
+프론트엔드에서 Header에 token만 추가하면 됨
+
+단점
+
+클라이언트가 Token을 직접 보관해야 하므로 여전히 보안 리스크 존재 (탈취 위험)
+
+3. 2차 개선 – HttpOnly + Secure 쿠키
+
+변경 내용:
+
+Refresh Token을 Response Body로 전달하지 않고, 서버에서 HttpOnly + Secure 속성을 가진 쿠키에 저장
+
+장점
+
+XSS 공격 차단 – JS에서 쿠키 접근 불가
+
+토큰 저장/갱신 로직을 서버에서 전담 → 일관성과 보안성 향상
+
+효과
+
+클라이언트 측 보관 부담 제거
+
+보안 수준 강화
+
+실서비스 환경과 테스트 환경 모두에서 사용성 개선
 
 
 
