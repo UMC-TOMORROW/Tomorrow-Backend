@@ -78,24 +78,35 @@ public class MemberController {
         if (imageFile != null) {
             try {
                 String imageUrl = memberService.uploadProfileImage(user.getUserResponseDTO().getId(), imageFile);
+                
+                // userDTO가 null인 경우 빈 DTO로 초기화
                 if (userDTO == null) {
-                    userDTO = new UserUpdateDTO();
+                    userDTO = UserUpdateDTO.builder()
+                            .profileImageUrl(imageUrl)
+                            .build();
+                } else {
+                    // 기존 DTO에 이미지 URL만 추가
+                    userDTO = UserUpdateDTO.builder()
+                            .email(userDTO.getEmail())
+                            .name(userDTO.getName())
+                            .gender(userDTO.getGender())
+                            .phoneNumber(userDTO.getPhoneNumber())
+                            .address(userDTO.getAddress())
+                            .isOnboarded(userDTO.getIsOnboarded())
+                            .provider(userDTO.getProvider())
+                            .providerUserId(userDTO.getProviderUserId())
+                            .resumeId(userDTO.getResumeId())
+                            .profileImageUrl(imageUrl)
+                            .build();
                 }
-                userDTO = new UserUpdateDTO(
-                        userDTO.getEmail(),
-                        userDTO.getName(),
-                        userDTO.getGender(),
-                        userDTO.getPhoneNumber(),
-                        userDTO.getAddress(),
-                        userDTO.getIsOnboarded(),
-                        userDTO.getProvider(),
-                        userDTO.getProviderUserId(),
-                        userDTO.getResumeId(),
-                        imageUrl
-                );
             } catch (Exception e) {
                 return ResponseEntity.badRequest().build();
             }
+        }
+        
+        // userDTO가 여전히 null인 경우 빈 DTO로 초기화
+        if (userDTO == null) {
+            userDTO = new UserUpdateDTO();
         }
         
         UserResponseDTO updated = memberService.updateUser(user.getUserResponseDTO().getId(), userDTO);
