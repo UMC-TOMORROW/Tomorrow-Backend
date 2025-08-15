@@ -91,7 +91,7 @@
 
 
 ### ☁️ 서버 아키텍처
-![스크린샷](https://github.com/user-attachments/assets/03ae536b-fd6a-41b2-9310-18fe5930cca9)
+![스크린샷](https://github.com/user-attachments/assets/6ff0acb3-ecf1-481c-be0f-da736b2a5a48)
 
 
 ## 프로젝트 구조
