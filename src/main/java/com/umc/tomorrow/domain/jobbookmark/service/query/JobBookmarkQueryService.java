@@ -1,5 +1,5 @@
 /**
- * JobBookmarkQueryServiceImpl
+ * JobBookmarkQueryService
  * - JobBookmark 조회(Read) 로직을 처리하는 서비스 구현체
  * - 사용자의 북마크 목록을 가져옴
  * 작성자 : 정여진
