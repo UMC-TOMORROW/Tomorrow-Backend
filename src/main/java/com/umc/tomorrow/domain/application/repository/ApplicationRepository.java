@@ -25,6 +25,12 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     List<Application> findByJobId(@Param("jobId") Long jobId);
     
     /**
+     * 특정 공고의 지원서 목록 조회 (findAllByJobId와 동일)
+     */
+    @Query("SELECT a FROM Application a WHERE a.job.id = :jobId")
+    List<Application> findAllByJobId(@Param("jobId") Long jobId);
+    
+    /**
      * 특정 사용자의 지원서 목록 조회
      */
     @Query("SELECT a FROM Application a WHERE a.user.id = :userId")
@@ -35,6 +41,14 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
      */
     @Query("SELECT a FROM Application a WHERE a.job.id = :jobId AND a.user.id = :userId")
     Optional<Application> findByJobIdAndUserId(@Param("jobId") Long jobId, @Param("userId") Long userId);
+    
+    /**
+     * 특정 공고에 특정 사용자가 지원했는지 확인 (Resume 포함)
+     */
+    @Query("SELECT a FROM Application a " +
+           "LEFT JOIN FETCH a.resume " +
+           "WHERE a.job.id = :jobId AND a.user.id = :userId")
+    Optional<Application> findByJobIdAndUserIdWithResume(@Param("jobId") Long jobId, @Param("userId") Long userId);
     
     /**
      * 특정 공고의 특정 상태 지원서 목록 조회
@@ -51,4 +65,10 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
      * 사용자의 ID, 상태(합격/불합)에 따라 공고 조회
      */
     List<Application> findAllByUserIdAndStatus(Long userId, ApplicationStatus status);
+
+    /**
+     *
+     * 사용자의 ID, job ID로 이미 지원했는지 조회
+     */
+    boolean existsByUserIdAndJobId(Long userId, Long jobId);
 }

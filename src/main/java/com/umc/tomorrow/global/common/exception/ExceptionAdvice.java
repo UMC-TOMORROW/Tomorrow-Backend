@@ -3,18 +3,20 @@ package com.umc.tomorrow.global.common.exception;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import com.umc.tomorrow.global.common.exception.code.BaseCode;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
+import com.umc.tomorrow.domain.application.exception.ApplicationException;
+import com.umc.tomorrow.domain.review.exception.ReviewException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -35,6 +37,26 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity<BaseResponse<String>> handleRestApiException(RestApiException e) {
         BaseCode errorCode = e.getErrorCode();
         log.error("An error occurred: {}", e.getMessage(), e);
+        return handleExceptionInternal(errorCode);
+    }
+
+    /*
+     * ApplicationException 에러 클래스에 대한 예외 처리
+     */
+    @ExceptionHandler(value = ApplicationException.class)
+    public ResponseEntity<BaseResponse<String>> handleApplicationException(ApplicationException e) {
+        BaseCode errorCode = e.getErrorCode();
+        log.error("Application error occurred: {}", e.getMessage(), e);
+        return handleExceptionInternal(errorCode);
+    }
+
+    /*
+     * ReviewException 에러 클래스에 대한 예외 처리
+     */
+    @ExceptionHandler(value = ReviewException.class)
+    public ResponseEntity<BaseResponse<String>> handleReviewException(ReviewException e) {
+        BaseCode errorCode = e.getErrorCode();
+        log.error("Review error occurred: {}", e.getMessage(), e);
         return handleExceptionInternal(errorCode);
     }
 

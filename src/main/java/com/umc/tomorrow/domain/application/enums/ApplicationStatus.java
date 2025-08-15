@@ -5,12 +5,13 @@
  */
 package com.umc.tomorrow.domain.application.enums;
 
-import com.umc.tomorrow.domain.application.exception.ApplicationErrorStatus;
+import com.umc.tomorrow.domain.application.exception.code.ApplicationErrorStatus;
 import com.umc.tomorrow.domain.application.exception.ApplicationException;
 
 public enum ApplicationStatus {
-    ACCEPTED("합격"),
-    REJECTED("불합격");
+    PENDING("지원완료"),   // 지원서 제출 후 기본 상태
+    ACCEPTED("합격"),     // 합격
+    REJECTED("불합격");   // 불합격
 
     private final String label;
 
@@ -23,10 +24,11 @@ public enum ApplicationStatus {
     }
 
     public static ApplicationStatus from(String label) {
-        return switch (label) {
-            case "합격" -> ACCEPTED;
-            case "불합격" -> REJECTED;
-            default -> throw new ApplicationException(ApplicationErrorStatus.INVALID_STATUS);
-        };
+        for (ApplicationStatus status : ApplicationStatus.values()) {
+            if (status.name().equalsIgnoreCase(label) || status.label.equals(label)) {
+                return status;
+            }
+        }
+        throw new ApplicationException(ApplicationErrorStatus.INVALID_STATUS);
     }
 }

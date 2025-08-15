@@ -1,5 +1,6 @@
 package com.umc.tomorrow.domain.job.entity;
 
+import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class BusinessVerification extends BaseEntity {
 
     @Id
@@ -30,5 +31,7 @@ public class BusinessVerification extends BaseEntity {
     private LocalDate openingDate;
 
     //연관관계
+    @OneToOne(mappedBy = "businessVerification")
+    private User user;
 
 }

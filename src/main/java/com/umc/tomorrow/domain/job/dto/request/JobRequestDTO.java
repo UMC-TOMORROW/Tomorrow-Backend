@@ -1,5 +1,6 @@
 package com.umc.tomorrow.domain.job.dto.request;
 
+import com.umc.tomorrow.domain.job.enums.JobCategory;
 import com.umc.tomorrow.domain.job.enums.PaymentType;
 import com.umc.tomorrow.domain.job.enums.RegistrantType;
 import com.umc.tomorrow.domain.job.enums.WorkPeriod;
@@ -10,6 +11,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -35,10 +37,10 @@ public class JobRequestDTO {
     private Boolean isPeriodNegotiable = false;
 
     @Schema(description = "근무 시작 시간", example = "12:00")
-    private LocalDateTime workStart;
+    private LocalTime workStart;
 
     @Schema(description = "근무 종료 시간", example = "17:00")
-    private LocalDateTime workEnd;
+    private LocalTime workEnd;
 
     @Schema(description = "근무 시작 협의", example = "true")
     private Boolean isTimeNegotiable = false;
@@ -47,12 +49,18 @@ public class JobRequestDTO {
     @NotNull(message = "{job.paymentType.notnull}")
     private PaymentType paymentType;
 
+    @Schema(description = "일자리 카테고리", example = "TUTORING", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "{job.jobCategory.notnull}")
+    private JobCategory jobCategory;
+
     @Schema(description = "급여",
             example = "12000",
             requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "{job.salary.notnull}")
+//    @NotNull(message = "{job.salary.notnull}")
     @Min(value = 1, message = "{job.salary.min}")
     private Integer salary;
+
+    private Boolean isSalaryNegotiable = false;
 
     @Schema(description = "근무 설명", example = "음료 제조 및 서빙")
     private String jobDescription;
@@ -70,7 +78,7 @@ public class JobRequestDTO {
             example = "true",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "{job.isActive.notnull}")
-    private Boolean isActive;
+    private Boolean isActive = true;
 
     @Schema(description = "모집인원",
             example = "2",
@@ -80,7 +88,7 @@ public class JobRequestDTO {
     private Integer recruitmentLimit;
 
     @Schema(description = "등록유형",
-            example = "BUSINESS",
+            example = "PERSONAL",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "{job.registrantType.notnull}")
     private RegistrantType registrantType;
@@ -96,21 +104,21 @@ public class JobRequestDTO {
     private String preferredQualifications;
 
     @Schema(description = "위도",
-            example = "123.566",
+            example = "37.572950",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "{job.latitude.notnull}")
     private BigDecimal latitude;
 
     @Schema(description = "경도",
-            example = "123.566",
+            example = "126.979357",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "{job.longitude.notnull}")
     private BigDecimal longitude;
 
-    @Schema(description = "주소",
-            example = "서울특별시 종로구",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "{job.location.notblank}")
+//    @Schema(description = "주소",
+//            example = "서울특별시 종로구",
+//            requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+//    @NotBlank(message = "{job.location.notblank}")
     private String location;
 
     @Schema(description = "상시모집 여부",

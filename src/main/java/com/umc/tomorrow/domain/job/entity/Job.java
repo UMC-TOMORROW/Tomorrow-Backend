@@ -1,10 +1,8 @@
 package com.umc.tomorrow.domain.job.entity;
 
-import com.umc.tomorrow.domain.job.enums.JobCategory;
+import com.umc.tomorrow.domain.job.enums.*;
 import com.umc.tomorrow.domain.application.entity.Application;
-import com.umc.tomorrow.domain.job.enums.PaymentType;
-import com.umc.tomorrow.domain.job.enums.RegistrantType;
-import com.umc.tomorrow.domain.job.enums.WorkPeriod;
+import com.umc.tomorrow.domain.jobbookmark.entity.JobBookmark;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
@@ -12,6 +10,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,14 +19,12 @@ import java.util.List;
         uniqueConstraints = {
                 @UniqueConstraint(name = "uk_job_work_env", columnNames = "work_environment_id"),
                 @UniqueConstraint(name = "uk_job_personal_reg", columnNames = "personal_registration_id"),
-                @UniqueConstraint(name = "uk_job_work_days", columnNames = "work_days_id"),
-                @UniqueConstraint(name = "uk_job_business_verification", columnNames = "business_verification_id")
+                @UniqueConstraint(name = "uk_job_work_days", columnNames = "work_days_id")
         })
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class Job extends BaseEntity {
 
     @Id
@@ -37,6 +34,12 @@ public class Job extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String title;
 
+    @Column(nullable = false)
+    private Boolean isActive;
+
+    @Column(length = 1000)
+    private String jobDescription;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private JobCategory jobCategory;
@@ -44,26 +47,27 @@ public class Job extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private WorkPeriod workPeriod;
 
+    @Builder.Default
     @Column(columnDefinition = "BOOLEAN DEFAULT false", nullable = false) //false라면 workPeriod를 필수로 입력 받아야함
-    private Boolean isPeriodNegotiable;
+    private Boolean isPeriodNegotiable = false;
 
-    private LocalDateTime workStart;
+    private LocalTime workStart;
 
-    private LocalDateTime workEnd;
+    private LocalTime workEnd;
 
+    @Builder.Default
     @Column(columnDefinition = "BOOLEAN DEFAULT false") //false라면 workStart, workEnd를 필수로 입력 받아야함
-    private Boolean isTimeNegotiable;
+    private Boolean isTimeNegotiable = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    //private PaymentType paymentType;
-    private PaymentType paymentType = PaymentType.HOURLY; //테스트용
+    private PaymentType paymentType;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private Integer salary;
 
-    @Lob
-    private String jobDescription;
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    private Boolean isSalaryNegotiable = false;
 
     private String jobImageUrl;
 
@@ -71,15 +75,16 @@ public class Job extends BaseEntity {
     private String companyName;
 
     @Column(nullable = false)
-    private Boolean isActive; //공고 활성화 여부
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private PostStatus status = PostStatus.OPEN;
 
     @Column(nullable = false)
     private Integer recruitmentLimit;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    //private RegistrantType registrantType;
-    private RegistrantType registrantType = RegistrantType.BUSINESS;//테스트용
+    private RegistrantType registrantType;
 
     @Column(nullable = false)
     private LocalDateTime deadline;
@@ -87,27 +92,22 @@ public class Job extends BaseEntity {
     @Lob
     private String preferredQualifications;
 
-    @Column(precision = 10, scale = 7, nullable = false)//지도 api추가 후 nullable = false로 변경
+    @Column(precision = 10, scale = 7, nullable = false)
     private BigDecimal latitude; //위도
 
-    @Column(precision = 10, scale = 7, nullable = false)//지도 api추가 후 nullable = false로 변경
+    @Column(precision = 10, scale = 7, nullable = false)
     private BigDecimal longitude; //경도
 
-    @Column(length = 100)//지도 api추가 후 nullable = false로 변경
-    private String location;//위도, 경도를 받아서 address에 저장
+    @Column(length = 100)
+    private String location;//위도, 경도를 받아서 location에 저장
 
+    @Builder.Default
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
-    private Boolean alwaysHiring;
-
-    //businessVerification와 1:1관계
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "business_verification_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_job_business_verification"))
-    private BusinessVerification businessVerification;
+    private Boolean alwaysHiring = false;
 
     //personalRegistration와 1:1관계
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "personal_registration_id", nullable = false,
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name = "personal_registration_id", nullable = true,
             foreignKey = @ForeignKey(name = "fk_job_personal_registration"))
     private PersonalRegistration personalRegistration;
 
@@ -115,7 +115,6 @@ public class Job extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "work_days_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_job_work_days"))
-    //private WorkDays workDays;
     private WorkDays workDays;
 
     //WorkEnvironment와 1:1관계
@@ -130,6 +129,16 @@ public class Job extends BaseEntity {
     private User user; // 등록자
     
     // 지원서와 1:N 관계
+    @Builder.Default
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Application> applications = new ArrayList<>();
+
+    // 찜과 1:N 관계
+    @Builder.Default
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobBookmark> jobBookmarks = new ArrayList<>();
+
+    public void updateStatus(PostStatus newStatus) {
+        this.status = newStatus;
+    }
 }

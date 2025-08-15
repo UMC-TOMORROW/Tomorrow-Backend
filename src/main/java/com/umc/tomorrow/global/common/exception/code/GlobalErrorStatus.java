@@ -28,10 +28,10 @@ public enum GlobalErrorStatus implements BaseCodeInterface {
 
     //페이지 관련 오류
     NEGATIVE_PAGE_SIZE_REQUEST(HttpStatus.BAD_REQUEST, "PAGE4001", "잘못된 페이지 사이즈 요청입니다."),
+    INVALID_CURSOR_VALUE(HttpStatus.BAD_REQUEST, "PAGING4002", "잘못된 커서 값입니다. 유효한 커서 값을 입력해주세요."),
     ;
 
     // applicationErrorStatus(지원자 상태)
-    
 
     private final HttpStatus httpStatus;
     private final boolean isSuccess = false; //성공 여부 실패로 고정

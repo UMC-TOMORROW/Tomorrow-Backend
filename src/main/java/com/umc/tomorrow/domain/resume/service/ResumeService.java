@@ -6,6 +6,8 @@
  */
 package com.umc.tomorrow.domain.resume.service;
 
+import com.umc.tomorrow.domain.member.exception.MemberException;
+import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.resume.dto.request.ResumeSaveRequestDTO;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
@@ -36,8 +38,14 @@ public class ResumeService {
     @Transactional
     public Resume saveResume(Long userId, ResumeSaveRequestDTO dto) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+            .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
         Resume resume = ResumeConverter.toEntity(dto, user);
-        return resumeRepository.save(resume);
+        Resume savedResume = resumeRepository.save(resume);
+        
+        // 사용자의 resumeId 필드 업데이트
+        user.setResumeId(savedResume.getId());
+        userRepository.save(user);
+        
+        return savedResume;
     }
 } 

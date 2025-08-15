@@ -12,7 +12,7 @@ import com.umc.tomorrow.domain.careertalk.dto.response.GetCareertalkResponseDto;
 import com.umc.tomorrow.domain.careertalk.dto.response.GetCareertalkListResponseDto;
 import com.umc.tomorrow.domain.careertalk.entity.Careertalk;
 import com.umc.tomorrow.domain.careertalk.exception.CareertalkException;
-import com.umc.tomorrow.domain.careertalk.exception.code.CareertalkStatus;
+import com.umc.tomorrow.domain.careertalk.exception.code.CareertalkErrorStatus;
 import com.umc.tomorrow.domain.careertalk.repository.CareertalkRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,15 +70,19 @@ public class CareertalkQueryServiceImpl implements CareertalkQueryService {
      */
 
     @Override
-    public GetCareertalkResponseDto getCareertalk(Long careertalkId) {
+    public GetCareertalkResponseDto getCareertalk(Long careertalkId, Long userId) {
         Careertalk careertalk = careertalkRepository.findById(careertalkId)
-                .orElseThrow(() -> new CareertalkException(CareertalkStatus.CAREERTALK_NOT_FOUND));
+                .orElseThrow(() -> new CareertalkException(CareertalkErrorStatus.CAREERTALK_NOT_FOUND));
+
+        boolean isAuthor = careertalk.getUser().getId().equals(userId);
 
         return GetCareertalkResponseDto.builder()
                 .id(careertalk.getId())
                 .category(careertalk.getCategory())
                 .title(careertalk.getTitle())
                 .content(careertalk.getContent())
+                .isAuthor(isAuthor)
+                .chatroomId(careertalk.getChattingRoom().getId())
                 .createdAt(careertalk.getCreatedAt())
                 .build();
     }

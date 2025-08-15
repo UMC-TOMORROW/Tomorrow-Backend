@@ -18,9 +18,9 @@ public class ResumeSaveRequestDTO {
 
     private final String introduction; // 자기소개서 내용
 
-    private final List<Career> career; // 경력 목록
+    private final List<CareerSaveRequest> careers;
 
-    private final List<String> certificates; // 자격증 목록
+    private final List<CertificateSaveRequest> certificates;
 
     /**
      * 경력 저장 요청 내부 클래스
@@ -33,4 +33,17 @@ public class ResumeSaveRequestDTO {
         private final int workedYear;
         private WorkPeriodType workedPeriod;
     }
+
+    /**
+     * 자격증 저장 요청 내부 클래스
+     */
+    @Getter
+    @Builder
+    public static class CertificateSaveRequest {
+        private final String fileUrl;
+        private final String filename;
+    }
+
+
+
 } 

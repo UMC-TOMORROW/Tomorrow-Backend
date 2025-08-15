@@ -18,7 +18,9 @@ import java.util.List;
 @AllArgsConstructor
 public class ApplicationDetailsResponseDTO {
     private Long applicantId;
+    private Long applicationId;
     private String status; // 현재 지원 상태
+    private String content; //지원 시 한 줄로 입력하는 정보, ex)이승주/남/26세/관악구/열심히 하겠습니다.
 
     private UserProfileDTO userProfile;
     private ResumeInfoDTO resumeInfo;
@@ -43,16 +45,18 @@ public class ApplicationDetailsResponseDTO {
     public static class ResumeInfoDTO {
         private String resumeContent;
         private String portfolioUrl;
-        private List<ExperienceDTO> experiences;
+        private List<CareerDTO> careers;
         private List<CertificationDTO> certifications;
     }
 
-    // 경험
+
+
+    // 경력
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ExperienceDTO {
+    public static class CareerDTO {
         private Long id;
         private String company;     // 일한 곳
         private String position;    // 했던 일

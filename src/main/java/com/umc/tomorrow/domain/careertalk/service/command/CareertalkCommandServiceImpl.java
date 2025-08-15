@@ -7,13 +7,15 @@
  */
 package com.umc.tomorrow.domain.careertalk.service.command;
 
+import com.umc.tomorrow.domain.chatting.entity.ChattingRoom;
+import com.umc.tomorrow.domain.chatting.repository.ChattingRoomRepository;
 import com.umc.tomorrow.domain.careertalk.converter.CareertalkConverter;
-import com.umc.tomorrow.domain.careertalk.dto.request.CreateCareertalkRequestDto;
-import com.umc.tomorrow.domain.careertalk.dto.request.UpdateCareertalkRequestDto;
+import com.umc.tomorrow.domain.careertalk.dto.request.CreateCareertalkRequestDTO;
+import com.umc.tomorrow.domain.careertalk.dto.request.UpdateCareertalkRequestDTO;
 import com.umc.tomorrow.domain.careertalk.dto.response.CareertalkResponseDto;
 import com.umc.tomorrow.domain.careertalk.entity.Careertalk;
 import com.umc.tomorrow.domain.careertalk.exception.CareertalkException;
-import com.umc.tomorrow.domain.careertalk.exception.code.CareertalkStatus;
+import com.umc.tomorrow.domain.careertalk.exception.code.CareertalkErrorStatus;
 import com.umc.tomorrow.domain.careertalk.repository.CareertalkRepository;
 
 import com.umc.tomorrow.domain.member.entity.User;
@@ -34,6 +36,7 @@ public class CareertalkCommandServiceImpl implements CareertalkCommandService {
 
     private final CareertalkRepository careertalkRepository;
     private final UserRepository userRepository;
+    private final ChattingRoomRepository chattingRoomRepository;
 
     /**
      * 커리어톡 게시글 생성 메서드
@@ -42,7 +45,7 @@ public class CareertalkCommandServiceImpl implements CareertalkCommandService {
      * @return 커리어톡 게시글 응답 DTO
      */
     @Override
-    public CareertalkResponseDto createCareertalk(Long userId, CreateCareertalkRequestDto requestDto){
+    public CareertalkResponseDto createCareertalk(Long userId, CreateCareertalkRequestDTO requestDto){
 
         User user = userRepository.findById(userId)
                 .orElseThrow(()  -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
@@ -55,6 +58,12 @@ public class CareertalkCommandServiceImpl implements CareertalkCommandService {
                 .build();
 
         careertalkRepository.save(careertalk);
+
+        ChattingRoom room = ChattingRoom.builder()
+                .careertalk(careertalk)
+                .build();
+        chattingRoomRepository.save(room); //커리어톡 글 생성시 채팅방 동시에 생성
+
         return CareertalkConverter.toCareertalkResponseDto(careertalk);
     }
 
@@ -66,16 +75,16 @@ public class CareertalkCommandServiceImpl implements CareertalkCommandService {
      * @return 커리어톡 게시글 응답 DTO
      */
     @Override
-    public CareertalkResponseDto updateCareertalk(Long userId, Long careertalkId, UpdateCareertalkRequestDto requestDto){
+    public CareertalkResponseDto updateCareertalk(Long userId, Long careertalkId, UpdateCareertalkRequestDTO requestDto){
 
         User user = userRepository.findById(userId)
                 .orElseThrow(()  -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
         Careertalk careertalk = careertalkRepository.findById(careertalkId)
-                .orElseThrow(() -> new CareertalkException(CareertalkStatus.CAREERTALK_NOT_FOUND));
+                .orElseThrow(() -> new CareertalkException(CareertalkErrorStatus.CAREERTALK_NOT_FOUND));
 
         if (!careertalk.getUser().getId().equals(userId)){ //권한 유효성 검사
-            throw new CareertalkException(CareertalkStatus.CAREERTALK_FORBIDDEN);
+            throw new CareertalkException(CareertalkErrorStatus.CAREERTALK_FORBIDDEN);
         }
 
         careertalk.update(requestDto.getTitle(), requestDto.getContent(), requestDto.getCategory());
@@ -94,10 +103,10 @@ public class CareertalkCommandServiceImpl implements CareertalkCommandService {
                 .orElseThrow(()  -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
         Careertalk careertalk = careertalkRepository.findById(careertalkId)
-                .orElseThrow(() -> new CareertalkException(CareertalkStatus.CAREERTALK_NOT_FOUND));
+                .orElseThrow(() -> new CareertalkException(CareertalkErrorStatus.CAREERTALK_NOT_FOUND));
 
         if (!careertalk.getUser().getId().equals(userId)){ //권한 유효성 검사
-            throw new CareertalkException(CareertalkStatus.CAREERTALK_FORBIDDEN);
+            throw new CareertalkException(CareertalkErrorStatus.CAREERTALK_FORBIDDEN);
         }
 
         CareertalkResponseDto responseDto = CareertalkConverter.toCareertalkResponseDto(careertalk); // 삭제 전 DTO 생성

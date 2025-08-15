@@ -6,7 +6,9 @@
  */
 package com.umc.tomorrow.domain.review.entity;
 
+import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import jakarta.validation.constraints.NotNull;
@@ -16,13 +18,10 @@ import jakarta.validation.constraints.NotNull;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Review {
+public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotNull(message = "{review.postId.notnull}")
-    private Long postId;
 
     @NotNull(message = "{review.stars.notnull}")
     private int stars;
@@ -34,4 +33,9 @@ public class Review {
     @NotNull(message = "{review.user.notnull}")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "job_id")
+    @JoinColumn(name = "post_id", nullable = false)
+    private Job job;
 }

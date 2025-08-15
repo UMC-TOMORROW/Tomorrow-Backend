@@ -4,10 +4,19 @@ import com.umc.tomorrow.global.common.exception.code.BaseCode;
 import com.umc.tomorrow.global.common.exception.code.BaseCodeInterface;
 import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 public class RestApiException extends RuntimeException {
 
     private final BaseCodeInterface errorCode; //추상화 시킨 인터페이스를 받아서 사용
+
+    // 생성자를 직접 정의하여 부모 클래스(RuntimeException)에 메시지를 전달합니다.
+    public RestApiException(BaseCodeInterface errorCode) {
+        super(errorCode.getCode().getMessage());
+        this.errorCode = errorCode;
+    }
+    public RestApiException(BaseCodeInterface errorCode, String customMessage) {
+        super(customMessage);
+        this.errorCode = errorCode;
+    }
 
     //추상화 시킨 ErrorCode의 getCode()를 사용하여 ErrorCode를 반환
     public BaseCode getErrorCode() {

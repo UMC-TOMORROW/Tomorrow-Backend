@@ -8,16 +8,19 @@
 package com.umc.tomorrow.domain.review.controller;
 
 import com.umc.tomorrow.domain.review.dto.ReviewRequestDTO;
+import com.umc.tomorrow.domain.review.dto.ReviewResponseDTO;
 import com.umc.tomorrow.domain.review.service.ReviewService;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Tag(name = "review-controller", description = "후기 관련 API")
@@ -42,12 +45,29 @@ public class ReviewController {
     @PostMapping
     public ResponseEntity<BaseResponse> saveReview(
             @AuthenticationPrincipal CustomOAuth2User user,
-            @RequestBody ReviewRequestDTO dto) {
+            @Valid @RequestBody ReviewRequestDTO dto) {
         // 실제 DB에 후기 저장
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
         reviewService.saveReview(userId, dto);
         return ResponseEntity.ok(
                 BaseResponse.onSuccess(Map.of("saved", true))
         );
     }
+
+    /**
+     * 특정 공고에 대한 리뷰 목록 조회
+     * @param jobId 일자리 ID
+     * @param customOAuth2User 인증된 사용자
+     * @return 리뷰 목록
+     */
+    @GetMapping("/{jobId}")
+    public ResponseEntity<BaseResponse<List<ReviewResponseDTO>>> getReviewsByJobId(
+            @PathVariable Long jobId,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        Long userId = customOAuth2User.getUserResponseDTO().getId();
+        List<ReviewResponseDTO> result = reviewService.getReviewsByJobId(jobId, userId);
+        return ResponseEntity.ok(BaseResponse.onSuccess(result));
+    }
+
+
 }

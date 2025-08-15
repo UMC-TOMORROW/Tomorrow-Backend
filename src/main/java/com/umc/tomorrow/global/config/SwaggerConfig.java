@@ -17,7 +17,7 @@ public class SwaggerConfig {
         Info info = new Info()
                 .title("Tomorrow Server API")
                 .description("Tomorrow 서비스 백엔드 API 명세서입니다.")
-                .version("1.0.0");
+                .version("3.0.1");
 
         String jwtSchemeName = "JWT";
 

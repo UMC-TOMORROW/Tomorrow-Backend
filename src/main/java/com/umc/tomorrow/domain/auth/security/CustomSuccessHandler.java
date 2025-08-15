@@ -1,110 +1,185 @@
 package com.umc.tomorrow.domain.auth.security;
 
-import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.enums.Provider;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
+import com.umc.tomorrow.domain.resume.entity.Resume;
+import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
+import com.umc.tomorrow.domain.introduction.entity.Introduction;
+import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Iterator;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
-
-    @Autowired
-    public CustomSuccessHandler(JWTUtil jwtUtil, UserRepository userRepository) {
-        this.jwtUtil = jwtUtil;
-        this.userRepository = userRepository;
-    }
+    private final ResumeRepository resumeRepository;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
 
-        //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
-
-        String username = customUserDetails.getUsername();
+        String usernameToUseForTokens;
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String providerStr = customUserDetails.getUserDTO().getProvider();
-        String providerUserId = customUserDetails.getUserDTO().getProviderUserId();
+        String providerStr = customUserDetails.getUserResponseDTO().getProvider();
+        String providerUserId = customUserDetails.getUserResponseDTO().getProviderUserId();
         Provider provider = Provider.valueOf(providerStr.toUpperCase());
 
         User user = userRepository.findByProviderAndProviderUserId(provider, providerUserId);
         if (user == null) {
-            // 소셜 로그인 정보로 새 회원 생성
+            // 새로운 사용자 생성
             user = new User();
-            user.setName(customUserDetails.getName()); // 필요시
-            // 필수값 세팅
+            user.setName(customUserDetails.getName());
             user.setCreatedAt(java.time.LocalDateTime.now());
             user.setUpdatedAt(java.time.LocalDateTime.now());
-            // provider, providerUserId, username, email 세팅
-            providerStr = customUserDetails.getUserDTO().getProvider();
-            providerUserId = customUserDetails.getUserDTO().getProviderUserId();
-            if (providerStr != null) {
-                user.setProvider(Provider.valueOf(providerStr.toUpperCase()));
-            }
+            user.setProvider(provider);
             user.setProviderUserId(providerUserId);
-            // username은 provider + '_' + providerUserId로 생성
-            String usernameValue = (providerStr != null && providerUserId != null) ? providerStr + "_" + providerUserId : null;
-            user.setUsername(usernameValue);
-            user.setEmail(customUserDetails.getUserDTO().getEmail());
+
+            usernameToUseForTokens = (providerStr != null && providerUserId != null)
+                    ? providerStr + "_" + providerUserId : null;
+            user.setUsername(usernameToUseForTokens);
+            user.setEmail(customUserDetails.getUserResponseDTO().getEmail());
+
+            // 사용자 저장
+            user = userRepository.save(user);
+
+            // 기본 이력서 생성
+            Resume defaultResume = Resume.builder()
+                    .user(user)
+                    .build();
+
+            // 기본 자기소개 생성
+            Introduction defaultIntroduction = Introduction.builder()
+                    .content("안녕하세요! 저는 " + user.getName() + "입니다.")
+                    .resume(defaultResume)
+                    .build();
+
+            defaultResume.setIntroduction(defaultIntroduction);
+
+            // 이력서 저장
+            Resume savedResume = resumeRepository.save(defaultResume);
+
+            // 사용자의 resumeId 업데이트
+            user.setResumeId(savedResume.getId());
             userRepository.save(user);
+
+        } else {
+            usernameToUseForTokens = user.getUsername();
+            if (usernameToUseForTokens == null) {
+                usernameToUseForTokens = (providerStr != null && providerUserId != null)
+                        ? providerStr + "_" + providerUserId : null;
+                user.setUsername(usernameToUseForTokens);
+                userRepository.save(user);
+            }
+
+            // 기존 사용자이지만 resumeId가 없는 경우 기본 이력서 생성
+            if (user.getResumeId() == null) {
+                Resume defaultResume = Resume.builder()
+                        .user(user)
+                        .build();
+
+                Introduction defaultIntroduction = Introduction.builder()
+                        .content("안녕하세요! 저는 " + user.getName() + "입니다.")
+                        .resume(defaultResume)
+                        .build();
+
+                defaultResume.setIntroduction(defaultIntroduction);
+
+                Resume savedResume = resumeRepository.save(defaultResume);
+                user.setResumeId(savedResume.getId());
+                userRepository.save(user);
+            }
         }
-        String token = jwtUtil.createJwt(
-            user.getId(),
-            user.getName(),
-            user.getUsername(),
-            (user.getStatus() != null ? user.getStatus().name() : null),
-            60*60*60L
+
+        // Access Token (60시간)
+        long accessTokenExpiredMs = 60L * 60 * 60 * 1000;
+        long accessTokenExpiredSeconds = 60L * 60 * 60;
+
+        String accessToken = jwtUtil.createJwt(
+                user.getId(),
+                user.getName(),
+                user.getUsername(),
+                (user.getStatus() != null ? user.getStatus().name() : null),
+                accessTokenExpiredMs
         );
 
-        // Refresh Token 생성 (2주)
-        String refreshToken = jwtUtil.createRefreshToken(username, 60L * 60 * 24 * 14 * 1000); // 2주
+        // Refresh Token (2주)
+        long refreshTokenExpiredMs = 60L * 60 * 24 * 14 * 1000;
+        long refreshTokenExpiredSeconds = 60L * 60 * 24 * 14;
+
+        String refreshToken = jwtUtil.createRefreshToken(user.getId(), usernameToUseForTokens, refreshTokenExpiredMs);
 
         // DB에 저장
-        if (user != null) {
-            user.setRefreshToken(refreshToken);
-            userRepository.save(user);
+        user.setRefreshToken(refreshToken);
+        System.out.println("[DEBUG] refresh Token 확인 : " + refreshToken);
+        userRepository.save(user);
+
+        // 환경 감지
+        boolean isLocal = request.getServerName().equals("localhost");
+        boolean secureFlag = !isLocal;
+
+// 쿠키 설정 (Secure=%b 대신 조건부 추가)
+        StringBuilder accessCookieBuilder = new StringBuilder();
+        accessCookieBuilder.append("Authorization=").append(accessToken)
+                .append("; Max-Age=").append((int) accessTokenExpiredSeconds)
+                .append("; Path=/; HttpOnly; SameSite=None; ");
+        if (secureFlag) {
+            accessCookieBuilder.append("Secure; ");
+        }
+        response.addHeader("Set-Cookie", accessCookieBuilder.toString().trim());
+
+        StringBuilder refreshCookieBuilder = new StringBuilder();
+        refreshCookieBuilder.append("RefreshToken=").append(refreshToken)
+                .append("; Max-Age=").append((int) refreshTokenExpiredSeconds)
+                .append("; Path=/; HttpOnly; SameSite=None; ");
+        if (secureFlag) {
+            refreshCookieBuilder.append("Secure; ");
+        }
+        response.addHeader("Set-Cookie", refreshCookieBuilder.toString().trim());
+
+// 헤더 추가
+        response.addHeader("Authorization", "Bearer " + accessToken);
+        response.addHeader("RefreshToken", refreshToken);
+
+// 리다이렉트 URL 분기
+        boolean isOnboarded = Boolean.TRUE.equals(user.getIsOnboarded());
+
+        String redirectUrl;
+        if (isLocal) {
+            redirectUrl = isOnboarded
+                    ? "http://localhost:5173"       // 온보딩 완료 유저
+                    : "http://localhost:5173/onboarding"; // 온보딩 필요 유저
+        } else {
+            redirectUrl = isOnboarded
+                    ? "https://umctomorrow.shop"
+                    : "https://umctomorrow.shop/onboarding";
         }
 
-        // 클라이언트에 전달 (쿠키/헤더)
-        response.addCookie(createCookie("Authorization", token));
-        response.addHeader("Authorization", "Bearer " + token);
-        response.addCookie(createCookie("RefreshToken", refreshToken));
-        response.addHeader("RefreshToken", refreshToken);
-        //response.sendRedirect("http://localhost:3000/");
-        //response.sendRedirect("/success");//로컬 테스트 확인용
-    }
-
-    private Cookie createCookie(String key, String value) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60*60*60);
-        //cookie.setSecure(true);
-        cookie.setSecure(false); // 로컬 테스트용
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
+        response.sendRedirect(redirectUrl);
 
 
-
-        return cookie;
     }
 }

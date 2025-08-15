@@ -6,14 +6,23 @@
  */
 package com.umc.tomorrow.domain.review.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class ReviewRequestDTO {
-    private Long postId;
-    private int stars;
-    private String review;
+    @NotNull(message = "{review.jobId.notnull}")
+    private final Long jobId;
+
+    @NotNull(message = "{review.stars.notnull}")
+    @Min(value = 0, message = "{review.stars.min}")
+    @Max(value = 5, message = "{review.stars.max}")
+    private final int stars;
+
+    @NotBlank(message = "{review.review.notnull}")
+    private final String review;
 }

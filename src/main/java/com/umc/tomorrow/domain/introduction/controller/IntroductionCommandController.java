@@ -5,10 +5,8 @@ import com.umc.tomorrow.domain.introduction.dto.request.IntroductionCreateReques
 import com.umc.tomorrow.domain.introduction.dto.request.IntroductionUpdateRequestDTO;
 import com.umc.tomorrow.domain.introduction.dto.response.GetIntroductionResponseDTO;
 import com.umc.tomorrow.domain.introduction.dto.response.IntroductionResponseDTO;
-import com.umc.tomorrow.domain.introduction.service.command.IntroductionCommandService;
-import com.umc.tomorrow.domain.job.dto.response.JobStepResponseDTO;
-import com.umc.tomorrow.domain.job.service.command.JobCommandService;
-import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.domain.introduction.service.IntroductionCommandService;
+import com.umc.tomorrow.domain.introduction.service.query.IntroductionQueryService;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class IntroductionCommandController {
 
     private final IntroductionCommandService introductionCommandService;
+    private final IntroductionQueryService introductionQueryService;
 
     /**
      * 이력서 자기소개 저장(POST)
@@ -40,7 +39,7 @@ public class IntroductionCommandController {
             @AuthenticationPrincipal CustomOAuth2User user,
             @RequestBody @Valid IntroductionCreateRequestDTO requestDTO) {
 
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
 
         IntroductionResponseDTO response = introductionCommandService.saveIntroduction(userId, resumeId, requestDTO);
 
@@ -59,9 +58,9 @@ public class IntroductionCommandController {
             @PathVariable Long resumeId,
             @AuthenticationPrincipal CustomOAuth2User user) {
 
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
 
-        GetIntroductionResponseDTO response = introductionCommandService.getIntroduction(userId, resumeId);
+        GetIntroductionResponseDTO response = introductionQueryService.getIntroduction(userId, resumeId);
 
         return ResponseEntity.ok(BaseResponse.onSuccess(response));
     }
@@ -80,7 +79,7 @@ public class IntroductionCommandController {
             @AuthenticationPrincipal CustomOAuth2User user,
             @RequestBody @Valid IntroductionUpdateRequestDTO requestDTO) {
 
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
 
         IntroductionResponseDTO response = introductionCommandService.updateIntroduction(userId, resumeId, requestDTO);
 

@@ -6,27 +6,30 @@ spring:
     name: tomorrow
   messages:
     encoding: UTF-8
-    basename: validation
-
+    basename: messages_ko
+  data:
+    redis:
+      host: redis # docker-compose에 설정했던 이름이랑 같아야 해
+      port: 6379
+      
   profiles:
-    active: local #임시수정
-    # active: ${SPRING_PROFILES_ACTIVE}
+    active: ${SPRING_PROFILES_ACTIVE:local}
+    # active: ${SPRING_PROFILES_ACTIVE:dev}
 
-  # 로컬 개발용 데이터베이스 설정
-  datasource:
-    url: jdbc:mysql://localhost:3306/tomorrow_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      connection-timeout: 20000
-      idle-timeout: 300000
-      max-lifetime: 1200000
-      pool-name: HikariCP-Local
-
-  # JPA 설정 (로컬 개발용)
+  #메일 관련 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAILNAME}
+    password: ${MAILPASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+  # JPA 설정 
   jpa:
     hibernate:
       ddl-auto: create
@@ -37,6 +40,7 @@ spring:
         format_sql: true
         use_sql_comments: true
         jdbc:
+          time_zone: Asia/Seoul
           lob:
             non_contextual_creation: true
 
@@ -63,6 +67,7 @@ spring:
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/google
             scope: profile, email
+
           
           kakao:
             client-name: kakao
@@ -70,6 +75,7 @@ spring:
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             scope: profile_nickname, profile_image
+
 
         provider:
           naver:
@@ -102,6 +108,8 @@ springdoc:
     disable-swagger-default-url: true
     display-request-duration: true
     try-it-out-enabled: true
+  api-docs:
+    path: /v3/api-docs
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
 
@@ -114,4 +122,33 @@ management:
   endpoint:
     health:
       show-details: never
+  metrics:
+    enable:
+      processors: false
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  # 프록시 헤더 전략
+  forward-headers-strategy: native
+  error:
+    include-stacktrace: never
+    include-message: always
+
+# AWS S3 설정
+cloud:
+  aws:
+    s3:
+      bucket: umc8-tomorrow-bucket
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
 
