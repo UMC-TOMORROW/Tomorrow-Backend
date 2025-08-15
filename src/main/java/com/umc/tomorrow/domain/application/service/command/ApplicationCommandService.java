@@ -129,7 +129,7 @@ public class ApplicationCommandService {
                     .job(job)
                     .user(user)
                     .resume(resume)
-                    .status(ApplicationStatus.REJECTED)
+                    .status(ApplicationStatus.PENDING)
                     .appliedAt(LocalDateTime.now())
                     .build();
         } else {
@@ -137,7 +137,7 @@ public class ApplicationCommandService {
                     .content(requestDTO.getContent())
                     .job(job)
                     .user(user)
-                    .status(ApplicationStatus.REJECTED)
+                    .status(ApplicationStatus.PENDING)
                     .appliedAt(LocalDateTime.now())
                     .build();
         }

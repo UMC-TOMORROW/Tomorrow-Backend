@@ -15,8 +15,10 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ApplicationStatusListResponseDTO {
+public class
+ApplicationStatusListResponseDTO {
     private String postTitle;
+    private Long jobId;
     private String company;
     private String date;
 

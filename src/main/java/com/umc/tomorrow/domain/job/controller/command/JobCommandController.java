@@ -90,9 +90,21 @@ public class JobCommandController {
 
 
         // 이미지 업로드
+        if (image != null) {
+            log.info("[이미지 업로드] 파일명: {}, 크기: {} bytes, isEmpty: {}",
+                    image.getOriginalFilename(),
+                    image.getSize(),
+                    image.isEmpty());
+        } else {
+            log.warn("[이미지 업로드] image 객체가 null입니다.");
+        }
+
         if (image != null && !image.isEmpty()) {
             String imageUrl = s3Uploader.upload(image, "job-images");
+            log.info("[이미지 업로드 성공] 업로드 경로: {}", imageUrl);
             requestDTO.setJobImageUrl(imageUrl);
+        } else {
+            log.info("[이미지 업로드] 업로드 로직이 실행되지 않았습니다.");
         }
 
         // 서비스 호출

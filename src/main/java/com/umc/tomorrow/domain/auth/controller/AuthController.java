@@ -11,11 +11,14 @@ package com.umc.tomorrow.domain.auth.controller;
 import com.umc.tomorrow.domain.auth.excpetion.code.AuthErrorStatus;
 
 import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
+import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.Cookie;
@@ -86,4 +89,31 @@ public class AuthController {
             throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_INVALID); // AUTH4003
         }
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+            HttpServletResponse response
+    ) {
+        Long userId = customOAuth2User.getUserResponseDTO().getId();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(MemberErrorStatus.MEMBER_NOT_FOUND));
+
+        // DB에 저장된 Refresh Token 제거
+        user.setRefreshToken(null);
+        userRepository.save(user);
+
+        // Refresh Token 쿠키 제거
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // 즉시 만료
+        cookie.setDomain("umctomorrow.shop"); // 배포 환경 도메인
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().body("로그아웃 성공");
+    }
+
 } 
