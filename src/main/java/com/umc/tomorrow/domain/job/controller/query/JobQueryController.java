@@ -34,7 +34,7 @@ public class JobQueryController {
     public ResponseEntity<BaseResponse<List<MyPostResponseDTO>>> getOpenPosts(
             @AuthenticationPrincipal CustomOAuth2User user
     ) {
-        List<MyPostResponseDTO> result = jobQueryService.getMyPosts(user.getUserDTO().getId(), "open");
+        List<MyPostResponseDTO> result = jobQueryService.getMyPosts(user.getUserResponseDTO().getId(), "open");
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
 
@@ -43,7 +43,7 @@ public class JobQueryController {
     public ResponseEntity<BaseResponse<List<MyPostResponseDTO>>> getClosedPosts(
             @AuthenticationPrincipal CustomOAuth2User user
     ) {
-        List<MyPostResponseDTO> result = jobQueryService.getMyPosts(user.getUserDTO().getId(), "closed");
+        List<MyPostResponseDTO> result = jobQueryService.getMyPosts(user.getUserResponseDTO().getId(), "closed");
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }
 
@@ -64,7 +64,7 @@ public class JobQueryController {
             @Positive @RequestParam(required = false) Long cursor,
             @Positive @RequestParam(defaultValue = "8") int size
     ){
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
         GetRecommendationListResponse result = jobQueryService.getTomorrowRecommendations(userId, cursor,size);
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }

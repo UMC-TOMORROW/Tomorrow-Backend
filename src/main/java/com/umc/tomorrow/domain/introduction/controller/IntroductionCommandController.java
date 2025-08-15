@@ -39,7 +39,7 @@ public class IntroductionCommandController {
             @AuthenticationPrincipal CustomOAuth2User user,
             @RequestBody @Valid IntroductionCreateRequestDTO requestDTO) {
 
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
 
         IntroductionResponseDTO response = introductionCommandService.saveIntroduction(userId, resumeId, requestDTO);
 
@@ -58,7 +58,7 @@ public class IntroductionCommandController {
             @PathVariable Long resumeId,
             @AuthenticationPrincipal CustomOAuth2User user) {
 
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
 
         GetIntroductionResponseDTO response = introductionQueryService.getIntroduction(userId, resumeId);
 
@@ -79,7 +79,7 @@ public class IntroductionCommandController {
             @AuthenticationPrincipal CustomOAuth2User user,
             @RequestBody @Valid IntroductionUpdateRequestDTO requestDTO) {
 
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
 
         IntroductionResponseDTO response = introductionCommandService.updateIntroduction(userId, resumeId, requestDTO);
 

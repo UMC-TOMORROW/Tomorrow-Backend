@@ -47,7 +47,7 @@ public class ReviewController {
             @AuthenticationPrincipal CustomOAuth2User user,
             @Valid @RequestBody ReviewRequestDTO dto) {
         // 실제 DB에 후기 저장
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
         reviewService.saveReview(userId, dto);
         return ResponseEntity.ok(
                 BaseResponse.onSuccess(Map.of("saved", true))
@@ -64,7 +64,7 @@ public class ReviewController {
     public ResponseEntity<BaseResponse<List<ReviewResponseDTO>>> getReviewsByJobId(
             @PathVariable Long jobId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        Long userId = customOAuth2User.getUserDTO().getId();
+        Long userId = customOAuth2User.getUserResponseDTO().getId();
         List<ReviewResponseDTO> result = reviewService.getReviewsByJobId(jobId, userId);
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
     }

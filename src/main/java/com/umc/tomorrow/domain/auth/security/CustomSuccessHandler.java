@@ -43,8 +43,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String providerStr = customUserDetails.getUserDTO().getProvider();
-        String providerUserId = customUserDetails.getUserDTO().getProviderUserId();
+        String providerStr = customUserDetails.getUserResponseDTO().getProvider();
+        String providerUserId = customUserDetails.getUserResponseDTO().getProviderUserId();
         Provider provider = Provider.valueOf(providerStr.toUpperCase());
 
         User user = userRepository.findByProviderAndProviderUserId(provider, providerUserId);
@@ -60,7 +60,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             usernameToUseForTokens = (providerStr != null && providerUserId != null)
                     ? providerStr + "_" + providerUserId : null;
             user.setUsername(usernameToUseForTokens);
-            user.setEmail(customUserDetails.getUserDTO().getEmail());
+            user.setEmail(customUserDetails.getUserResponseDTO().getEmail());
             
             // 사용자 저장
             user = userRepository.save(user);

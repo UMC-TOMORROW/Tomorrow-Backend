@@ -40,7 +40,7 @@ public class CareerCommandController {
             @AuthenticationPrincipal CustomOAuth2User user,
             @RequestBody @Valid CareerCreateRequestDTO requestDTO) {
 
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
 
         CareerCreateResponseDTO response = careerCommandService.saveCareer(userId, resumeId, requestDTO);
 
@@ -61,7 +61,7 @@ public class CareerCommandController {
             @PathVariable Long resumeId,
             @AuthenticationPrincipal CustomOAuth2User user) {
 
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
 
         List<CareerGetResponseDTO> response = careerQueryService.getCareerList(userId, resumeId);
 
@@ -80,7 +80,7 @@ public class CareerCommandController {
             @PathVariable Long careerId,
             @AuthenticationPrincipal CustomOAuth2User user) {
 
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
 
         careerCommandService.deleteCareer(userId, resumeId, careerId);
 

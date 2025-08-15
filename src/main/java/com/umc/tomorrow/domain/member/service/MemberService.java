@@ -7,7 +7,8 @@
  */
 package com.umc.tomorrow.domain.member.service;
 
-import com.umc.tomorrow.domain.member.dto.UserDTO;
+import com.umc.tomorrow.domain.member.dto.UserResponseDTO;
+import com.umc.tomorrow.domain.member.dto.UserUpdateDTO;
 import com.umc.tomorrow.domain.member.dto.request.DeactivateUserRequest;
 import com.umc.tomorrow.domain.member.dto.response.DeactivateUserResponse;
 import com.umc.tomorrow.domain.member.dto.response.GetUserTypeResponse;
@@ -19,7 +20,7 @@ import com.umc.tomorrow.domain.member.enums.UserStatus;
 import com.umc.tomorrow.domain.member.exception.MemberException;
 import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
-import com.umc.tomorrow.domain.member.dto.UserConverter;
+import com.umc.tomorrow.domain.member.dto.UserResponseConverter;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
@@ -51,24 +52,23 @@ public class MemberService {
 
     /**
      * 회원 정보 수정
-     * @param currentUser 현재 로그인한 회원의 DTO (id 포함)
-     * @param userDTO 수정할 정보가 담긴 DTO
+     * @param userId 현재 로그인한 회원의 ID
+     * @param userUpdateDTO 수정할 정보가 담긴 DTO
      * @return 수정된 회원 정보 DTO
      */
     @Transactional
-    public UserDTO updateUser(UserDTO currentUser, UserDTO userDTO) {
-        Long userId = currentUser.getId();
+    public UserResponseDTO updateUser(Long userId, UserUpdateDTO userUpdateDTO) {
         User user = userRepository.findById(userId).orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
-        UserConverter.updateEntity(user, userDTO);
+        UserResponseConverter.updateEntity(user, userUpdateDTO);
         userRepository.save(user);
-        return UserConverter.toDTO(user);
+        return UserResponseConverter.toResponseDTO(user);
     }
 
     /**
-     * User 엔티티를 UserDTO로 변환
+     * User 엔티티를 UserResponseDTO로 변환
      */
-    public UserDTO toDTO(User user) {
-        return UserConverter.toDTO(user);
+    public UserResponseDTO toDTO(User user) {
+        return UserResponseConverter.toResponseDTO(user);
     }
 
     /**
