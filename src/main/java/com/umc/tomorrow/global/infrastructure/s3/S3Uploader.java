@@ -6,7 +6,9 @@
 package com.umc.tomorrow.global.infrastructure.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import java.io.IOException;
@@ -36,6 +38,12 @@ public class S3Uploader {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
+
+            //권한설정 추가
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead);
+
+            amazonS3.putObject(putObjectRequest);
 
             amazonS3.putObject(bucketName, fileName, file.getInputStream(), metadata);
         } catch (IOException e) {

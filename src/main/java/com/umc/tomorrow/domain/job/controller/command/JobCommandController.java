@@ -20,6 +20,7 @@ import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import com.umc.tomorrow.global.infrastructure.s3.S3Uploader;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
