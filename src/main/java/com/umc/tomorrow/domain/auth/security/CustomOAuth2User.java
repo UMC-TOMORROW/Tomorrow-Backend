@@ -1,6 +1,6 @@
 package com.umc.tomorrow.domain.auth.security;
 
-import com.umc.tomorrow.domain.member.dto.UserDTO;
+import com.umc.tomorrow.domain.member.dto.UserResponseDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -11,11 +11,11 @@ import java.util.Map;
 
 public class CustomOAuth2User implements OAuth2User {
 
-    private final UserDTO userDTO;
+    private final UserResponseDTO userResponseDTO;
 
-    public CustomOAuth2User(UserDTO userDTO) {
+    public CustomOAuth2User(UserResponseDTO userResponseDTO) {
 
-        this.userDTO = userDTO;
+        this.userResponseDTO = userResponseDTO;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class CustomOAuth2User implements OAuth2User {
             @Override
             public String getAuthority() {
 
-                return userDTO.getRole();
+                return userResponseDTO.getRole();
             }
         });
 
@@ -43,18 +43,18 @@ public class CustomOAuth2User implements OAuth2User {
     @Override
     public String getName() {
 
-        return userDTO.getName();
+        return userResponseDTO.getName();
     }
 
-    public UserDTO getUserDTO() {
-        return userDTO;
+    public UserResponseDTO getUserResponseDTO() {
+        return userResponseDTO;
     }
 
     public String getUsername() {
-        return userDTO.getUsername();
+        return userResponseDTO.getUsername();
     }
 
-    public UserDTO getUser() {
-        return this.userDTO;
+    public UserResponseDTO getUser() {
+        return this.userResponseDTO;
     }
 }
