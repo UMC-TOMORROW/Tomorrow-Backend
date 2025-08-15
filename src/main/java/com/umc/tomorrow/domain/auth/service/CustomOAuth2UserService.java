@@ -43,15 +43,23 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             throw new OAuth2AuthenticationException("지원하지 않는 로그인 방식입니다.");
         }
 
-        String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
-
-        UserDTO userDTO = UserDTO.builder()
-            .name(oAuth2Response.getName())
-            .provider(oAuth2Response.getProvider())
-            .providerUserId(oAuth2Response.getProviderId())
-            .email(oAuth2Response.getEmail())
-            // .role("ROLE_USER") // UserDTO에 role 필드가 없으므로 주석 처리 또는 필요시 추가
-            .build();
+        UserDTO userDTO = new UserDTO(
+            null, // id
+            null, // role
+            null, // username
+            oAuth2Response.getEmail(),
+            oAuth2Response.getName(),
+            null, // gender
+            null, // phoneNumber
+            null, // address
+            null, // status
+            null, // inactiveAt
+            null, // isOnboarded
+            oAuth2Response.getProvider(),
+            oAuth2Response.getProviderId(),
+            null, // resumeId
+            null  // profileImageUrl
+        );
 
         return new CustomOAuth2User(userDTO);
 

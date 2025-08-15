@@ -8,67 +8,62 @@
  */
 package com.umc.tomorrow.domain.member.dto;
 
-import jakarta.persistence.EntityListeners;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import com.umc.tomorrow.domain.member.enums.Gender;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.umc.tomorrow.global.common.base.BaseEntity;
 
-@EntityListeners(AuditingEntityListener.class)
 @Getter
-@Builder
-public class UserDTO {
-    private final Long id; // 회원 고유 ID
-    private final String role; // 권한 (예: ROLE_USER, ROLE_ADMIN)
-    private final String username; // 사용자명(로그인 ID 또는 소셜 ID)
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserDTO extends BaseEntity {
+    private Long id; // 회원 고유 ID
+    private String role; 
+    private String username; // 사용자명(로그인 ID 또는 소셜 ID)
 
     @Email(message = "{user.email.invalid}")
     @NotBlank(message = "{user.email.notblank}")
     @Size(max = 30, message = "{user.email.size}")
-    private final String email; // 이메일
+    private String email;
 
     @NotBlank(message = "{user.name.notblank}")
     @Size(max = 10, message = "{user.name.size}")
-    private final String name; // 이름
-
+    private String name; 
     @NotNull(message = "{user.gender.notnull}")
-    private final Gender gender; // 성별 (MALE, FEMALE)
+    private Gender gender; 
 
     @NotBlank(message = "{user.phoneNumber.notblank}")
     @Size(max = 20, message = "{user.phoneNumber.size}")
-    private final String phoneNumber; // 휴대폰 번호
+    private String phoneNumber; 
 
     @Size(max = 255, message = "{user.address.size}")
-    private final String address; // 주소
+    private String address;
 
     @NotNull(message = "{user.status.notnull}")
-    private final String status; // 상태 (ACTIVE, INACTIVE)
+    private String status; // 상태 (ACTIVE, INACTIVE)
 
-    @LastModifiedDate
     private LocalDateTime inactiveAt; // 비활성화 일시
 
     @NotNull(message = "{user.isOnboarded.notnull}")
-    private final Boolean isOnboarded; // 온보딩 여부
+    private Boolean isOnboarded; 
 
     @NotNull(message = "{user.provider.notnull}")
-    private final String provider; // 소셜 제공자 (KAKAO, NAVER, GOOGLE)
+    private String provider; // 소셜 제공자 (KAKAO, NAVER, GOOGLE)
 
     @NotBlank(message = "{user.providerUserId.notblank}")
     @Size(max = 10, message = "{user.providerUserId.size}")
-    private final String providerUserId; // 소셜 제공자 ID
-
-    @LastModifiedDate
-    private LocalDateTime createdAt; // 생성일시
-    @LastModifiedDate
-    private LocalDateTime updatedAt; // 수정일시
-
+    private String providerUserId; 
+    
     @NotNull(message = "{user.resumeId.notnull}")
-    private final Long resumeId; // 이력서 ID
+    private Long resumeId; 
+
+    @Size(max = 500, message = "{user.profileImageUrl.size}")
+    private String profileImageUrl; 
 }

@@ -28,7 +28,6 @@ public class JWTFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         System.out.println("JWTFilter: Request URI = " + path); // 요청 URI 로그 추가
 
-        // /login, /oauth2 경로는 필터를 건너뜀
         if (path.startsWith("/login") || path.startsWith("/oauth2") || path.startsWith("/swagger-ui") ||
                         path.startsWith("/v3/api-docs")) {
             System.out.println("JWTFilter: Skipping filter for path: " + path);
@@ -42,16 +41,14 @@ public class JWTFilter extends OncePerRequestFilter {
         // 쿠키에서 Authorization 토큰 찾기
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                // System.out.println("JWTFilter: Cookie found - " + cookie.getName()); // 모든 쿠키 이름 로깅 (필요 시 주석 해제)
                 if (cookie.getName().equals("Authorization")) {
                     authorization = cookie.getValue();
                     System.out.println("JWTFilter: Authorization cookie found.");
-                    break; // 찾았으면 더 이상 반복할 필요 없음
+                    break;
                 }
             }
         }
 
-        // 쿠키에 없으면 Authorization 헤더에서 찾기
         if (authorization == null) {
             String headerAuth = request.getHeader("Authorization");
             if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
@@ -71,15 +68,12 @@ public class JWTFilter extends OncePerRequestFilter {
         System.out.println("JWTFilter: Token received (first few chars): " + token.substring(0, Math.min(token.length(), 20)) + "..."); // 토큰 일부 로깅
 
         try {
-            // 토큰 소멸 시간 검증
             if (jwtUtil.isExpired(token)) {
                 System.out.println("JWTFilter: Token is EXPIRED.");
-                // 토큰이 만료되었지만, 스프링 시큐리티의 다른 필터에서 401 Unauthorized를 처리할 수 있도록 filterChain을 계속 진행
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // 토큰에서 정보 획득
             String username = jwtUtil.getUsername(token);
             String role = jwtUtil.getRole(token);
             Long id = null;
@@ -96,34 +90,35 @@ public class JWTFilter extends OncePerRequestFilter {
                 System.out.println("JWTFilter: Could not get Name from token (might be for refresh token or specific payload format): " + e.getMessage());
             }
 
-            System.out.println("JWTFilter: Token Payload - Username: " + username + ", Role: " + role + ", ID: " + id + ", Name: " + name);
-
             // UserDTO 생성 및 값 설정
-            UserDTO userDTO = UserDTO.builder()
-                .id(id)
-                .name(name)
-                .role(role)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+            UserDTO userDTO = new UserDTO(
+                id,
+                role,
+                username,
+                null,
+                name,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
 
-            // UserDetails에 회원 정보 객체 담기
+
             CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
-
-            // 스프링 시큐리티 인증 토큰 생성
             Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
-            // 세션에 사용자 등록 (SecurityContextHolder에 Authentication 객체 설정)
             SecurityContextHolder.getContext().setAuthentication(authToken);
-            System.out.println("JWTFilter: Authentication successful for user: " + username);
-
         } catch (io.jsonwebtoken.security.SignatureException e) {
             System.out.println("JWTFilter: Token parsing failed - Invalid Signature: " + e.getMessage());
-            // 서명 검증 실패 시, 이후 필터에서 401 처리될 수 있도록 진행
             filterChain.doFilter(request, response);
             return;
         } catch (Exception e) {
             System.out.println("JWTFilter: Token parsing failed - General Error: " + e.getClass().getSimpleName() + " - " + e.getMessage());
-            // 기타 토큰 파싱 실패 시, 이후 필터에서 401 처리될 수 있도록 진행
             filterChain.doFilter(request, response);
             return;
         }

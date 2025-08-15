@@ -15,22 +15,23 @@ import com.umc.tomorrow.domain.member.enums.UserStatus;
 public class UserConverter {
     public static UserDTO toDTO(User user) {
         if (user == null) return null;
-        return UserDTO.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .name(user.getName())
-                .gender(user.getGender() != null ? com.umc.tomorrow.domain.member.enums.Gender.valueOf(user.getGender().name()) : null)
-                .phoneNumber(user.getPhoneNumber())
-                .address(user.getAddress())
-                .status(user.getStatus() != null ? user.getStatus().name() : null)
-                .inactiveAt(user.getInactiveAt())
-                .isOnboarded(user.getIsOnboarded())
-                .provider(user.getProvider() != null ? user.getProvider().name() : null)
-                .providerUserId(user.getProviderUserId())
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
-                .resumeId(user.getResumeId())
-                .build();
+        return new UserDTO(
+                user.getId(),
+                user.getMemberType() != null ? user.getMemberType().name() : null,
+                user.getUsername(),
+                user.getEmail(),
+                user.getName(),
+                user.getGender() != null ? com.umc.tomorrow.domain.member.enums.Gender.valueOf(user.getGender().name()) : null,
+                user.getPhoneNumber(),
+                user.getAddress(),
+                user.getStatus() != null ? user.getStatus().name() : null,
+                user.getInactiveAt(),
+                user.getIsOnboarded(),
+                user.getProvider() != null ? user.getProvider().name() : null,
+                user.getProviderUserId(),
+                user.getResumeId(),
+                user.getProfileImageUrl()
+        );
     }
 
     public static void updateEntity(User user, UserDTO dto) {
@@ -47,5 +48,6 @@ public class UserConverter {
         if (dto.getCreatedAt() != null) user.setCreatedAt(dto.getCreatedAt());
         if (dto.getUpdatedAt() != null) user.setUpdatedAt(dto.getUpdatedAt());
         if (dto.getResumeId() != null) user.setResumeId(dto.getResumeId());
+        if (dto.getProfileImageUrl() != null) user.setProfileImageUrl(dto.getProfileImageUrl());
     }
 } 

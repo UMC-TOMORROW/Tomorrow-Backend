@@ -25,6 +25,7 @@ import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
 import com.umc.tomorrow.domain.resume.entity.Resume;
 import com.umc.tomorrow.domain.introduction.entity.Introduction;
+import com.umc.tomorrow.global.infrastructure.s3.S3Uploader;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,17 +33,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class MemberService {
 
     private final UserRepository userRepository;
     private final ResumeRepository resumeRepository;
+    private final S3Uploader fileUploadService;
 
     @Autowired
-    public MemberService(UserRepository userRepository, ResumeRepository resumeRepository) {
+    public MemberService(UserRepository userRepository, ResumeRepository resumeRepository, S3Uploader fileUploadService) {
         this.userRepository = userRepository;
         this.resumeRepository = resumeRepository;
+        this.fileUploadService = fileUploadService;
     }
 
     /**
@@ -190,5 +194,52 @@ public class MemberService {
                 .memberType(user.getMemberType())
                 .build();
 
+    }
+
+    /**
+     * 프로필 이미지 업로드
+     * 
+     * @param userId 사용자 ID
+     * @param imageFile 업로드할 이미지 파일
+     * @return 업로드된 이미지 URL
+     */
+    @Transactional
+    public String uploadProfileImage(Long userId, MultipartFile imageFile) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
+        
+        // 기존 이미지가 있다면 삭제
+        if (user.getProfileImageUrl() != null) {
+            fileUploadService.delete(user.getProfileImageUrl());
+        }
+        
+        // 새 이미지 업로드
+        String imageUrl = fileUploadService.upload(imageFile, "profile/" + userId);
+        
+        // 사용자 정보 업데이트
+        user.setProfileImageUrl(imageUrl);
+        userRepository.save(user);
+        
+        return imageUrl;
+    }
+
+    /**
+     * 프로필 이미지 삭제
+     * 
+     * @param userId 사용자 ID
+     */
+    @Transactional
+    public void deleteProfileImage(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
+        
+        if (user.getProfileImageUrl() != null) {
+            // S3에서 이미지 삭제
+            fileUploadService.delete(user.getProfileImageUrl());
+            
+            // 사용자 정보에서 이미지 URL 제거
+            user.setProfileImageUrl(null);
+            userRepository.save(user);
+        }
     }
 } 
