@@ -50,6 +50,7 @@ public class ApplicationConverter {
     public static ApplicationStatusListResponseDTO toStatusListDTO(Application application) {
         return ApplicationStatusListResponseDTO.builder()
                 .postTitle(application.getJob().getTitle())
+                .jobId(application.getJob().getId())
                 .company(application.getJob().getCompanyName()) // Job에 필드가 있어야 함
                 .date(application.getAppliedAt().toLocalDate().toString()) // LocalDateTime → yyyy-MM-dd
                 .status(application.getStatus() == null ? ApplicationStatus.valueOf("미정") : application.getStatus())
