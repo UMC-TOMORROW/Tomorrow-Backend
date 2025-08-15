@@ -45,7 +45,7 @@ public class S3Uploader {
 
             amazonS3.putObject(putObjectRequest);
 
-            amazonS3.putObject(bucketName, fileName, file.getInputStream(), metadata);
+            //amazonS3.putObject(bucketName, fileName, file.getInputStream(), metadata);
         } catch (IOException e) {
             throw new RestApiException(GlobalErrorStatus._S3_UPLOAD_ERROR);
         }
