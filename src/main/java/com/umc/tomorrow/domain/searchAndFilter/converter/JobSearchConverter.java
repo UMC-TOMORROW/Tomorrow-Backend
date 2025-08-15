@@ -37,7 +37,9 @@ public class JobSearchConverter {
                 .workStart(job.getWorkStart())
                 .workEnd(job.getWorkEnd())
                 .jobCategory(job.getJobCategory())
-                .workDays(workDaysDTO) // ✅ 요일 데이터 DTO로 세팅
+                .workDays(workDaysDTO)
+                .jobImageUrl(job.getJobImageUrl())
+                .paymentType(job.getPaymentType())
                 .build();
     }
 }
