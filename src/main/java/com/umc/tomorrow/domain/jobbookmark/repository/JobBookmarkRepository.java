@@ -30,4 +30,6 @@ public interface JobBookmarkRepository extends JpaRepository<JobBookmark, Long> 
      * @return JobBookmark 슬라이스.
      */
     Slice<JobBookmark> findByUserIdAndIdLessThanOrderByIdDesc(Long userId, Long cursor, Pageable pageable);
+
+    Slice<JobBookmark> findByUserIdOrderByIdDesc(Long userId, Pageable pageable);
 }
