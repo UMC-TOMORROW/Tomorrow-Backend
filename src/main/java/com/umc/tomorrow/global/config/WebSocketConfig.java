@@ -76,9 +76,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
                     } else if (u instanceof CustomOAuth2User cou) {
                         // CustomOAuth2User → userId로 정규화
-                        Long userId = cou.getUserDTO().getId();
+                        Long userId = cou.getUserResponseDTO().getId();
                         log.info("[WS-IN] sessionId={} found CustomOAuth2User(name={}, id={}), normalizing to userId",
-                                sid, cou.getUserDTO().getName(), userId);
+                                sid, cou.getUserResponseDTO().getName(), userId);
 
                         Authentication normalized = new UsernamePasswordAuthenticationToken(
                                 String.valueOf(userId), null, Collections.emptyList()

@@ -1,7 +1,7 @@
 package com.umc.tomorrow.domain.auth.jwt;
 
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
-import com.umc.tomorrow.domain.member.dto.UserDTO;
+import com.umc.tomorrow.domain.member.dto.UserResponseDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -91,7 +91,7 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
             // UserDTO 생성 및 값 설정
-            UserDTO userDTO = new UserDTO(
+            UserResponseDTO userDTO = new UserResponseDTO(
                 id,
                 role,
                 username,

@@ -2,8 +2,8 @@ package com.umc.tomorrow.domain.auth.service;
 
 import com.umc.tomorrow.domain.auth.dto.*;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
-import com.umc.tomorrow.domain.member.dto.UserDTO;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
+import com.umc.tomorrow.domain.member.dto.UserResponseDTO;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -43,7 +43,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             throw new OAuth2AuthenticationException("지원하지 않는 로그인 방식입니다.");
         }
 
-        UserDTO userDTO = new UserDTO(
+        UserResponseDTO userResponseDTO = new UserResponseDTO(
             null, // id
             null, // role
             null, // username
@@ -61,7 +61,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             null  // profileImageUrl
         );
 
-        return new CustomOAuth2User(userDTO);
+        return new CustomOAuth2User(userResponseDTO);
 
     }
 

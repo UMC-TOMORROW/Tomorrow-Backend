@@ -40,7 +40,7 @@ public class JobBookmarkController {
             @PathVariable Long jobId
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(BaseResponse.onSuccessCreate(commandService.save(user.getUserDTO().getId(), jobId)));
+                .body(BaseResponse.onSuccessCreate(commandService.save(user.getUserResponseDTO().getId(), jobId)));
     }
 
     @DeleteMapping("/{jobId}")
@@ -50,7 +50,7 @@ public class JobBookmarkController {
             @AuthenticationPrincipal CustomOAuth2User user,
             @PathVariable Long jobId
     ) {
-        commandService.delete(user.getUserDTO().getId(), jobId);
+        commandService.delete(user.getUserResponseDTO().getId(), jobId);
         return ResponseEntity.ok(BaseResponse.onSuccessDelete(null));
     }
 
@@ -62,6 +62,6 @@ public class JobBookmarkController {
             @Positive @RequestParam(required = false) Long cursor,
             @Positive @RequestParam(defaultValue = "8") int size
     ) {
-        return ResponseEntity.ok(BaseResponse.onSuccess(queryService.getList(user.getUserDTO().getId(), cursor, size)));
+        return ResponseEntity.ok(BaseResponse.onSuccess(queryService.getList(user.getUserResponseDTO().getId(), cursor, size)));
     }
 }

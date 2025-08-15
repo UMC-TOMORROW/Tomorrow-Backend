@@ -66,7 +66,7 @@ public class JobCommandController {
             @RequestPart(value = "image", required = false) MultipartFile image,
             HttpSession session
     ) {
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
 
         // JSON 파싱
         ObjectMapper objectMapper = new ObjectMapper()
@@ -80,7 +80,7 @@ public class JobCommandController {
             throw new RestApiException(GlobalErrorStatus._BAD_REQUEST);
         }
 
-        // 유효성 검증
+        // 유효성 검증f
         Set<ConstraintViolation<JobRequestDTO>> violations = validator.validate(requestDTO);
         if (!violations.isEmpty()) {
             String errorMessage = violations.iterator().next().getMessage();
@@ -114,7 +114,7 @@ public class JobCommandController {
             @Valid @RequestBody PersonalRequestDTO requestDTO,
             HttpSession session
     ) {
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
 
         JobCreateResponseDTO result = jobCommandService.savePersonalRegistration(userId, requestDTO, session);
         return ResponseEntity.ok(BaseResponse.onSuccess(result));
@@ -135,7 +135,7 @@ public class JobCommandController {
             @Valid @RequestBody BusinessRequestDTO requestDTO,
             HttpSession session
     ) {
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
 
         // 세션에 job이 있다면사업자 등록 후 job 생성까지
         JobRequestDTO jobDTO = (JobRequestDTO) session.getAttribute("job_session");
@@ -173,7 +173,7 @@ public class JobCommandController {
             @AuthenticationPrincipal CustomOAuth2User user,
             @Valid @RequestBody BusinessRequestDTO requestDTO
     ) {
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
         jobCommandService.saveBusinessVerification(userId, requestDTO);
         return ResponseEntity.ok(BaseResponse.onSuccess(null));
 
@@ -191,7 +191,7 @@ public class JobCommandController {
             @PathVariable Long jobId,
             @Valid @RequestBody PostStatusRequestDTO requestDTO,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        Long userId = customOAuth2User.getUserDTO().getId();
+        Long userId = customOAuth2User.getUserResponseDTO().getId();
         jobCommandService.updateJobStatus(userId, jobId, requestDTO.getStatus());
 
         return ResponseEntity.ok(BaseResponse.onSuccess(null));

@@ -8,7 +8,8 @@
  */
 package com.umc.tomorrow.domain.member.controller;
 
-import com.umc.tomorrow.domain.member.dto.UserDTO;
+import com.umc.tomorrow.domain.member.dto.UserResponseDTO;
+import com.umc.tomorrow.domain.member.dto.UserUpdateDTO;
 import com.umc.tomorrow.domain.member.dto.request.DeactivateUserRequest;
 import com.umc.tomorrow.domain.member.dto.request.UpdateMemberTypeRequestDTO;
 import com.umc.tomorrow.domain.member.dto.response.DeactivateUserResponse;
@@ -30,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.member.exception.MemberException;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
-import com.umc.tomorrow.domain.member.dto.UserConverter;
+import com.umc.tomorrow.domain.member.dto.UserResponseConverter;
 import com.umc.tomorrow.domain.member.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,27 +48,27 @@ public class MemberController {
 
     @Operation(summary = "내 정보 조회", description = "현재 로그인한 회원의 정보를 조회합니다.")
     @GetMapping("/me")
-    public ResponseEntity<UserDTO> getMe(@AuthenticationPrincipal CustomOAuth2User user) {
+    public ResponseEntity<UserResponseDTO> getMe(@AuthenticationPrincipal CustomOAuth2User user) {
         if (user == null) {
             return ResponseEntity.status(401).build();
         }
         
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
 
         memberService.updateResumeIdIfNull(userId);
 
         User updatedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
         
-        UserDTO updatedUserDTO = UserConverter.toDTO(updatedUser);
+        UserResponseDTO updatedUserDTO = UserResponseConverter.toResponseDTO(updatedUser);
         return ResponseEntity.ok(updatedUserDTO);
     }
 
     @Operation(summary = "내 정보 수정", description = "현재 로그인한 회원의 정보를 수정합니다. 이미지 파일도 함께 업로드할 수 있습니다.")
     @PutMapping(value = "/me", consumes = {"application/json", "multipart/form-data"})
-    public ResponseEntity<UserDTO> updateMe(
+    public ResponseEntity<UserResponseDTO> updateMe(
             @AuthenticationPrincipal CustomOAuth2User user, 
-            @Valid @RequestPart(value = "userInfo", required = false) UserDTO userDTO,
+            @Valid @RequestPart(value = "userInfo", required = false) UserUpdateDTO userDTO,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
         
         if (user == null) {
@@ -76,22 +77,16 @@ public class MemberController {
         
         if (imageFile != null) {
             try {
-                String imageUrl = memberService.uploadProfileImage(user.getUserDTO().getId(), imageFile);
+                String imageUrl = memberService.uploadProfileImage(user.getUserResponseDTO().getId(), imageFile);
                 if (userDTO == null) {
-                    userDTO = new UserDTO();
+                    userDTO = new UserUpdateDTO();
                 }
-                // 이미지 URL을 userDTO에 설정
-                userDTO = new UserDTO(
-                        userDTO.getId(),
-                        userDTO.getRole(),
-                        userDTO.getUsername(),
+                userDTO = new UserUpdateDTO(
                         userDTO.getEmail(),
                         userDTO.getName(),
                         userDTO.getGender(),
                         userDTO.getPhoneNumber(),
                         userDTO.getAddress(),
-                        userDTO.getStatus(),
-                        userDTO.getInactiveAt(),
                         userDTO.getIsOnboarded(),
                         userDTO.getProvider(),
                         userDTO.getProviderUserId(),
@@ -103,7 +98,7 @@ public class MemberController {
             }
         }
         
-        UserDTO updated = memberService.updateUser(user.getUserDTO(), userDTO);
+        UserResponseDTO updated = memberService.updateUser(user.getUserResponseDTO().getId(), userDTO);
         return ResponseEntity.ok(updated);
     }
 
@@ -134,7 +129,7 @@ public class MemberController {
             @Parameter(hidden = true) @AuthenticationPrincipal CustomOAuth2User user,
             @RequestBody UpdateMemberTypeRequestDTO request
     ){
-        UpdateUserTypeResponse updated = memberService.updateMemberType(user.getUserDTO().getId(), request.getMemberType());
+        UpdateUserTypeResponse updated = memberService.updateMemberType(user.getUserResponseDTO().getId(), request.getMemberType());
         return ResponseEntity.ok(BaseResponse.onSuccess(updated));
     }
 
@@ -146,7 +141,7 @@ public class MemberController {
     public ResponseEntity<BaseResponse<GetUserTypeResponse>> getMemberType(
             @Parameter(hidden = true) @AuthenticationPrincipal CustomOAuth2User user) {
 
-        GetUserTypeResponse getUserTypeResponse = memberService.getMemberType(user.getUserDTO().getId());
+        GetUserTypeResponse getUserTypeResponse = memberService.getMemberType(user.getUserResponseDTO().getId());
         return ResponseEntity.ok(BaseResponse.onSuccess(getUserTypeResponse));
     }
 
@@ -163,7 +158,7 @@ public class MemberController {
         }
         
         try {
-            memberService.deleteProfileImage(user.getUserDTO().getId());
+            memberService.deleteProfileImage(user.getUserResponseDTO().getId());
             return ResponseEntity.ok("프로필 이미지가 성공적으로 삭제되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("프로필 이미지 삭제에 실패했습니다: " + e.getMessage());
