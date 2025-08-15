@@ -48,7 +48,8 @@ public class ApplicationConverter {
         String statusLabel = application.getStatus() != null ? application.getStatus().getLabel() : "불합격";
         return ApplicationStatusListResponseDTO.builder()
                 .postTitle(application.getJob().getTitle())
-                .company(application.getJob().getCompanyName()) 
+                .jobId(application.getJob().getId())
+                .company(application.getJob().getCompanyName())
                 .date(application.getAppliedAt().toLocalDate().toString()) 
                 .status(application.getStatus())
                 .build();
