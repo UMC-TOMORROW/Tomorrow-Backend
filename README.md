@@ -227,4 +227,4 @@ tomorrow
 |------------------|----------------------------------|------|
 | 🧭 Issue | 이슈 관리 페이지     | [바로가기](https://github.com/UMC-TOMORROW/Tomorrow-Backend/issues) |
 | 🗂 WBS 문서        | 작업 분할 구조 (WBS)              | [바로가기](https://docs.google.com/spreadsheets/d/11NSNtlvPUEnsArg_nXWPCCu9KqXRKk7K/edit?gid=1940237796#gid=1940237796) |
-| 🗺 ERD             | 데이터베이스 설계 (ERDCloud)      | [바로가기](https://www.erdcloud.com/d/hvd9js58oTde7G8wZ) |
+| 🗺 ERD             | 데이터베이스 설계 (ERDCloud)      | [바로가기](https://www.erdcloud.com/d/TPhcjZH3BHyARFSBJ) |
