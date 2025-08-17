@@ -67,14 +67,6 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // 인증 실패시 401 JSON 응답
-                .exceptionHandling(e -> e
-                        .authenticationEntryPoint((req, res, ex) -> {
-                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            res.setContentType("application/json;charset=UTF-8");
-                            res.getWriter().write("{\"code\":\"AUTH401\",\"message\":\"Unauthorized\"}");
-                        })
-                )
                 .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(endpoint -> endpoint.userService(customOAuth2UserService))
