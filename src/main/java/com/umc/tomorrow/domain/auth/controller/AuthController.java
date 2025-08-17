@@ -1,29 +1,27 @@
 /**
  * 인증 관련 API 컨트롤러
  * - POST /api/v1/auth/refresh : 리프레시 토큰으로 액세스 토큰 재발급
- * 
+ * - POST /api/v1/auth/logout  : 로그아웃
+ *
  * 작성자: 정여진
- * 작성일: 2025-07-07
- * 수정일 : 2025-07-29
+ * 수정자: ChatGPT
  */
 package com.umc.tomorrow.domain.auth.controller;
 
 import com.umc.tomorrow.domain.auth.excpetion.code.AuthErrorStatus;
-
 import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.Map;
 
 @RestController
@@ -32,61 +30,58 @@ public class AuthController {
 
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
+    private final Environment env; // 현재 profile 가져오기용
 
-    public static final long REFRESH_EXP_MIN = 1000L * 60L * 60L * 24L * 14L; // 2주
-    public static final long ACCRESS_EXP_MIN = 60 * 60 * 1000L; // 1시간
+    public static final long REFRESH_EXP_MS = 1000L * 60L * 60L * 24L * 14L; // 2주
+    public static final long ACCESS_EXP_MS  = 1000L * 60L * 60L;             // 1시간
 
-    public AuthController(JWTUtil jwtUtil, UserRepository userRepository) {
+    public AuthController(JWTUtil jwtUtil, UserRepository userRepository, Environment env) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
+        this.env = env;
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@RequestHeader(value = "RefreshToken", required = false) String refreshToken, HttpServletResponse response) {
-        // 1. 빈 문자열 체크
+    public ResponseEntity<?> refreshToken(
+            @CookieValue(value = "refreshToken", required = false) String refreshToken, // 쿠키에서 읽기
+            HttpServletResponse response
+    ) {
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_NOT_FOUND);
         }
 
         try {
-            // 2. 토큰 만료 여부 먼저 확인해야 함.
+            // 만료 여부 체크
             if (jwtUtil.isExpired(refreshToken)) {
-                throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_EXPIRED); // AUTH4002
+                throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_EXPIRED);
             }
 
             Long userId = jwtUtil.getUserId(refreshToken);
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RestApiException(AuthErrorStatus.REFRESH_TOKEN_INVALID));
 
-            if (user.getRefreshToken() == null || !user.getRefreshToken().equals(refreshToken)) { // 아 여기가 문제네.
+            if (user.getRefreshToken() == null || !user.getRefreshToken().equals(refreshToken)) {
                 throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_INVALID);
             }
 
-            // 새 accessToken, 새 refreshToken 생성
-            String newAccessToken = jwtUtil.createJwt(user.getId(), user.getName(), ACCRESS_EXP_MIN);
-            String newRefreshToken = jwtUtil.createRefreshToken(user.getId(), user.getName(), REFRESH_EXP_MIN); // 14일
+            // 새 토큰 발급
+            String newAccessToken = jwtUtil.createJwt(user.getId(), user.getName(), ACCESS_EXP_MS);
+            String newRefreshToken = jwtUtil.createRefreshToken(user.getId(), user.getName(), REFRESH_EXP_MS);
 
-            // DB에 새 refreshToken 저장
+            // DB에 갱신
             user.setRefreshToken(newRefreshToken);
             userRepository.save(user);
 
-            // refreshToken을 HttpOnly 쿠키로 변경한다.
-            Cookie cookie = new Cookie("refreshToken", newRefreshToken);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(true); // HTTPS 환경에서만 전송
-            cookie.setPath("/");
-            cookie.setMaxAge((int) (REFRESH_EXP_MIN / 1000L));
-            cookie.setDomain("localhost"); // 배포 시 실제 도메인으로 변경
-            response.addCookie(cookie);
+            // 새 refreshToken을 쿠키에 심음
+            addRefreshTokenCookie(response, newRefreshToken);
 
-            // 응답에 둘 다 포함
-            return ResponseEntity.ok().body(Map.of(
+            return ResponseEntity.ok(Map.of(
                     "accessToken", newAccessToken
             ));
         } catch (RestApiException e) {
-            throw e; // 전체 Exception이 아니라 RestAPIException으로
-        } catch (Exception e){
-            throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_INVALID); // AUTH4003
+            throw e;
+        } catch (Exception e) {
+            throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_INVALID);
         }
     }
 
@@ -100,20 +95,48 @@ public class AuthController {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(MemberErrorStatus.MEMBER_NOT_FOUND));
 
-        // DB에 저장된 Refresh Token 제거
+        // DB에서 Refresh Token 제거
         user.setRefreshToken(null);
         userRepository.save(user);
 
-        // Refresh Token 쿠키 제거
-        Cookie cookie = new Cookie("refreshToken", null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0); // 즉시 만료
-        cookie.setDomain("umctomorrow.shop"); // 배포 환경 도메인
-        response.addCookie(cookie);
+        // 쿠키 제거
+        removeRefreshTokenCookie(response);
 
-        return ResponseEntity.ok().body("로그아웃 성공");
+        return ResponseEntity.ok("로그아웃 성공");
     }
 
-} 
+
+    private void addRefreshTokenCookie(HttpServletResponse response, String token) {
+        Cookie cookie = new Cookie("refreshToken", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(isProd()); // 운영에서는 true
+        cookie.setPath("/");
+        cookie.setMaxAge((int) (REFRESH_EXP_MS / 1000L));
+
+        if (isProd()) {
+            cookie.setDomain("umctomorrow.shop");
+        }
+        response.addCookie(cookie);
+    }
+
+    private void removeRefreshTokenCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(isProd());
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+
+        if (isProd()) {
+            cookie.setDomain("umctomorrow.shop");
+        }
+        response.addCookie(cookie);
+    }
+
+    private boolean isProd() {
+        String[] profiles = env.getActiveProfiles();
+        for (String p : profiles) {
+            if ("prod".equalsIgnoreCase(p)) return true;
+        }
+        return false;
+    }
+}
