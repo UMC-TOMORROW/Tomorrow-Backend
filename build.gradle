@@ -36,7 +36,8 @@ dependencies {
 
 	// 데이터베이스 연동 (JPA + MySQL)
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'com.mysql:mysql-connector-j:9.2.0'
+
 
 
 

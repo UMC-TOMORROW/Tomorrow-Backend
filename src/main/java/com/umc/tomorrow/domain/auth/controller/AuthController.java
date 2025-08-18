@@ -51,7 +51,7 @@ public class AuthController {
         String refreshToken = null;
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if ("RefreshToken".equals(cookie.getName())) { // ✅ 핸들러에 맞춰 대문자
+                if ("RefreshToken".equals(cookie.getName())) {
                     refreshToken = cookie.getValue();
                     break;
                 }
@@ -119,33 +119,18 @@ public class AuthController {
 
     private void removeCookie(HttpServletResponse response, String name) {
         String setCookieHeader = String.format(
-                "%s=; Max-Age=0; Path=/; HttpOnly; %s %s SameSite=None",
-                name,
-                isProd() ? "Domain=umctomorrow.shop;" : "",
-                isProd() ? "Secure;" : ""
+                "%s=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=None",
+                name
         );
         response.addHeader("Set-Cookie", setCookieHeader);
     }
-
 
     private void addRefreshTokenCookie(HttpServletResponse response, String token) {
         String setCookieHeader = String.format(
-                "RefreshToken=%s; Max-Age=%d; Path=/; HttpOnly; %s %s SameSite=None",
+                "RefreshToken=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
                 token,
-                (int) (REFRESH_EXP_MS / 1000L),
-                isProd() ? "Domain=umctomorrow.shop;" : "",
-                isProd() ? "Secure;" : ""
+                (int) (REFRESH_EXP_MS / 1000L)
         );
         response.addHeader("Set-Cookie", setCookieHeader);
-    }
-
-
-
-    private boolean isProd() {
-        String[] profiles = env.getActiveProfiles();
-        for (String p : profiles) {
-            if ("prod".equalsIgnoreCase(p)) return true;
-        }
-        return false;
     }
 }
