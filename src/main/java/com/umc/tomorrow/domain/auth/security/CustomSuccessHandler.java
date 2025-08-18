@@ -10,8 +10,10 @@ import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -29,6 +31,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
     private final ResumeRepository resumeRepository;
+    private final Environment env; // profile 확인용
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -123,28 +126,28 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
 
-        // 환경 감지
-        String origin = request.getHeader("Origin");
-        String referer = request.getHeader("Referer");
-        boolean isLocalSwagger = (origin == null && referer == null); // Swagger/Postman 요청
-        boolean isLocalFrontend = (origin != null && origin.contains("localhost:5173"));
-        boolean isProdFrontend = (origin != null && origin.contains("umctomorrow.shop"));
-
+        boolean isLocal = request.getServerName().equals("localhost"); // 프론트 로컬 구분
         boolean isOnboarded = Boolean.TRUE.equals(user.getIsOnboarded());
 
-        // Refresh Token은 HttpOnly 쿠키로 저장
+        // Swagger/Postman 요청 분기
+        String origin = request.getHeader("Origin");
+        String referer = request.getHeader("Referer");
+        boolean isSwaggerRequest = (origin == null && referer == null && isLocalProfile());
+
+
+                // Refresh Token은 HttpOnly 쿠키로 저장
         StringBuilder refreshCookieBuilder = new StringBuilder();
         refreshCookieBuilder.append("refreshToken=").append(refreshToken)
                 .append("; Max-Age=").append((int) refreshTokenExpiredSeconds)
                 .append("; Path=/; HttpOnly; SameSite=None; Secure"); // 배포 대비 Secure 고정
         response.addHeader("Set-Cookie", refreshCookieBuilder.toString().trim());
 
-        // Access Token은 헤더로 내려줌
+        // 헤더 추가
         response.addHeader("Authorization", "Bearer " + accessToken);
 
-        // 분기 처리
-        if (isLocalSwagger) {
-            // Swagger/Postman → JSON 응답
+        // === 분기 처리 ===
+        if (isSwaggerRequest) {
+            // Swagger/Postman (로컬 테스트) → JSON 반환
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write(
                     String.format(
@@ -152,27 +155,17 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                             accessToken, refreshToken, isOnboarded
                     )
             );
-        } else if (isLocalFrontend) {
-            // 로컬 프론트 (5173)
-            String redirectUrl = isOnboarded
-                    ? "http://localhost:5173"
-                    : "http://localhost:5173/onboarding";
-            response.sendRedirect(redirectUrl);
-        } else if (isProdFrontend) {
-            // 배포 프론트
-            String redirectUrl = isOnboarded
-                    ? "https://umctomorrow.shop"
-                    : "https://umctomorrow.shop/onboarding";
-            response.sendRedirect(redirectUrl);
         } else {
-            //혹시 모르는 케이스 -> SON
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(
-                    String.format(
-                            "{\"accessToken\":\"%s\",\"refreshToken\":\"%s\",\"isOnboarded\":%b}",
-                            accessToken, refreshToken, isOnboarded
-                    )
-            );
+            // 프론트 (로컬/배포) → Redirect
+            String redirectUrl = isLocal
+                    ? (isOnboarded ? "http://localhost:5173" : "http://localhost:5173/onboarding")
+                    : (isOnboarded ? "https://umctomorrow.shop" : "https://umctomorrow.shop/onboarding");
+
+            response.sendRedirect(redirectUrl);
         }
+    }
+
+    private boolean isLocalProfile() {
+        return Arrays.asList(env.getActiveProfiles()).contains("local");
     }
 }
