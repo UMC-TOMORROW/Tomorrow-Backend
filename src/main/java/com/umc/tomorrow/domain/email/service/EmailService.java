@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
@@ -47,6 +48,7 @@ public class EmailService {
     private final ReceiptCardRenderer receiptCardRenderer;
     private final ApplicationRepository applicationRepository;
 
+    @Async("emailExecutor")
     public EmailResponseDTO sendEmail(Long userId, EmailRequestDTO dto) {
         // 1) 사용자/공고 조회
         User user = userRepository.findById(userId)

@@ -130,9 +130,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         boolean isOnboarded = Boolean.TRUE.equals(user.getIsOnboarded());
 
         // Swagger/Postman 요청 분기
-        String origin = request.getHeader("Origin");
-        String referer = request.getHeader("Referer");
-        boolean isSwaggerRequest = (origin == null && referer == null && isLocalProfile());
+        boolean isSwaggerRequest = (isLocalProfile());
 
 
                 // Refresh Token은 HttpOnly 쿠키로 저장
