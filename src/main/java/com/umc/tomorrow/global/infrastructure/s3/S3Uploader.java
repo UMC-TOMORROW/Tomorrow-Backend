@@ -76,6 +76,7 @@ public class S3Uploader {
 
         // (4) DB에 반영
         user.updateProfileImageUrl(newUrl);
+        userRepository.save(user);
 
         return newUrl;
     }
