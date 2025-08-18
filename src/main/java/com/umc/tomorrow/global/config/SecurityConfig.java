@@ -5,8 +5,6 @@ import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
 import com.umc.tomorrow.domain.auth.security.CustomSuccessHandler;
 import com.umc.tomorrow.domain.auth.service.CustomOAuth2UserService;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

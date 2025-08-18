@@ -43,7 +43,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(
-            @CookieValue(value = "refreshToken", required = false) String refreshToken, // 쿠키에서 읽기
+            @RequestHeader(value = "RefreshToken", required = false) String refreshToken,
             HttpServletResponse response
     ) {
         if (refreshToken == null || refreshToken.isBlank()) {
