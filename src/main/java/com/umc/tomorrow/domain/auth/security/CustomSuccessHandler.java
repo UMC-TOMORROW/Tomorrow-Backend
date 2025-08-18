@@ -133,7 +133,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         boolean isSwaggerRequest = (isLocalProfile());
 
 
-                // Refresh Token은 HttpOnly 쿠키로 저장
+        StringBuilder accessCookieBuilder = new StringBuilder();
+        accessCookieBuilder.append("accessToken=").append(accessToken)
+                .append("; Max-Age=").append((int) accessTokenExpiredSeconds)
+                .append("; Path=/; HttpOnly; SameSite=None; Secure"); // Secure는 배포에서만 의미 있음
+        response.addHeader("Set-Cookie", accessCookieBuilder.toString().trim());
+
+        // Refresh Token은 HttpOnly 쿠키로 저장
         StringBuilder refreshCookieBuilder = new StringBuilder();
         refreshCookieBuilder.append("refreshToken=").append(refreshToken)
                 .append("; Max-Age=").append((int) refreshTokenExpiredSeconds)
@@ -142,6 +148,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 헤더 추가
         response.addHeader("Authorization", "Bearer " + accessToken);
+        response.addHeader("RefreshToken", refreshToken);
 
         // === 분기 처리 ===
         if (isSwaggerRequest) {
@@ -153,14 +160,14 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                             accessToken, refreshToken, isOnboarded
                     )
             );
-        } else {
-            // 프론트 (로컬/배포) → Redirect
+        } else {            // 프론트 (로컬/배포) → Redirect
             String redirectUrl = isLocal
                     ? (isOnboarded ? "http://localhost:5173" : "http://localhost:5173/onboarding")
                     : (isOnboarded ? "https://umctomorrow.shop" : "https://umctomorrow.shop/onboarding");
 
             response.sendRedirect(redirectUrl);
         }
+
     }
 
     private boolean isLocalProfile() {
