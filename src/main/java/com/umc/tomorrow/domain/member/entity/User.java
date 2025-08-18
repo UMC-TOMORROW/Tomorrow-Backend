@@ -112,5 +112,7 @@ public class User {
         this.username = username;
     }
 
-
+    public void updateProfileImageUrl(String imageUrl) {
+        this.profileImageUrl = imageUrl;
+    }
 }
