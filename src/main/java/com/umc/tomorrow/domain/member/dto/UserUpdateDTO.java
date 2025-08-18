@@ -24,8 +24,7 @@ import com.umc.tomorrow.domain.member.enums.Gender;
 @AllArgsConstructor
 @Builder
 public class UserUpdateDTO {
-    
-    @Email(message = "{user.email.invalid}")
+
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", 
              message = "{user.email.pattern}")
     @Size(max = 30, message = "{user.email.size}")
@@ -46,13 +45,5 @@ public class UserUpdateDTO {
 
     private Boolean isOnboarded;
 
-    private String provider;
-
-    @Size(max = 10, message = "{user.providerUserId.size}")
-    private String providerUserId;
-
     private Long resumeId;
-
-    @Size(max = 500, message = "{user.profileImageUrl.size}")
-    private String profileImageUrl;
 }

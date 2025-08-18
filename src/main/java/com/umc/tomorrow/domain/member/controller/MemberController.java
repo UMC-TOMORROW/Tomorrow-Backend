@@ -19,10 +19,17 @@ import com.umc.tomorrow.domain.member.dto.response.UpdateUserTypeResponse;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
@@ -34,6 +41,10 @@ import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.domain.member.dto.UserResponseConverter;
 import com.umc.tomorrow.domain.member.entity.User;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Tag(name = "member-controller", description = "회원 관련 API")
 @RestController
@@ -64,53 +75,24 @@ public class MemberController {
         return ResponseEntity.ok(updatedUserDTO);
     }
 
-    @Operation(summary = "내 정보 수정", description = "현재 로그인한 회원의 정보를 수정합니다. 이미지 파일도 함께 업로드할 수 있습니다.")
-    @PutMapping(value = "/me", consumes = {"application/json", "multipart/form-data"})
-    public ResponseEntity<UserResponseDTO> updateMe(
-            @AuthenticationPrincipal CustomOAuth2User user, 
-            @Valid @RequestPart(value = "userInfo", required = false) UserUpdateDTO userDTO,
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
-        
-        if (user == null) {
-            return ResponseEntity.status(401).build();
-        }
-        
-        if (imageFile != null) {
-            try {
-                String imageUrl = memberService.uploadProfileImage(user.getUserResponseDTO().getId(), imageFile);
-                
-                // userDTO가 null인 경우 빈 DTO로 초기화
-                if (userDTO == null) {
-                    userDTO = UserUpdateDTO.builder()
-                            .profileImageUrl(imageUrl)
-                            .build();
-                } else {
-                    // 기존 DTO에 이미지 URL만 추가
-                    userDTO = UserUpdateDTO.builder()
-                            .email(userDTO.getEmail())
-                            .name(userDTO.getName())
-                            .gender(userDTO.getGender())
-                            .phoneNumber(userDTO.getPhoneNumber())
-                            .address(userDTO.getAddress())
-                            .isOnboarded(userDTO.getIsOnboarded())
-                            .provider(userDTO.getProvider())
-                            .providerUserId(userDTO.getProviderUserId())
-                            .resumeId(userDTO.getResumeId())
-                            .profileImageUrl(imageUrl)
-                            .build();
-                }
-            } catch (Exception e) {
-                return ResponseEntity.badRequest().build();
-            }
-        }
-        
-        // userDTO가 여전히 null인 경우 빈 DTO로 초기화
-        if (userDTO == null) {
-            userDTO = new UserUpdateDTO();
-        }
-        
-        UserResponseDTO updated = memberService.updateUser(user.getUserResponseDTO().getId(), userDTO);
+    @Operation(summary = "내 정보 수정", description = "현재 로그인한 회원의 정보를 수정합니다.")
+    @PutMapping(value="/me", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateMeJson(
+            @AuthenticationPrincipal CustomOAuth2User user,
+            @Valid @RequestBody UserUpdateDTO dto
+    ){
+        var updated = memberService.updateUser(user.getUserResponseDTO().getId(), dto);
         return ResponseEntity.ok(updated);
+    }
+
+    @Operation(summary = "프로필 사진 업로드", description = "현재 로그인한 회원의 프로필 사진을 업로드합니다.")
+    @PutMapping(value="/me/profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadProfileImage(
+            @AuthenticationPrincipal CustomOAuth2User user,
+            @RequestPart("imageFile") MultipartFile image
+    ){
+        String url = memberService.uploadProfileImage(user.getUserResponseDTO().getId(), image);
+        return ResponseEntity.ok(Map.of("profileImageUrl", url));
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 API입니다. 14일 내로 복구가 가능합니다.")
@@ -163,17 +145,37 @@ public class MemberController {
     @DeleteMapping("/profile-image")
     public ResponseEntity<String> deleteProfileImage(
             @Parameter(hidden = true) @AuthenticationPrincipal CustomOAuth2User user) {
-        
+
         if (user == null) {
-            return ResponseEntity.status(401).build();
+            return ResponseEntity.status(401).body("인증되지 않은 사용자입니다.");
         }
-        
+
         try {
-            memberService.deleteProfileImage(user.getUserResponseDTO().getId());
+            boolean deleted = memberService.deleteProfileImage(user.getUserResponseDTO().getId());
+            if (!deleted) {
+                return ResponseEntity.badRequest().body("삭제할 이미지가 없습니다.");
+            }
             return ResponseEntity.ok("프로필 이미지가 성공적으로 삭제되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("프로필 이미지 삭제에 실패했습니다: " + e.getMessage());
         }
+    }
+
+
+    // 이 컨트롤러 안에 지역 예외처리(검증 실패 400 JSON)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleManve(MethodArgumentNotValidException ex) {
+        var details = ex.getBindingResult().getFieldErrors().stream().map(fe -> {
+            Object rej = fe.getRejectedValue();
+            String s = rej == null ? null : rej.toString();
+            if (s != null && s.length() > 200) s = s.substring(0,200) + "...";
+            return Map.of("field", fe.getField(), "reason", fe.getDefaultMessage(), "rejectedValue", s);
+        }).toList();
+        return ResponseEntity.badRequest().body(Map.of(
+                "code","VALIDATION_ERROR",
+                "message","입력값이 유효하지 않습니다.",
+                "errors", details
+        ));
     }
 
 }

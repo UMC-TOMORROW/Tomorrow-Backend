@@ -73,8 +73,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
 
-                // ★ WebSocket 핸드셰이크 & SockJS 폴백 허용
-                .requestMatchers("/wss", "/wss/**").permitAll()
+                        // WebSocket 핸드셰이크 & SockJS 폴백 허용
+                        .requestMatchers("/wss", "/wss/**").permitAll()
                         .requestMatchers(
                                 "/", "/api/ping",
                                 "/swagger-ui/**",
@@ -90,4 +90,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-

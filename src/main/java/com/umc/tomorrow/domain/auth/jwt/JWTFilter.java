@@ -26,7 +26,7 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
-        System.out.println("JWTFilter: Request URI = " + path); // 요청 URI 로그 추가
+        System.out.println("JWTFilter: Request URI = " + path);
 
         if (path.startsWith("/login") || path.startsWith("/oauth2") || path.startsWith("/swagger-ui") ||
                         path.startsWith("/v3/api-docs")) {
@@ -38,7 +38,6 @@ public class JWTFilter extends OncePerRequestFilter {
         String authorization = null;
         Cookie[] cookies = request.getCookies();
 
-        // 쿠키에서 Authorization 토큰 찾기
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("Authorization")) {
@@ -57,10 +56,12 @@ public class JWTFilter extends OncePerRequestFilter {
             }
         }
 
-        // Authorization 토큰이 없는 경우
+        // Authorization 토큰이 없는 경우 - 인증 실패 응답
         if (authorization == null) {
-            System.out.println("JWTFilter: Token not found in cookies or Authorization header. Proceeding without authentication.");
-            filterChain.doFilter(request, response);
+            System.out.println("JWTFilter: Token not found in cookies or Authorization header. Authentication failed.");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"code\":\"AUTH_401\",\"message\":\"Unauthorized\",\"redirectUrl\":\"/login\"}");
             return;
         }
 
@@ -70,7 +71,9 @@ public class JWTFilter extends OncePerRequestFilter {
         try {
             if (jwtUtil.isExpired(token)) {
                 System.out.println("JWTFilter: Token is EXPIRED.");
-                filterChain.doFilter(request, response);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"code\":\"AUTH_401\",\"message\":\"Token expired\",\"redirectUrl\":\"/login\"}");
                 return;
             }
 
@@ -91,35 +94,27 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
             // UserDTO 생성 및 값 설정
-            UserResponseDTO userDTO = new UserResponseDTO(
-                id,
-                role,
-                username,
-                null,
-                name,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            );
-
+            UserResponseDTO userDTO = UserResponseDTO.builder()
+                    .id(id)                 // null 가능
+                    .role(role)             // 예: "EMPLOYER" or "JOB_SEEKER" 등
+                    .username(username)
+                    .name(name)
+                    .build();
 
             CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
             Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authToken);
         } catch (io.jsonwebtoken.security.SignatureException e) {
             System.out.println("JWTFilter: Token parsing failed - Invalid Signature: " + e.getMessage());
-            filterChain.doFilter(request, response);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"code\":\"AUTH_401\",\"message\":\"Invalid token\",\"redirectUrl\":\"/login\"}");
             return;
         } catch (Exception e) {
             System.out.println("JWTFilter: Token parsing failed - General Error: " + e.getClass().getSimpleName() + " - " + e.getMessage());
-            filterChain.doFilter(request, response);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"code\":\"AUTH_401\",\"message\":\"Token validation failed\",\"redirectUrl\":\"/login\"}");
             return;
         }
 

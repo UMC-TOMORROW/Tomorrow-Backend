@@ -225,21 +225,25 @@ public class MemberService {
 
     /**
      * 프로필 이미지 삭제
-     * 
+     *
      * @param userId 사용자 ID
+     * @return
      */
     @Transactional
-    public void deleteProfileImage(Long userId) {
+    public boolean deleteProfileImage(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
-        
-        if (user.getProfileImageUrl() != null) {
-            // S3에서 이미지 삭제
-            fileUploadService.delete(user.getProfileImageUrl());
-            
-            // 사용자 정보에서 이미지 URL 제거
-            user.setProfileImageUrl(null);
-            userRepository.save(user);
+
+        if (user.getProfileImageUrl() == null) {
+            return false; // 삭제할 이미지 없음
         }
+
+        // S3에서 이미지 삭제
+        fileUploadService.delete(user.getProfileImageUrl());
+
+        // 사용자 정보에서 이미지 URL 제거
+        user.setProfileImageUrl(null);
+        userRepository.save(user);
+        return false;
     }
 } 
