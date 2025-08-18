@@ -110,11 +110,23 @@ public class AuthController {
         user.setRefreshToken(null);
         userRepository.save(user);
 
-        // 쿠키 제거
-        removeRefreshTokenCookie(response);
+        // === 쿠키 제거 ===
+        removeCookie(response, "RefreshToken");
+        removeCookie(response, "Authorization");
 
         return ResponseEntity.ok("로그아웃 성공");
     }
+
+    private void removeCookie(HttpServletResponse response, String name) {
+        String setCookieHeader = String.format(
+                "%s=; Max-Age=0; Path=/; HttpOnly; %s %s SameSite=None",
+                name,
+                isProd() ? "Domain=umctomorrow.shop;" : "",
+                isProd() ? "Secure;" : ""
+        );
+        response.addHeader("Set-Cookie", setCookieHeader);
+    }
+
 
     private void addRefreshTokenCookie(HttpServletResponse response, String token) {
         String setCookieHeader = String.format(
@@ -127,14 +139,7 @@ public class AuthController {
         response.addHeader("Set-Cookie", setCookieHeader);
     }
 
-    private void removeRefreshTokenCookie(HttpServletResponse response) {
-        String setCookieHeader = String.format(
-                "RefreshToken=; Max-Age=0; Path=/; HttpOnly; %s %s SameSite=None",
-                isProd() ? "Domain=umctomorrow.shop;" : "",
-                isProd() ? "Secure;" : ""
-        );
-        response.addHeader("Set-Cookie", setCookieHeader);
-    }
+
 
     private boolean isProd() {
         String[] profiles = env.getActiveProfiles();
