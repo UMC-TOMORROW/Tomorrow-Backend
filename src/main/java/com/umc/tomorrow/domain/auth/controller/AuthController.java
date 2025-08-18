@@ -47,11 +47,11 @@ public class AuthController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        // 쿠키에서 refreshToken 찾기
+        // 쿠키에서 RefreshToken 찾기
         String refreshToken = null;
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if ("refreshToken".equals(cookie.getName())) {
+                if ("RefreshToken".equals(cookie.getName())) { // ✅ 핸들러에 맞춰 대문자
                     refreshToken = cookie.getValue();
                     break;
                 }
@@ -96,7 +96,6 @@ public class AuthController {
         }
     }
 
-
     @PostMapping("/logout")
     public ResponseEntity<?> logout(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
@@ -117,31 +116,24 @@ public class AuthController {
         return ResponseEntity.ok("로그아웃 성공");
     }
 
-
     private void addRefreshTokenCookie(HttpServletResponse response, String token) {
-        Cookie cookie = new Cookie("refreshToken", token);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(isProd()); // 운영에서는 true
-        cookie.setPath("/");
-        cookie.setMaxAge((int) (REFRESH_EXP_MS / 1000L));
-
-        if (isProd()) {
-            cookie.setDomain("umctomorrow.shop");
-        }
-        response.addCookie(cookie);
+        String setCookieHeader = String.format(
+                "RefreshToken=%s; Max-Age=%d; Path=/; HttpOnly; %s %s SameSite=None",
+                token,
+                (int) (REFRESH_EXP_MS / 1000L),
+                isProd() ? "Domain=umctomorrow.shop;" : "",
+                isProd() ? "Secure;" : ""
+        );
+        response.addHeader("Set-Cookie", setCookieHeader);
     }
 
     private void removeRefreshTokenCookie(HttpServletResponse response) {
-        Cookie cookie = new Cookie("refreshToken", null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(isProd());
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-
-        if (isProd()) {
-            cookie.setDomain("umctomorrow.shop");
-        }
-        response.addCookie(cookie);
+        String setCookieHeader = String.format(
+                "RefreshToken=; Max-Age=0; Path=/; HttpOnly; %s %s SameSite=None",
+                isProd() ? "Domain=umctomorrow.shop;" : "",
+                isProd() ? "Secure;" : ""
+        );
+        response.addHeader("Set-Cookie", setCookieHeader);
     }
 
     private boolean isProd() {
