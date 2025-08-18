@@ -16,6 +16,7 @@ import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -43,15 +44,25 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(
-            @RequestHeader(value = "RefreshToken", required = false) String refreshToken,
+            HttpServletRequest request,
             HttpServletResponse response
     ) {
+        // 쿠키에서 refreshToken 찾기
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_NOT_FOUND);
         }
 
         try {
-            // 만료 여부 체크
             if (jwtUtil.isExpired(refreshToken)) {
                 throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_EXPIRED);
             }
@@ -68,11 +79,11 @@ public class AuthController {
             String newAccessToken = jwtUtil.createJwt(user.getId(), user.getName(), ACCESS_EXP_MS);
             String newRefreshToken = jwtUtil.createRefreshToken(user.getId(), user.getName(), REFRESH_EXP_MS);
 
-            // DB에 갱신
+            // DB 갱신
             user.setRefreshToken(newRefreshToken);
             userRepository.save(user);
 
-            // 새 refreshToken을 쿠키에 심음
+            // 새 refreshToken을 다시 쿠키에 심음
             addRefreshTokenCookie(response, newRefreshToken);
 
             return ResponseEntity.ok(Map.of(
@@ -84,6 +95,7 @@ public class AuthController {
             throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_INVALID);
         }
     }
+
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(
