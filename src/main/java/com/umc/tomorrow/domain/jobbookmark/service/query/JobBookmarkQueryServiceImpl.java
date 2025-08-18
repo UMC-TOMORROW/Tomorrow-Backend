@@ -15,12 +15,14 @@ import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JobBookmarkQueryServiceImpl implements JobBookmarkQueryService {
@@ -35,7 +37,13 @@ public class JobBookmarkQueryServiceImpl implements JobBookmarkQueryService {
 
         PageRequest pageRequest = PageRequest.of(0, size);
 
-        Slice<JobBookmark> jobBookmarks = jobBookmarkRepository.findByUserIdAndIdLessThanOrderByIdDesc(userId, cursor, pageRequest);
+        Slice<JobBookmark> jobBookmarks;
+
+        if(cursor==null){
+            jobBookmarks = jobBookmarkRepository.findByUserIdOrderByIdDesc(userId, pageRequest);
+        }else{
+            jobBookmarks = jobBookmarkRepository.findByUserIdAndIdLessThanOrderByIdDesc(userId, cursor, pageRequest);
+        }
 
         List<JobBookmarkResponseDTO> bookmarkDTOs = jobBookmarks.getContent().stream()
                 .map(bookmark -> JobBookmarkResponseDTO.builder()

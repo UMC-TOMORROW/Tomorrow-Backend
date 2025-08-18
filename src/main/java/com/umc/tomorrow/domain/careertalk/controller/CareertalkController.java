@@ -61,7 +61,7 @@ public class CareertalkController {
             @Valid @RequestBody CreateCareertalkRequestDTO requestDto
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(BaseResponse.onSuccessCreate(careertalkCommandService.createCareertalk(customOAuth2User.getUserDTO().getId(), requestDto)));
+                .body(BaseResponse.onSuccessCreate(careertalkCommandService.createCareertalk(customOAuth2User.getUserResponseDTO().getId(), requestDto)));
     }
 
     /**
@@ -94,7 +94,7 @@ public class CareertalkController {
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User
 
     ) {
-        Long userId = customOAuth2User.getUserDTO().getId();
+        Long userId = customOAuth2User.getUserResponseDTO().getId();
         return ResponseEntity.ok(BaseResponse.onSuccess(careertalkQueryService.getCareertalk(careertalkId, userId)));
     }
 
@@ -112,7 +112,7 @@ public class CareertalkController {
             @PathVariable Long careertalkId,
             @Valid @RequestBody UpdateCareertalkRequestDTO requestDto
     ){
-        return ResponseEntity.ok(BaseResponse.onSuccess(careertalkCommandService.updateCareertalk(customOAuth2User.getUserDTO().getId(),careertalkId,requestDto)));
+        return ResponseEntity.ok(BaseResponse.onSuccess(careertalkCommandService.updateCareertalk(customOAuth2User.getUserResponseDTO().getId(),careertalkId,requestDto)));
     }
 
     /**
@@ -128,7 +128,7 @@ public class CareertalkController {
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @PathVariable Long careertalkId
     ){
-        return ResponseEntity.ok(BaseResponse.onSuccessDelete(careertalkCommandService.deleteCareertalk(customOAuth2User.getUserDTO().getId(),careertalkId)));
+        return ResponseEntity.ok(BaseResponse.onSuccessDelete(careertalkCommandService.deleteCareertalk(customOAuth2User.getUserResponseDTO().getId(),careertalkId)));
     }
 
     /**

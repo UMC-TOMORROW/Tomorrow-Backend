@@ -76,10 +76,6 @@ public class CareertalkQueryServiceImpl implements CareertalkQueryService {
 
         boolean isAuthor = careertalk.getUser().getId().equals(userId);
 
-        if(!isAuthor){
-            throw new CareertalkException(CareertalkErrorStatus.CAREERTALK_FORBIDDEN);
-        }
-
         return GetCareertalkResponseDto.builder()
                 .id(careertalk.getId())
                 .category(careertalk.getCategory())

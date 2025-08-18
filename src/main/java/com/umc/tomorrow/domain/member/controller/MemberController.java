@@ -8,7 +8,8 @@
  */
 package com.umc.tomorrow.domain.member.controller;
 
-import com.umc.tomorrow.domain.member.dto.UserDTO;
+import com.umc.tomorrow.domain.member.dto.UserResponseDTO;
+import com.umc.tomorrow.domain.member.dto.UserUpdateDTO;
 import com.umc.tomorrow.domain.member.dto.request.DeactivateUserRequest;
 import com.umc.tomorrow.domain.member.dto.request.UpdateMemberTypeRequestDTO;
 import com.umc.tomorrow.domain.member.dto.response.DeactivateUserResponse;
@@ -19,6 +20,8 @@ import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +29,11 @@ import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
+import com.umc.tomorrow.domain.member.exception.MemberException;
+import com.umc.tomorrow.domain.member.repository.UserRepository;
+import com.umc.tomorrow.domain.member.dto.UserResponseConverter;
+import com.umc.tomorrow.domain.member.entity.User;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "member-controller", description = "회원 관련 API")
 @RestController
@@ -35,32 +43,73 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Operation(summary = "내 정보 조회", description = "현재 로그인한 회원의 정보를 조회합니다.")
     @GetMapping("/me")
-    public ResponseEntity<UserDTO> getMe(@AuthenticationPrincipal CustomOAuth2User user) {
+    public ResponseEntity<UserResponseDTO> getMe(@AuthenticationPrincipal CustomOAuth2User user) {
         if (user == null) {
             return ResponseEntity.status(401).build();
         }
         
-        // resumeId가 null인 경우 업데이트
-        memberService.updateResumeIdIfNull(user.getUserDTO().getId());
+        Long userId = user.getUserResponseDTO().getId();
+
+        memberService.updateResumeIdIfNull(userId);
+
+        User updatedUser = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
         
-        UserDTO userDTO = user.getUserDTO();
-        return ResponseEntity.ok(userDTO);
+        UserResponseDTO updatedUserDTO = UserResponseConverter.toResponseDTO(updatedUser);
+        return ResponseEntity.ok(updatedUserDTO);
     }
 
-    /**
-     * 내 정보 수정
-     * 실제로 DB에 회원 정보가 반영되도록 MemberService를 호출
-     */
-    @Operation(summary = "내 정보 수정", description = "현재 로그인한 회원의 정보를 수정합니다.")
-    @PutMapping("/me")
-    public ResponseEntity<UserDTO> updateMe(@AuthenticationPrincipal CustomOAuth2User user, @RequestBody UserDTO userDTO) {
+    @Operation(summary = "내 정보 수정", description = "현재 로그인한 회원의 정보를 수정합니다. 이미지 파일도 함께 업로드할 수 있습니다.")
+    @PutMapping(value = "/me", consumes = {"application/json", "multipart/form-data"})
+    public ResponseEntity<UserResponseDTO> updateMe(
+            @AuthenticationPrincipal CustomOAuth2User user, 
+            @Valid @RequestPart(value = "userInfo", required = false) UserUpdateDTO userDTO,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
+        
         if (user == null) {
             return ResponseEntity.status(401).build();
         }
-        // 실제 DB에 회원 정보 업데이트
-        UserDTO updated = memberService.updateUser(user.getUserDTO(), userDTO);
+        
+        if (imageFile != null) {
+            try {
+                String imageUrl = memberService.uploadProfileImage(user.getUserResponseDTO().getId(), imageFile);
+                
+                // userDTO가 null인 경우 빈 DTO로 초기화
+                if (userDTO == null) {
+                    userDTO = UserUpdateDTO.builder()
+                            .profileImageUrl(imageUrl)
+                            .build();
+                } else {
+                    // 기존 DTO에 이미지 URL만 추가
+                    userDTO = UserUpdateDTO.builder()
+                            .email(userDTO.getEmail())
+                            .name(userDTO.getName())
+                            .gender(userDTO.getGender())
+                            .phoneNumber(userDTO.getPhoneNumber())
+                            .address(userDTO.getAddress())
+                            .isOnboarded(userDTO.getIsOnboarded())
+                            .provider(userDTO.getProvider())
+                            .providerUserId(userDTO.getProviderUserId())
+                            .resumeId(userDTO.getResumeId())
+                            .profileImageUrl(imageUrl)
+                            .build();
+                }
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        
+        // userDTO가 여전히 null인 경우 빈 DTO로 초기화
+        if (userDTO == null) {
+            userDTO = new UserUpdateDTO();
+        }
+        
+        UserResponseDTO updated = memberService.updateUser(user.getUserResponseDTO().getId(), userDTO);
         return ResponseEntity.ok(updated);
     }
 
@@ -91,7 +140,7 @@ public class MemberController {
             @Parameter(hidden = true) @AuthenticationPrincipal CustomOAuth2User user,
             @RequestBody UpdateMemberTypeRequestDTO request
     ){
-        UpdateUserTypeResponse updated = memberService.updateMemberType(user.getUserDTO().getId(), request.getMemberType());
+        UpdateUserTypeResponse updated = memberService.updateMemberType(user.getUserResponseDTO().getId(), request.getMemberType());
         return ResponseEntity.ok(BaseResponse.onSuccess(updated));
     }
 
@@ -103,9 +152,28 @@ public class MemberController {
     public ResponseEntity<BaseResponse<GetUserTypeResponse>> getMemberType(
             @Parameter(hidden = true) @AuthenticationPrincipal CustomOAuth2User user) {
 
-        GetUserTypeResponse getUserTypeResponse = memberService.getMemberType(user.getUserDTO().getId());
+        GetUserTypeResponse getUserTypeResponse = memberService.getMemberType(user.getUserResponseDTO().getId());
         return ResponseEntity.ok(BaseResponse.onSuccess(getUserTypeResponse));
     }
 
+    @Operation(
+            summary = "프로필 이미지 삭제",
+            description = "프로필 이미지만 삭제합니다."
+    )
+    @DeleteMapping("/profile-image")
+    public ResponseEntity<String> deleteProfileImage(
+            @Parameter(hidden = true) @AuthenticationPrincipal CustomOAuth2User user) {
+        
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        
+        try {
+            memberService.deleteProfileImage(user.getUserResponseDTO().getId());
+            return ResponseEntity.ok("프로필 이미지가 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("프로필 이미지 삭제에 실패했습니다: " + e.getMessage());
+        }
+    }
 
 }

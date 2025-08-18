@@ -7,12 +7,15 @@ package com.umc.tomorrow.global.infrastructure.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.umc.tomorrow.domain.member.entity.User;
+import com.umc.tomorrow.domain.member.exception.MemberException;
+import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
+import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import com.umc.tomorrow.global.common.exception.code.GlobalErrorStatus;
 import java.io.IOException;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,13 +23,15 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class S3Uploader {
 
-    private AmazonS3 amazonS3;
+    private final AmazonS3 amazonS3;
     private final String bucketName;
+    private final UserRepository userRepository;
 
     public S3Uploader(AmazonS3 amazonS3,
-                      @Value("${cloud.aws.s3.bucket}") String bucketName) {
+                      @Value("${cloud.aws.s3.bucket}") String bucketName,UserRepository userRepository) {
         this.amazonS3 = amazonS3;
         this.bucketName = bucketName;
+        this.userRepository = userRepository;
     }
 
     public String upload(MultipartFile file, String dirName) {
@@ -37,7 +42,12 @@ public class S3Uploader {
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
 
-            amazonS3.putObject(bucketName, fileName, file.getInputStream(), metadata);
+            // ACL 설정 제거 - 버킷 정책으로만 접근 제어
+            PutObjectRequest putObjectRequest =
+                    new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata);
+
+            amazonS3.putObject(putObjectRequest);
+
         } catch (IOException e) {
             throw new RestApiException(GlobalErrorStatus._S3_UPLOAD_ERROR);
         }
@@ -51,9 +61,29 @@ public class S3Uploader {
         amazonS3.deleteObject(bucketName, key);
     }
 
+    public String updateProfileImage(Long userId, MultipartFile newImage) {
+        // (1) DB에서 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
+
+        // (2) 기존 이미지 있으면 S3에서 삭제
+        if (user.getProfileImageUrl() != null) {
+            delete(user.getProfileImageUrl());
+        }
+
+        // (3) 새 이미지 업로드
+        String newUrl = upload(newImage, "profile");
+
+        // (4) DB에 반영
+        user.updateProfileImageUrl(newUrl);
+        userRepository.save(user);
+
+        return newUrl;
+    }
+
+
     private String extractKeyFromUrl(String fileUrl) {
         String bucketUrl = amazonS3.getUrl(bucketName, "").toString(); // ex: https://bucket.s3.amazonaws.com/
         return fileUrl.replace(bucketUrl, "");
     }
-
 }

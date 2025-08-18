@@ -1,7 +1,6 @@
 package com.umc.tomorrow.domain.career.converter;
 
 import com.umc.tomorrow.domain.career.dto.request.CareerCreateRequestDTO;
-import com.umc.tomorrow.domain.career.dto.request.CareerUpdateRequestDTO;
 import com.umc.tomorrow.domain.career.dto.response.CareerCreateResponseDTO;
 import com.umc.tomorrow.domain.career.dto.response.CareerGetResponseDTO;
 import com.umc.tomorrow.domain.career.entity.Career;

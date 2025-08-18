@@ -30,18 +30,30 @@ public class PreferenceServiceImpl implements PreferenceService {
     private final UserRepository userRepository;
 
     /**
-     * 희망 조건 저장
+     * 희망 조건 저장 (upsert 방식)
      */
     @Override
     @Transactional
     public PreferencesDTO savePreferences(Long userId, PreferencesDTO dto) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
-        Preference entity = Preference.builder()
-            .user(user)
-            .preferences(dto.getPreferences())
-            .build();
+            .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
+        
+        // 기존 preference가 있는지 확인
+        Preference entity = preferenceRepository.findByUser(user).orElse(null);
+        
+        if (entity == null) {
+            // 새로 생성
+            entity = Preference.builder()
+                .user(user)
+                .preferences(dto.getPreferences())
+                .build();
+        } else {
+            // 기존 것 업데이트
+            PreferenceConverter.updateEntity(entity, dto);
+        }
+        
         preferenceRepository.save(entity);
+        user.setIsOnboarded(true);
         return PreferenceConverter.toDTO(entity);
     }
 

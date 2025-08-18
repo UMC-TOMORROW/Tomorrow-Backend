@@ -6,7 +6,7 @@ spring:
     name: tomorrow
   messages:
     encoding: UTF-8
-    basename: validation
+    basename: messages_ko
   data:
     redis:
       host: redis # docker-compose에 설정했던 이름이랑 같아야 해
@@ -32,7 +32,7 @@ spring:
   # JPA 설정 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
@@ -139,6 +139,7 @@ server:
     include-stacktrace: never
     include-message: always
 
+# AWS S3 설정
 cloud:
   aws:
     s3:

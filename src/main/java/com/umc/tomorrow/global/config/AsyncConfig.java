@@ -8,7 +8,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 @EnableAsync
-public class AysncConfig {
+public class AsyncConfig {
 
     @Bean(name = "chatExecutor")
     public Executor chatExecutor() {
@@ -17,6 +17,17 @@ public class AysncConfig {
         executor.setMaxPoolSize(10);
         executor.setQueueCapacity(100);
         executor.setThreadNamePrefix("ChatAsync-");
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean(name = "emailExecutor")
+    public Executor emailExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(5);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("EmailAsync-");
         executor.initialize();
         return executor;
     }

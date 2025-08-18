@@ -48,8 +48,9 @@ public class ApplicationConverter {
         String statusLabel = application.getStatus() != null ? application.getStatus().getLabel() : "불합격";
         return ApplicationStatusListResponseDTO.builder()
                 .postTitle(application.getJob().getTitle())
-                .company(application.getJob().getCompanyName()) 
-                .date(application.getAppliedAt().toLocalDate().toString()) 
+                .jobId(application.getJob().getId())
+                .company(application.getJob().getCompanyName())
+                .date(application.getAppliedAt().toLocalDate().toString())
                 .status(application.getStatus())
                 .build();
     }
@@ -109,7 +110,7 @@ public class ApplicationConverter {
 
     private static ApplicationDetailsResponseDTO.CertificationDTO toCertificationDTO(Certificate certificate) {
         return ApplicationDetailsResponseDTO.CertificationDTO.builder()
-                .certificationName(certificate.getName())
+                .certificationName(certificate.getFilename())
                 .fileUrl(certificate.getFileUrl())
                 .build();
     }
@@ -119,8 +120,8 @@ public class ApplicationConverter {
         return ApplicationDetailsResponseDTO.CareerDTO.builder()
                 .id(career.getId())
                 .company(career.getCompany())
-                .position(career.getWorkedPeriod().getLabel()) 
-                .duration(career.getWorkedYear() + "년") 
+                .position(career.getWorkedPeriod().getLabel())
+                .duration(career.getWorkedYear() + "년")
                 .description(career.getDescription())
                 .build();
     }

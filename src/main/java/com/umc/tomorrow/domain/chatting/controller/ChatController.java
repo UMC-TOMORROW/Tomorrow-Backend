@@ -81,7 +81,7 @@ public class ChatController {
             }
             // 소셜 기본 형태: principal = CustomOAuth2User
             if (p instanceof CustomOAuth2User cou) {
-                return cou.getUserDTO().getId();
+                return cou.getUserResponseDTO().getId();
             }
             // 혹시 다른 타입이어도 숫자 문자열이면 처리
             if (p != null) {
@@ -101,7 +101,7 @@ public class ChatController {
         if (ctx instanceof UsernamePasswordAuthenticationToken ctxAuth) {
             Object p = ctxAuth.getPrincipal();
             if (p instanceof CustomOAuth2User cou) {
-                return cou.getUserDTO().getId();
+                return cou.getUserResponseDTO().getId();
             }
             if (p instanceof String s && s.chars().allMatch(Character::isDigit)) {
                 return Long.valueOf(s);
@@ -118,7 +118,7 @@ public class ChatController {
             @NotNull @Positive @PathVariable Long chattingRoomId,
             @AuthenticationPrincipal CustomOAuth2User user
     ){
-        Long userId = user.getUserDTO().getId();
+        Long userId = user.getUserResponseDTO().getId();
         chatCommandService.joinChatRoom(chattingRoomId, userId);
         return ResponseEntity
                 .status(HttpStatus.CREATED)

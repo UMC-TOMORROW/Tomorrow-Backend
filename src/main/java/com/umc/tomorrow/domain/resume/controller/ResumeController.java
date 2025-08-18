@@ -13,6 +13,7 @@ import com.umc.tomorrow.global.common.base.BaseResponse;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,8 +42,8 @@ public class ResumeController {
     @PostMapping
     public ResponseEntity<BaseResponse<Map<String, Long>>> saveResume(
             @AuthenticationPrincipal CustomOAuth2User user,
-            @RequestBody ResumeSaveRequestDTO dto) {
-        Long userId = user.getUserDTO().getId();
+            @Valid @RequestBody ResumeSaveRequestDTO dto) {
+        Long userId = user.getUserResponseDTO().getId();
         Resume saved = resumeService.saveResume(userId, dto);
         return ResponseEntity.ok(
             BaseResponse.onSuccess(Map.of("resumeId", saved.getId()))

@@ -35,7 +35,7 @@ public class EmailController {
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @Valid @RequestBody EmailRequestDTO dto) {
 
-        Long id = customOAuth2User.getUserDTO().getId();
+        Long id = customOAuth2User.getUserResponseDTO().getId();
         return ResponseEntity.ok(BaseResponse.onSuccess(emailService.sendEmail(id,dto)));
     }
 }

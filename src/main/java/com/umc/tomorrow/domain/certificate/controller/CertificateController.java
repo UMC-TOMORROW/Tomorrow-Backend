@@ -45,7 +45,7 @@ public class CertificateController {
             @PathVariable Long resumeId,
             @RequestParam("file") MultipartFile file
     ){
-        CertificateResponse response = certificateCommandService.uploadCertificate(user.getUserDTO().getId(), resumeId, file);
+        CertificateResponse response = certificateCommandService.uploadCertificate(user.getUserResponseDTO().getId(), resumeId, file);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.onSuccessCreate(response));
     }
 
@@ -57,7 +57,7 @@ public class CertificateController {
             @PathVariable Long resumeId,
             @PathVariable Long certificateId
     ) {
-        CertificateResponse response = certificateCommandService.deleteCertificate(user.getUserDTO().getId(),certificateId);
+        CertificateResponse response = certificateCommandService.deleteCertificate(user.getUserResponseDTO().getId(),certificateId);
         return ResponseEntity.ok(BaseResponse.onSuccessDelete(response));
     }
 

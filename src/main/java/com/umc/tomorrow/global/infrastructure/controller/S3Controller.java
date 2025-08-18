@@ -5,6 +5,8 @@
  */
 package com.umc.tomorrow.global.infrastructure.controller;
 
+import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
+import com.umc.tomorrow.domain.auth.security.CustomUserDetails;
 import com.umc.tomorrow.global.infrastructure.s3.S3Uploader;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,5 +58,23 @@ public class S3Controller {
     public ResponseEntity<BaseResponse<String>> delete(@RequestParam("fileUrl") String fileUrl) {
         s3Uploader.delete(fileUrl);
         return ResponseEntity.ok(BaseResponse.onSuccess(fileUrl));
+    }
+
+    /**
+     * 프로필 이미지 수정 API
+     * @param profileImage 새 프로필 이미지 파일
+     * @return 업데이트된 프로필 이미지 URL
+     */
+    @PostMapping(value = "/profile/update", consumes = "multipart/form-data")
+    @Operation(summary = "프로필 이미지 수정", description = "사용자의 기존 프로필 이미지를 삭제하고 새 이미지를 업로드합니다.")
+    @ApiResponse(responseCode = "201", description = "프로필 이미지 수정 성공")
+    public ResponseEntity<BaseResponse<String>> updateProfileImage(
+            @AuthenticationPrincipal CustomOAuth2User user,
+            @RequestParam("file") MultipartFile profileImage
+    ) {
+        // 기존 이미지 삭제 + 새 이미지 업로드
+        String newProfileUrl = s3Uploader.updateProfileImage(user.getUserResponseDTO().getId(), profileImage);
+
+        return ResponseEntity.ok(BaseResponse.onSuccess(newProfileUrl));
     }
 }

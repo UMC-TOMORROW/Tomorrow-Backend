@@ -1,14 +1,19 @@
 package com.umc.tomorrow.domain.auth.security;
 
-import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.enums.Provider;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
+import com.umc.tomorrow.domain.resume.entity.Resume;
+import com.umc.tomorrow.domain.resume.repository.ResumeRepository;
+import com.umc.tomorrow.domain.introduction.entity.Introduction;
+import com.umc.tomorrow.domain.auth.jwt.JWTUtil;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Arrays;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -18,128 +23,153 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
-
-    @Autowired
-    public CustomSuccessHandler(JWTUtil jwtUtil, UserRepository userRepository) {
-        this.jwtUtil = jwtUtil;
-        this.userRepository = userRepository;
-    }
+    private final ResumeRepository resumeRepository;
+    private final Environment env; // profile 확인용
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
 
-        //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
         String usernameToUseForTokens;
-        // String username = customUserDetails.getUsername();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String providerStr = customUserDetails.getUserDTO().getProvider();
-        String providerUserId = customUserDetails.getUserDTO().getProviderUserId();
+        String providerStr = customUserDetails.getUserResponseDTO().getProvider();
+        String providerUserId = customUserDetails.getUserResponseDTO().getProviderUserId();
         Provider provider = Provider.valueOf(providerStr.toUpperCase());
 
         User user = userRepository.findByProviderAndProviderUserId(provider, providerUserId);
+
         if (user == null) {
-            // 소셜 로그인 정보로 새 회원 생성
+            // 신규 사용자 생성
             user = new User();
             user.setName(customUserDetails.getName());
-            // 필수값 세팅
             user.setCreatedAt(java.time.LocalDateTime.now());
             user.setUpdatedAt(java.time.LocalDateTime.now());
-            // provider, providerUserId, username, email 세팅
-            user.setProvider(Provider.valueOf(providerStr.toUpperCase()));
+            user.setProvider(provider);
             user.setProviderUserId(providerUserId);
 
-            // DB에 저장할 username 형식과 토큰에 담을 username 형식을 일치시킴
-            usernameToUseForTokens = (providerStr != null && providerUserId != null) ? providerStr + "_" + providerUserId : null;
-            user.setUsername(usernameToUseForTokens); // DB에 저장
-            user.setEmail(customUserDetails.getUserDTO().getEmail());
+            usernameToUseForTokens = providerStr + "_" + providerUserId;
+            user.setUsername(usernameToUseForTokens);
+            user.setEmail(customUserDetails.getUserResponseDTO().getEmail());
+
+            user = userRepository.save(user);
+
+            // 기본 이력서 + 자기소개
+            Resume defaultResume = Resume.builder()
+                    .user(user)
+                    .build();
+            Introduction defaultIntroduction = Introduction.builder()
+                    .content("안녕하세요! 저는 " + user.getName() + "입니다.")
+                    .resume(defaultResume)
+                    .build();
+            defaultResume.setIntroduction(defaultIntroduction);
+
+            Resume savedResume = resumeRepository.save(defaultResume);
+            user.setResumeId(savedResume.getId());
             userRepository.save(user);
-        }else {
-            // 기존 사용자일 경우 db에 저장된 username 사용
+
+        } else {
             usernameToUseForTokens = user.getUsername();
-            // null 체크 추가 (혹시 기존 유저의 username이 null일 경우 대비)
             if (usernameToUseForTokens == null) {
-                // DB에 username이 없었던 경우, 새로 생성하여 업데이트
-                usernameToUseForTokens = (providerStr != null && providerUserId != null) ? providerStr + "_" + providerUserId : null;
+                usernameToUseForTokens = providerStr + "_" + providerUserId;
                 user.setUsername(usernameToUseForTokens);
+                userRepository.save(user);
+            }
+
+            if (user.getResumeId() == null) {
+                Resume defaultResume = Resume.builder()
+                        .user(user)
+                        .build();
+                Introduction defaultIntroduction = Introduction.builder()
+                        .content("안녕하세요! 저는 " + user.getName() + "입니다.")
+                        .resume(defaultResume)
+                        .build();
+                defaultResume.setIntroduction(defaultIntroduction);
+
+                Resume savedResume = resumeRepository.save(defaultResume);
+                user.setResumeId(savedResume.getId());
                 userRepository.save(user);
             }
         }
 
-        // Access Token 유효기간 (60시간)
-        long accessTokenExpiredMs = 60L * 60 * 60 * 1000; // 밀리초
-        long accessTokenExpiredSeconds = 60L * 60 * 60; // 초
+        // Access Token (60시간)
+        long accessTokenExpiredMs = 60L * 60 * 60 * 1000;
+        long accessTokenExpiredSeconds = 60L * 60 * 60;
 
-        // access token 생
         String accessToken = jwtUtil.createJwt(
-            user.getId(),
-            user.getName(),
-            user.getUsername(),
-            (user.getStatus() != null ? user.getStatus().name() : null),
+                user.getId(),
+                user.getName(),
+                user.getUsername(),
+                (user.getStatus() != null ? user.getStatus().name() : null),
                 accessTokenExpiredMs
         );
 
-        // Refresh Token 유효기간 (2주)
-        long refreshTokenExpiredMs = 60L * 60 * 24 * 14 * 1000; // 밀리초
-        long refreshTokenExpiredSeconds = 60L * 60 * 24 * 14; // 초
+        // Refresh Token (2주)
+        long refreshTokenExpiredMs = 60L * 60 * 24 * 14 * 1000;
+        long refreshTokenExpiredSeconds = 60L * 60 * 24 * 14;
 
-        // Refresh Token 생성 (2주)
+        String refreshToken = jwtUtil.createRefreshToken(user.getId(), usernameToUseForTokens, refreshTokenExpiredMs);
 
-        String refreshToken = jwtUtil.createRefreshToken(user.getId(), usernameToUseForTokens, refreshTokenExpiredMs); // 2주
+        // DB 저장
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
 
+        boolean isLocal = request.getServerName().equals("localhost"); // 프론트 로컬 구분
+        boolean isOnboarded = Boolean.TRUE.equals(user.getIsOnboarded());
+        boolean secureFlag = !isLocal;
 
-        // DB에 저장
-        if (user != null) {
-            user.setRefreshToken(refreshToken);
-            System.out.println("[DEBUG] refresh Token 확인 : " + refreshToken);
-            userRepository.save(user);
-        }
+        // Swagger/Postman 요청 분기
+        boolean isSwaggerRequest = (isLocalProfile());
 
-
-        // 쿠키 직접 문자열로 세팅 (로컬 테스트용 - Secure=false)
-        String accessCookie = String.format("Authorization=%s; Max-Age=%d; Path=/; HttpOnly; Secure=false; SameSite=None",
-                accessToken, (int) accessTokenExpiredSeconds);
+        String accessCookie = String.format(
+                "Authorization=%s; Max-Age=%d; Path=/; HttpOnly; Secure=%b; SameSite=None",
+                accessToken, (int) accessTokenExpiredSeconds, secureFlag
+        );
         response.addHeader("Set-Cookie", accessCookie);
 
-        String refreshCookie = String.format("RefreshToken=%s; Max-Age=%d; Path=/; HttpOnly; Secure=false; SameSite=None",
-                refreshToken, (int) refreshTokenExpiredSeconds);
+        String refreshCookie = String.format(
+                "RefreshToken=%s; Max-Age=%d; Path=/; HttpOnly; Secure=%b; SameSite=None",
+                refreshToken, (int) refreshTokenExpiredSeconds, secureFlag
+        );
         response.addHeader("Set-Cookie", refreshCookie);
 
-        //헤더 전달
+        // 헤더 추가
         response.addHeader("Authorization", "Bearer " + accessToken);
         response.addHeader("RefreshToken", refreshToken);
 
-         // 프론트로 리다이렉트
-        response.sendRedirect("http://localhost:5173/onboarding");
+        // === 분기 처리 ===
+        if (isSwaggerRequest) {
+            // Swagger/Postman (로컬 테스트) → JSON 반환
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(
+                    String.format(
+                            "{\"accessToken\":\"%s\",\"refreshToken\":\"%s\",\"isOnboarded\":%b}",
+                            accessToken, refreshToken, isOnboarded
+                    )
+            );
+        } else {            // 프론트 (로컬/배포) → Redirect
+            String redirectUrl = isLocal
+                    ? (isOnboarded ? "http://localhost:5173" : "http://localhost:5173/onboarding")
+                    : (isOnboarded ? "https://umctomorrow.shop" : "https://umctomorrow.shop/onboarding");
 
+            response.sendRedirect(redirectUrl);
+        }
 
-//        response.addCookie(createCookie("Authorization", accessToken, (int)accessTokenExpiredSeconds));
-//        response.addHeader("Authorization", "Bearer " + accessToken);
-//
-//        response.addCookie(createCookie("RefreshToken", refreshToken, (int)refreshTokenExpiredSeconds));
-//        response.addHeader("RefreshToken", refreshToken);
-//        response.sendRedirect("https://umctomorrow.shop/onboarding");
-//        //response.sendRedirect("/success");//로컬 테스트 확인용
     }
 
-    private Cookie createCookie(String key, String value, int maxAge) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(maxAge);
-        //cookie.setSecure(true);
-        cookie.setSecure(false); // 로컬 테스트용
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        return cookie;
+    private boolean isLocalProfile() {
+        return Arrays.asList(env.getActiveProfiles()).contains("local");
     }
 }

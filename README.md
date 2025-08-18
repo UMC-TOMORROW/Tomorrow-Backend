@@ -1,6 +1,99 @@
-# 🛠️ Tomorrow Backend
+# 🌱 내일 - 당신의 더 나은 '내일'을 위해 '내 일' 찾기
 
-DDD 기반으로 설계된 Tomorrow 서비스의 백엔드 레포지토리입니다.
+> 🧑‍🦳 건강 상태에 딱 맞는 맞춤형 일자리 추천 서비스
+> **내일**은 중장년층의 건강 상태와 생활 패턴을 고려한 건강 맞춤 온보딩 기능을 통해무리가 가지 않는 직무를 추천하고, 정서적·신체적 부담을 줄여 지속적인 사회 참여와 경제 활동을 돕는 서비스입니다.
+이를 통해 삶의 만족도와 자존감을 높이고, 건강한 노후를 준비할 수 있습니다.
+
+**📅 개발 기간**: 2025.06.22 ~ 2025.08.22
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/24bfb68f-7363-46f1-858f-74b753680489" 
+       alt="프로젝트 미리보기"
+       style="max-width: 800px; height: auto; border-radius: 12px;">
+</p>
+
+
+### ✨ 주요 기능
+
+#### 💪 건강 맞춤 온보딩
+
+* 5가지의 온보딩을 통해 개인의 건강 상태와 생활 패턴을 반영하여 무리가 없는 직무를 추천하는 맞춤형 초기 진단 기능
+* 중장년층도 쉽게 사용할 수 있는 직관적 UI/UX로 접근성과 편의성을 강화
+
+#### 📋 맞춤형 일자리 추천 & 후기 공유
+* 온보딩 결과와 건강 조건을 기반으로 한 최적의 일자리 매칭 시스템
+* 실제 근무자의 생생한 후기 공유를 통해 직무 이해도와 선택의 정확도를 높임
+
+#### 💬 커리어 정보 제공 & 실시간 소통
+* 다양한 업종·직무별 커리어 정보와 취업 준비 자료를 한 곳에서 제공
+* 실제 커리어 경험자와의 실시간 채팅을 통해 현장감 있는 조언과 정보를 실시간으로 획득
+
+##  👥 팀원 소개(백엔드)
+
+<table>
+  <tr>
+    <td align="center" width="33%">
+       <img width="300" height="400" alt="Image" src="https://github.com/user-attachments/assets/245fc11a-a37b-4962-9b91-613b2d93d6cd"/><br/>
+      <strong>이승주</strong><br/>
+      Team Lead<br/>
+      <a href="https://github.com/Leeseung-joo">📧 GitHub</a><br/>
+      <sub>커리어톡 및 채팅<br/>내일 추천 기능<br/>nginx 및 도메인 설정, S3</sub>
+    </td>
+    <td align="center" width="33%">
+      <img width="300" height="400" alt="Image" src="https://github.com/user-attachments/assets/a5eed6d6-3891-4ccf-99de-b0a98525406f"/><br/>
+      <strong>정여진</strong><br/>
+      Backend Developer<br/>
+      <a href="https://github.com/jnyn0314">📧 GitHub</a><br/>
+      <sub>마이페이지 및 온보딩<br/>소셜로그인 및 메일 발송<br/>인프라 구축,erd 설계</sub>
+    </td>
+    <td align="center" width="33%">
+      <img width="300" height="400" alt="Image" src="https://github.com/user-attachments/assets/65666847-066f-4985-bf10-bb494daeefeb" /><br/>
+      <strong>한지혜</strong><br/>
+      Backend Developer<br/>
+      <a href="https://github.com/hanfihei">📧 GitHub</a><br/>
+      <sub>일자리 등록 및 카카오 지도<br/>소셜로그인<br/>CI/CD,프로젝트 설계</sub>
+    </td>
+  </tr>
+</table>
+
+
+## ⚒ 기술 스택
+
+### Backend  
+![Java](https://img.shields.io/badge/Java-007396?style=flat&logo=openjdk&logoColor=white) 
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=flat&logo=spring-boot&logoColor=white) 
+![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?style=flat&logo=spring-security&logoColor=white) 
+![JPA](https://img.shields.io/badge/JPA-59666C?style=flat&logo=hibernate&logoColor=white)
+
+### DB  
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white) 
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white)
+
+### Infra  
+![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat&logo=amazon-aws&logoColor=white) 
+![Amazon S3](https://img.shields.io/badge/Amazon%20S3-569A31?style=flat&logo=amazon-s3&logoColor=white) 
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white) 
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=flat&logo=nginx&logoColor=white) 
+![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat&logo=github-actions&logoColor=white)
+
+### API  
+![Kakao API](https://img.shields.io/badge/Kakao%20API-FFCD00?style=flat&logo=kakao&logoColor=black) 
+![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=flat&logo=swagger&logoColor=black) 
+![JavaMail](https://img.shields.io/badge/JavaMail-007396?style=flat&logo=java&logoColor=white)
+
+### ETC  
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white) 
+![Notion](https://img.shields.io/badge/Notion-000000?style=flat&logo=notion&logoColor=white) 
+![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ-000000?style=flat&logo=intellijidea&logoColor=white) 
+![Slack](https://img.shields.io/badge/Slack-4A154B?style=flat&logo=slack&logoColor=white) 
+![Discord](https://img.shields.io/badge/Discord-5865F2?style=flat&logo=discord&logoColor=white) 
+![ERDCloud](https://img.shields.io/badge/ERDCloud-00C389?style=flat&logo=data&logoColor=white)
+
+
+### ☁️ 시스템 아키텍처
+---
+![스크린샷](https://github.com/user-attachments/assets/6ff0acb3-ecf1-481c-be0f-da736b2a5a48)
+
 
 ## 프로젝트 구조
 ```
@@ -38,42 +131,6 @@ tomorrow
 └── README.md
 ```
 
-## 코드 컨벤션
-
-### 1. 패키지 구조
-
-- **도메인형 패키지 구조**: 기능이 아닌 도메인(비즈니스 영역)별로 패키지를 구성합니다.
-  - `domain`: 각 도메인별 비즈니스 로직이 위치합니다.
-  - `global`: 프로젝트 전반에서 사용되는 공통 요소들이 위치합니다.
-
-### 2. 도메인 패키지 내부 구조
-
-각 도메인 패키지는 다음과 같은 내부 구조를 가집니다:
-- `controller`: 해당 도메인의 API 엔드포인트를 관리합니다.
-- `entity`: JPA 엔티티 클래스들이 위치합니다.
-- `repository`: 데이터 접근 계층 인터페이스가 위치합니다.
-- `service`: 비즈니스 로직이 구현되는 서비스 클래스들이 위치합니다.
-  - `command`: 데이터 변경(CUD)을 담당하는 서비스를 구현합니다.
-  - `query`: 데이터 조회(R)를 담당하는 서비스를 구현합니다.
-  - 
-### 3. 네이밍 컨벤션
-
-- **클래스명**: 파스칼 케이스(PascalCase)를 사용합니다. 예: `MemberService`
-- **메소드명, 변수명**: 카멜 케이스(camelCase)를 사용합니다. 예: `getUserById`
-- **상수**: 대문자 스네이크 케이스(SNAKE_CASE)를 사용합니다. 예: `MAX_USER_COUNT`
-- **패키지명**: 소문자만 사용합니다. 예: `com.umc.foody.domain.member`
-
-## 4. 예외 처리
-
-- 글로벌 예외 처리를 사용하여 일관된 응답 형식을 유지합니다.
-- 커스텀 예외 클래스를 사용하여 비즈니스 로직에 관련된 예외를 명확히 구분합니다.
-
-### 5. Lombok 사용
-
-- 반복적인 코드를 줄이기 위해 Lombok을 적극적으로 활용합니다.
-- 주로 사용하는 어노테이션: `@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor`, `@Builder`
-
-
 
 ## 🌱 Git 브랜치 전략
 
@@ -88,16 +145,10 @@ tomorrow
 
 ## 🧾 브랜치 네이밍 규칙
 
-- 접두어/이슈번호-작업내용 형태로 작성합니다.
-- 하위 작업은 소문자 알파벳으로 나누어 관리할 수 있습니다.
+- 접두어/작업내용#이슈번호 형태로 작성합니다.
+- 하위 작업은 숫자로 나누어 관리할 수 있습니다.
 
-### 예시
-
-
-feature/#24-image-create
-feature/#31-user-login-a
-fix/#78-token-expire
-refactor/#10-entity-rename
+**예시**Feat/image-create#24, Fix/token-expire#78, Refactor/entity-rename#10
 
 ---
 
@@ -109,56 +160,71 @@ refactor/#10-entity-rename
 
 
 
+<h2>🎥 시연 영상 및 배포 주소</h2>
+<p>
+  <a href="https://umctomorrow.shop/" target="_blank">
+    <img src="https://img.shields.io/badge/서비스-바로가기-4CAF50?style=for-the-badge&logo=google-chrome&logoColor=white">
+  </a>
+  <a href="https://www.youtube.com/watch?v=90jnHS6DWto&feature=youtu.be" target="_blank">
+    <img src="https://img.shields.io/badge/시연영상-유튜브-red?style=for-the-badge&logo=youtube&logoColor=white">
+  </a>
+</p>
+
+
+
+
+## ⚠️ 트러블슈팅 기록 (Troubleshooting)
+
+## 🔐 JWT Refresh Token 처리 방식 개선 과정
+
+### 1. 기존 구조의 한계
+- **구조**: `refreshToken`을 **Client 쿠키**에 저장하고, 서버에서 쿠키를 직접 추출
+- **문제점**
+  - API 테스트 도구 사용 불편  
+    (Swagger, Postman 등에서 Cookie 전달이 번거로움)
+  - **보안 취약성**  
+    - 초기 구현 시 `HttpOnly` 없이 저장 → **XSS 공격 위험**
+  - 환경 차이  
+    - 로컬 개발에서는 편리했으나, 실제 서비스·테스트 환경 모두에서 불편 발생
+
 ---
 
-## ✅ 커밋 컨벤션 (선택 시)
+### 2. 1차 개선 – Header 방식 수신
+- **변경 내용**
+  - `@RequestHeader("RefreshToken")`으로 refresh token을 받는 구조로 수정
+- **장점**
+  - Swagger / Postman 등에서 손쉽게 테스트 가능
+  - 프론트엔드에서 Header에 token만 추가하면 됨
+- **단점**
+  - 클라이언트가 Token을 직접 보관해야 하므로 여전히 **보안 리스크 존재** (탈취 위험)
 
-```md
-feat: 기능 추가
-fix: 버그 수정
-docs: 문서 수정
-refactor: 리팩토링
-test: 테스트 코드 작성
-chore: 빌드 설정, 패키지 추가 등
+---
 
-## 주요 디렉토리 설명
+### 3. 2차 개선 – HttpOnly + Secure 쿠키
+- **변경 내용**
+  - Refresh Token을 Response Body로 전달하지 않고, 서버에서 **HttpOnly + Secure** 속성을 가진 쿠키에 저장
+- **장점**
+  - **XSS 공격 차단** – JS에서 쿠키 접근 불가
+  - 토큰 저장/갱신을 서버에서 전담 → 보안성과 일관성 향상
+- **효과**
+  - 클라이언트 보관 부담 제거
+  - 실서비스·테스트 환경 모두에서 사용성 개선
 
-### domain
+---
 
-비즈니스 로직을 담당하는 도메인 계층입니다. 각 도메인은 독립적인 기능 단위로 구성됩니다.
-
-#### member
-
-사용자 관련 기능을 구현하는 도메인입니다.
-- `controller`: 사용자 API 엔드포인트
-- `entity`: 사용자 관련 엔티티 클래스
-- `repository`: 사용자 데이터 접근 인터페이스
-- `service/command`: 사용자 정보 생성/수정/삭제 서비스
-- `service/query`: 사용자 정보 조회 서비스
-
-### global
-
-프로젝트 전반에서 사용되는 공통 모듈입니다.
-
-#### common
-
-- `base`: 공통으로 사용되는 기본 클래스들
-  - `BaseEntity`: 생성일자, 수정일자, 삭제일자를 관리하는 JPA 엔티티 기본 클래스
-  - `BaseResponse`: API 응답의 일관성을 위한 응답 래퍼 클래스
-- `exception`: 예외 처리 관련 클래스들
-  - `code`: 에러 코드와 메시지를 정의하는 인터페이스와 구현체
-  - `ExceptionAdvice`: 전역 예외 처리기
-  - `RestApiException`: 사용자 정의 예외 클래스
-
-## 기술 스택
-
-- Java 17
-- Spring Boot 3.5.3
-- Spring Data JPA
-- Spring Security
-- MySQL
-- Gradle
-- Lombok
+💡 **정리**
+- 개발 초기: 편의성 중심의 쿠키 저장 방식  
+- 개선 과정: Header 수신 방식 → 최종적으로 `HttpOnly + Secure` 쿠키 방식 채택  
+- 결과: **보안성 강화** + **유지보수성 향상**
 
 
 
+
+
+## 📎 기타 자료
+
+| 구분             | 설명                            | 링크 |
+|------------------|----------------------------------|------|
+| 🧭 Issue | 이슈 관리 페이지     | [바로가기](https://github.com/UMC-TOMORROW/Tomorrow-Backend/issues) |
+| 🗂 WBS 문서        | 작업 분할 구조 (WBS)              | [바로가기](https://docs.google.com/spreadsheets/d/11NSNtlvPUEnsArg_nXWPCCu9KqXRKk7K/edit?gid=1940237796#gid=1940237796) |
+| 🗺 ERD             | 데이터베이스 설계 (ERDCloud)      | [바로가기](https://www.erdcloud.com/d/TPhcjZH3BHyARFSBJ) |

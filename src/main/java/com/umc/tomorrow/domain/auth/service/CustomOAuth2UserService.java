@@ -2,8 +2,8 @@ package com.umc.tomorrow.domain.auth.service;
 
 import com.umc.tomorrow.domain.auth.dto.*;
 import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
-import com.umc.tomorrow.domain.member.dto.UserDTO;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
+import com.umc.tomorrow.domain.member.dto.UserResponseDTO;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -43,17 +43,25 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             throw new OAuth2AuthenticationException("지원하지 않는 로그인 방식입니다.");
         }
 
-        String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
+        UserResponseDTO userResponseDTO = new UserResponseDTO(
+            null, // id
+            null, // role
+            null, // username
+            oAuth2Response.getEmail(),
+            oAuth2Response.getName(),
+            null, // gender
+            null, // phoneNumber
+            null, // address
+            null, // status
+            null, // inactiveAt
+            null, // isOnboarded
+            oAuth2Response.getProvider(),
+            oAuth2Response.getProviderId(),
+            null, // resumeId
+            null  // profileImageUrl
+        );
 
-        UserDTO userDTO = UserDTO.builder()
-            .name(oAuth2Response.getName())
-            .provider(oAuth2Response.getProvider())
-            .providerUserId(oAuth2Response.getProviderId())
-            .email(oAuth2Response.getEmail())
-            // .role("ROLE_USER") // UserDTO에 role 필드가 없으므로 주석 처리 또는 필요시 추가
-            .build();
-
-        return new CustomOAuth2User(userDTO);
+        return new CustomOAuth2User(userResponseDTO);
 
     }
 
