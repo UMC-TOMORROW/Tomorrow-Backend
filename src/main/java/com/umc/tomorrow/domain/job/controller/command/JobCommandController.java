@@ -137,42 +137,22 @@ public class JobCommandController {
     /**
      * 세션이 넘어온 경우 바로 일자리 등록, 아닐 경우 사업자 등록 페이지로 이동(POST)
      * @param user 인증된 사용자
-     * @param requestDTO 일자리 데이터 요청 DTO
      * @param session 세션 사용
      * @return 성공 응답
      */
-    @Operation(summary = "사업자 등록 페이지 진입", description = "세션에 job이 있으면 일자리 등록까지 진행")
     @PostMapping("/business-verifications/register")
-    public ResponseEntity<BaseResponse<JobStepResponseDTO>> registerBusiness(
+    @Operation(description = "세션과 유저 사업자 인증 여부에 따라 step 반환")
+    public ResponseEntity<BaseResponse<JobStepResponseDTO>> checkBusinessAndJobStep(
             @AuthenticationPrincipal CustomOAuth2User user,
-            @Valid @RequestBody BusinessRequestDTO requestDTO,
             HttpSession session
     ) {
         Long userId = user.getUserResponseDTO().getId();
 
-        // 세션에 job이 있다면사업자 등록 후 job 생성까지
-        JobRequestDTO jobDTO = (JobRequestDTO) session.getAttribute("job_session");
+        JobStepResponseDTO stepResponse = jobCommandService.determineJobStep(userId, session);
 
-        if (jobDTO != null) {
-            JobCreateResponseDTO result = jobCommandService.registerBusinessAndCreateJob(userId, requestDTO, session);
-            return ResponseEntity.ok(BaseResponse.onSuccess(
-                    JobStepResponseDTO.builder()
-                            .step("job_created")
-                            .jobId(result.getJobId())
-                            .registrantType(RegistrantType.BUSINESS)
-                            .build()
-            ));
-        }
-
-        // 세션에 job이 없다면 /business-verifications/only페이지로 이동(프론트에서 처리)
-        jobCommandService.saveBusinessVerification(userId, requestDTO);
-        return ResponseEntity.ok(BaseResponse.onSuccess(
-                JobStepResponseDTO.builder()
-                        .step("business-verifications/only")
-                        .registrantType(RegistrantType.BUSINESS)
-                        .build()
-        ));
+        return ResponseEntity.ok(BaseResponse.onSuccess(stepResponse));
     }
+
 
     /**
      * 사업자 등록 요청 페이지(POST)
