@@ -12,6 +12,9 @@ spring:
       idle-timeout: 300000
       max-lifetime: 1200000
       pool-name: HikariCP-Dev
+    datasource:
+      hikari:
+        connectionInitSql: "SET NAMES utf8mb4"
   security:
     oauth2:
       client:
