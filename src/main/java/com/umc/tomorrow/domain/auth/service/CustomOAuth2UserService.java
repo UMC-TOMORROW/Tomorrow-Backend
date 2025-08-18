@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    //오버라이드 전까지 코드 추가함 ->3번에서
     private final UserRepository userRepository;
 
     public CustomOAuth2UserService(UserRepository userRepository) {
@@ -29,6 +28,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         System.out.println(oAuth2User);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
+
         OAuth2Response oAuth2Response = null;
         if (registrationId.equals("naver")) {
 
