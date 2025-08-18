@@ -128,23 +128,22 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         boolean isLocal = request.getServerName().equals("localhost"); // 프론트 로컬 구분
         boolean isOnboarded = Boolean.TRUE.equals(user.getIsOnboarded());
+        boolean secureFlag = !isLocal;
 
         // Swagger/Postman 요청 분기
         boolean isSwaggerRequest = (isLocalProfile());
 
+        String accessCookie = String.format(
+                "Authorization=%s; Max-Age=%d; Path=/; HttpOnly; Secure=%b; SameSite=None",
+                accessToken, (int) accessTokenExpiredSeconds, secureFlag
+        );
+        response.addHeader("Set-Cookie", accessCookie);
 
-        StringBuilder accessCookieBuilder = new StringBuilder();
-        accessCookieBuilder.append("accessToken=").append(accessToken)
-                .append("; Max-Age=").append((int) accessTokenExpiredSeconds)
-                .append("; Path=/; HttpOnly; SameSite=None; Secure"); // Secure는 배포에서만 의미 있음
-        response.addHeader("Set-Cookie", accessCookieBuilder.toString().trim());
-
-        // Refresh Token은 HttpOnly 쿠키로 저장
-        StringBuilder refreshCookieBuilder = new StringBuilder();
-        refreshCookieBuilder.append("refreshToken=").append(refreshToken)
-                .append("; Max-Age=").append((int) refreshTokenExpiredSeconds)
-                .append("; Path=/; HttpOnly; SameSite=None; Secure"); // 배포 대비 Secure 고정
-        response.addHeader("Set-Cookie", refreshCookieBuilder.toString().trim());
+        String refreshCookie = String.format(
+                "RefreshToken=%s; Max-Age=%d; Path=/; HttpOnly; Secure=%b; SameSite=None",
+                refreshToken, (int) refreshTokenExpiredSeconds, secureFlag
+        );
+        response.addHeader("Set-Cookie", refreshCookie);
 
         // 헤더 추가
         response.addHeader("Authorization", "Bearer " + accessToken);
