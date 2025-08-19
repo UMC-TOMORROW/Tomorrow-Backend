@@ -30,6 +30,7 @@ services:
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
     restart: always
+
   # redis 추가
   redis:
     image: redis:6-alpine
@@ -89,6 +90,8 @@ services:
     profiles: [ "perf" ]
     command: [ "ngrinder-controller:80" ]
     restart: unless-stopped
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m   # JVM 메모리 제한 (1GB 서버니까 이 정도가 적당)
     ulimits:
       nofile:
         soft: 131072
@@ -99,4 +102,3 @@ volumes:
     driver: local
   tomorrow-local-data: # mysql-local-data 볼륨 이름 변경
   ngrinder-controller-data:
-
