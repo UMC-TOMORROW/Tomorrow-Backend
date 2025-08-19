@@ -44,8 +44,8 @@ public class JobSearchServiceImpl implements JobSearchService {
                 .toList();
 
         return JobResponseDTO.builder()
-                .jobCount(jobDtos.size())  // ✅ 검색된 개수
-                .jobs(jobDtos)             // ✅ 검색된 일자리 리스트
+                .jobCount(jobDtos.size())
+                .jobs(jobDtos)
                 .build();
     }
 
@@ -58,7 +58,7 @@ public class JobSearchServiceImpl implements JobSearchService {
                 .toList();
 
         return JobResponseDTO.builder()
-                .jobCount(jobDtos.size())  // ✅ 전체 개수
+                .jobCount(jobDtos.size())
                 .jobs(jobDtos)
                 .build();
     }
