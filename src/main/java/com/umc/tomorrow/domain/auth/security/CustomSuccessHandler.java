@@ -18,7 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-
+import com.umc.tomorrow.global.redis.RedisService;
+import java.time.Duration;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,7 +33,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final UserRepository userRepository;
     private final ResumeRepository resumeRepository;
     private final Environment env; // profile 확인용
-
+    private final RedisService redisService;
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -123,8 +124,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String refreshToken = jwtUtil.createRefreshToken(user.getId(), usernameToUseForTokens, refreshTokenExpiredMs);
 
         // DB 저장
-        user.setRefreshToken(refreshToken);
-        userRepository.save(user);
+        String rtKey = buildRtKey(user.getId(), refreshToken);
+        redisService.set(rtKey, refreshToken, Duration.ofMillis(refreshTokenExpiredMs));
 
         boolean isLocal = request.getServerName().equals("localhost"); // 프론트 로컬 구분
         boolean isOnboarded = Boolean.TRUE.equals(user.getIsOnboarded());
@@ -172,4 +173,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private boolean isLocalProfile() {
         return Arrays.asList(env.getActiveProfiles()).contains("local");
     }
+
+    private String buildRtKey(Long userId, String refreshToken) {
+        return "rt:" + userId + ":" + Integer.toHexString(refreshToken.hashCode());
+    }
 }
+
