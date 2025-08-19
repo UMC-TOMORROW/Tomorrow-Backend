@@ -7,44 +7,47 @@
  * 수정일: 2025-08-15
  */
 package com.umc.tomorrow.domain.member.dto;
-
 import com.umc.tomorrow.domain.member.entity.User;
-import com.umc.tomorrow.domain.member.enums.Gender;
-import com.umc.tomorrow.domain.member.enums.Provider;
-import com.umc.tomorrow.domain.member.enums.UserStatus;
-
+import java.time.format.DateTimeFormatter;
 public class UserResponseConverter {
     public static UserResponseDTO toResponseDTO(User user) {
+
+        final DateTimeFormatter ISO_FMT = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
         if (user == null) return null;
+
+        String role = (user.getMemberType() != null) ? user.getMemberType().name() : null;
+        String status = (user.getStatus() != null) ? user.getStatus().name() : null;
+        String inactiveAt = (user.getInactiveAt() != null) ? user.getInactiveAt().format(ISO_FMT) : null;
+        String provider = (user.getProvider() != null) ? user.getProvider().name() : null;
+
         return new UserResponseDTO(
                 user.getId(),
-                user.getMemberType() != null ? user.getMemberType().name() : null,
+                role,
                 user.getUsername(),
                 user.getEmail(),
                 user.getName(),
-                user.getGender() != null ? com.umc.tomorrow.domain.member.enums.Gender.valueOf(user.getGender().name()) : null,
+                user.getGender(),
                 user.getPhoneNumber(),
                 user.getAddress(),
-                user.getStatus() != null ? user.getStatus().name() : null,
-                user.getInactiveAt() != null ? user.getInactiveAt().toString() : null,
+                status,
+                inactiveAt,
                 user.getIsOnboarded(),
-                user.getProvider() != null ? user.getProvider().name() : null,
+                provider,
                 user.getProviderUserId(),
-                user.getResumeId(),
-                user.getProfileImageUrl()
+                user.getResumeId()
         );
     }
 
     public static void updateEntity(User user, UserUpdateDTO dto) {
-        if (dto.getEmail() != null) user.setEmail(dto.getEmail());
-        if (dto.getName() != null) user.setName(dto.getName());
-        if (dto.getGender() != null) user.setGender(Gender.valueOf(String.valueOf(dto.getGender())));
-        if (dto.getPhoneNumber() != null) user.setPhoneNumber(dto.getPhoneNumber());
-        if (dto.getAddress() != null) user.setAddress(dto.getAddress());
-        if (dto.getIsOnboarded() != null) user.setIsOnboarded(dto.getIsOnboarded());
-        if (dto.getProvider() != null) user.setProvider(Provider.valueOf(dto.getProvider()));
-        if (dto.getProviderUserId() != null) user.setProviderUserId(dto.getProviderUserId());
-        if (dto.getResumeId() != null) user.setResumeId(dto.getResumeId());
-        if (dto.getProfileImageUrl() != null) user.setProfileImageUrl(dto.getProfileImageUrl());
+        if (user == null || dto == null) return;
+
+        if (dto.getEmail() != null)        user.setEmail(dto.getEmail());
+        if (dto.getName() != null)         user.setName(dto.getName());
+        if (dto.getGender() != null)       user.setGender(dto.getGender());
+        if (dto.getPhoneNumber() != null)  user.setPhoneNumber(dto.getPhoneNumber());
+        if (dto.getAddress() != null)      user.setAddress(dto.getAddress());
+        if (dto.getIsOnboarded() != null)  user.setIsOnboarded(dto.getIsOnboarded());
+        if (dto.getResumeId() != null)     user.setResumeId(dto.getResumeId());
     }
 } 

@@ -31,5 +31,11 @@ public interface JobBookmarkRepository extends JpaRepository<JobBookmark, Long> 
      */
     Slice<JobBookmark> findByUserIdAndIdLessThanOrderByIdDesc(Long userId, Long cursor, Pageable pageable);
 
+    /**
+     * 특정 사용자에 대한 JobBookmark 목록을 ID 내림차순으로 정렬하여 페이지네이션으로 조회
+     * @param userId 사용자의 ID.
+     * @param pageable 페이지네이션 정보.
+     * @return JobBookmark 슬라이스.
+     */
     Slice<JobBookmark> findByUserIdOrderByIdDesc(Long userId, Pageable pageable);
 }

@@ -10,6 +10,7 @@
 package com.umc.tomorrow.domain.member.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,9 +20,10 @@ import com.umc.tomorrow.global.common.base.BaseEntity;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserResponseDTO extends BaseEntity {
     private Long id; // 회원 고유 ID
-    private String role; 
+    private String role;
     private String username; // 사용자명(로그인 ID 또는 소셜 ID)
     private String email; // 이메일
     private String name; // 이름
@@ -34,5 +36,4 @@ public class UserResponseDTO extends BaseEntity {
     private String provider; // 소셜 제공자 (KAKAO, NAVER, GOOGLE)
     private String providerUserId; // 소셜 제공자 ID
     private Long resumeId; // 이력서 ID
-    private String profileImageUrl; // 프로필 이미지 URL
 }
