@@ -2,8 +2,10 @@ package com.umc.tomorrow.domain.searchAndFilter.dto.response;
 
 import com.umc.tomorrow.domain.job.dto.request.WorkDaysRequestDTO;
 import com.umc.tomorrow.domain.job.entity.WorkDays;
+import com.umc.tomorrow.domain.job.entity.WorkEnvironment;
 import com.umc.tomorrow.domain.job.enums.JobCategory;
 import com.umc.tomorrow.domain.job.enums.PaymentType;
+import com.umc.tomorrow.domain.job.enums.WorkPeriod;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,5 +52,15 @@ public class JobSearchResponseDTO {
 
     @Schema(description = "급여타입", example = "HOURLY")
     private PaymentType paymentType;
+
+    @Schema(description = "업무환경", example = "canCommunicate")
+    private WorkEnvironmentDTO workEnvironment;
+
+    @Schema(description = "근무기간", example = "SHORT_TERM")
+    private WorkPeriod workPeriod;
+
+//    @Schema(description = "검색되는 일자리 수", example = "1")
+//    private int jobCount;
+
 
 }

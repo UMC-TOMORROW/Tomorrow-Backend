@@ -1,6 +1,7 @@
 package com.umc.tomorrow.domain.searchAndFilter.controller;
 
 import com.umc.tomorrow.domain.searchAndFilter.dto.request.JobSearchRequestDTO;
+import com.umc.tomorrow.domain.searchAndFilter.dto.response.JobResponseDTO;
 import com.umc.tomorrow.domain.searchAndFilter.dto.response.JobSearchResponseDTO;
 import com.umc.tomorrow.domain.searchAndFilter.service.query.JobSearchService;
 import com.umc.tomorrow.global.common.base.BaseResponse;
@@ -26,8 +27,8 @@ public class JobSearchController {
      * @return 성공 응답
      */
     @PostMapping("/jobs/search")
-    public ResponseEntity<List<JobSearchResponseDTO>> searchJobs(@RequestBody JobSearchRequestDTO requestDTO) {
-        List<JobSearchResponseDTO> result = jobSearchService.searchJobs(requestDTO);
+    public ResponseEntity<JobResponseDTO> searchJobs(@RequestBody JobSearchRequestDTO requestDTO) {
+        JobResponseDTO result = jobSearchService.searchJobs(requestDTO);
         return ResponseEntity.ok(BaseResponse.onSuccess(result).getResult());
     }
 
@@ -37,8 +38,8 @@ public class JobSearchController {
      */
     @Operation(summary = "일자리 조회 (GET)", description = "검색 조건을 쿼리스트링으로 받아 일자리를 조회합니다.")
     @GetMapping("/jobsView")
-    public ResponseEntity<List<JobSearchResponseDTO>> getAllActiveJobs() {
-        List<JobSearchResponseDTO> result = jobSearchService.getAllActiveJobs();
+    public ResponseEntity<JobResponseDTO> getAllActiveJobs() {
+        JobResponseDTO result = jobSearchService.getAllActiveJobs();
         return ResponseEntity.ok(BaseResponse.onSuccess(result).getResult());
     }
 

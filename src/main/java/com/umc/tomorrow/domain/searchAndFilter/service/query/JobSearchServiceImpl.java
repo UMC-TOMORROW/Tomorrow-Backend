@@ -5,6 +5,7 @@ import com.umc.tomorrow.domain.job.enums.PostStatus;
 import com.umc.tomorrow.domain.job.repository.JobRepository;
 import com.umc.tomorrow.domain.searchAndFilter.converter.JobSearchConverter;
 import com.umc.tomorrow.domain.searchAndFilter.dto.request.JobSearchRequestDTO;
+import com.umc.tomorrow.domain.searchAndFilter.dto.response.JobResponseDTO;
 import com.umc.tomorrow.domain.searchAndFilter.dto.response.JobSearchResponseDTO;
 import com.umc.tomorrow.domain.searchAndFilter.repository.JobJpaRepository;
 import com.umc.tomorrow.domain.searchAndFilter.repository.JobSearchRepository;
@@ -35,26 +36,31 @@ public class JobSearchServiceImpl implements JobSearchService {
      * @return 조건에 맞는 일자리 목록의 응답 DTO 리스트
      */
     @Override
-    public List<JobSearchResponseDTO> searchJobs(JobSearchRequestDTO requestDTO) {
-        // 조건에 맞는 Job 엔티티 목록 조회
+    public JobResponseDTO searchJobs(JobSearchRequestDTO requestDTO) {
         List<Job> jobs = jobSearchRepository.searchJobs(requestDTO);
 
-        // Job → JobSearchResponseDTO 변환 후 리스트로 반환
-        return jobs.stream()
+        List<JobSearchResponseDTO> jobDtos = jobs.stream()
                 .map(converter::toResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
+
+        return JobResponseDTO.builder()
+                .jobCount(jobDtos.size())  // ✅ 검색된 개수
+                .jobs(jobDtos)             // ✅ 검색된 일자리 리스트
+                .build();
     }
 
-    /**
-     * 검색 조건을 기반으로 일자리 목록을 조회하고 DTO로 변환하여 반환
-     * @return 조건에 맞는 일자리 목록의 응답 DTO 리스트
-     */
     @Override
-    public List<JobSearchResponseDTO> getAllActiveJobs() {
+    public JobResponseDTO getAllActiveJobs() {
         List<Job> jobs = jobJpaRepository.findByStatus(PostStatus.OPEN);
 
-        return jobs.stream()
+        List<JobSearchResponseDTO> jobDtos = jobs.stream()
                 .map(converter::toResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
+
+        return JobResponseDTO.builder()
+                .jobCount(jobDtos.size())  // ✅ 전체 개수
+                .jobs(jobDtos)
+                .build();
     }
+
 }
