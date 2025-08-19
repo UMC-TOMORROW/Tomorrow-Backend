@@ -76,6 +76,13 @@ public class ChatCommandService {
         if (!alreadyJoined) {
             String anonymousName = generateAnonymousName(room,user);
 
+            boolean duplicated = chatPartRepository.existsByChattingRoomAndAnonymousName(room, anonymousName);
+            if (duplicated) {
+                log.error("[CHAT]  Duplicate anonymousName detected! roomId={} name={}",
+                        room.getId(), anonymousName);
+            }
+
+
             ChatPart chatPart = ChatPart.builder()
                     .user(user)
                     .chattingRoom(room)

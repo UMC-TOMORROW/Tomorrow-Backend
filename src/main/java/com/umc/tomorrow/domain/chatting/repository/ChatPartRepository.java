@@ -17,4 +17,5 @@ public interface ChatPartRepository extends JpaRepository<ChatPart, Long> {
     Optional<ChatPart> findByUserIdAndChattingRoomId(Long userId, Long chattingRoomId);
     boolean existsByUserAndChattingRoom(User user, ChattingRoom room);
     int countByChattingRoom(ChattingRoom room);
+    boolean existsByChattingRoomAndAnonymousName(ChattingRoom room, String anonymousName);
 }
