@@ -7,7 +7,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
@@ -19,14 +18,12 @@ public class RedisConfig {
         return new LettuceConnectionFactory(host, port);
     }
 
+    // RedisTemplate<String, Object> 빈 등록
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory cf) {
-        RedisTemplate<String, Object> t = new RedisTemplate<>();
-        t.setConnectionFactory(cf);
-        t.setKeySerializer(new StringRedisSerializer());
-        t.setValueSerializer(new StringRedisSerializer());
-        t.afterPropertiesSet();
-        return t;
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        return template;
     }
 
     // StringRedisTemplate 빈 등록

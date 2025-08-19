@@ -15,7 +15,6 @@ import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.exception.code.MemberErrorStatus;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.exception.RestApiException;
-import com.umc.tomorrow.global.redis.RedisService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,16 +32,14 @@ public class AuthController {
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
     private final Environment env; // 현재 profile 가져오기용
-    private final RedisService redisService;
 
     public static final long REFRESH_EXP_MS = 1000L * 60L * 60L * 24L * 14L; // 2주
     public static final long ACCESS_EXP_MS  = 1000L * 60L * 60L;             // 1시간
 
-    public AuthController(JWTUtil jwtUtil, UserRepository userRepository, Environment env, RedisService redisService) {
+    public AuthController(JWTUtil jwtUtil, UserRepository userRepository, Environment env) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
         this.env = env;
-        this.redisService = redisService;
     }
 
     @GetMapping("/check")
@@ -86,43 +83,52 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = extractRefreshCookie(request);
+    public ResponseEntity<?> refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        // 쿠키에서 RefreshToken 찾기
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("RefreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_NOT_FOUND);
         }
-        if (jwtUtil.isExpired(refreshToken)) {
-            throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_EXPIRED);
-        }
 
         try {
-            Long userId = jwtUtil.getUserId(refreshToken);
+            if (jwtUtil.isExpired(refreshToken)) {
+                throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_EXPIRED);
+            }
 
-            // Redis에서 검증
-            String key = buildRtKey(userId, refreshToken);
-            String saved = redisService.get(key);
-            if (saved == null || !saved.equals(refreshToken)) {
+            Long userId = jwtUtil.getUserId(refreshToken);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RestApiException(AuthErrorStatus.REFRESH_TOKEN_INVALID));
+
+            if (user.getRefreshToken() == null || !user.getRefreshToken().equals(refreshToken)) {
                 throw new RestApiException(AuthErrorStatus.REFRESH_TOKEN_INVALID);
             }
 
-            // 로테이션: 기존 키 삭제 → 새 refresh 발급·저장
-            redisService.delete(key);
-            // username, name, role은 기존 JWT에서 꺼냄
-            String username = jwtUtil.getUsername(refreshToken);
-            String name     = jwtUtil.getName(refreshToken);
-            String role     = jwtUtil.getRole(refreshToken);
+            // 새 토큰 발급
+            String newAccessToken = jwtUtil.createJwt(user.getId(), user.getName(), ACCESS_EXP_MS);
+            String newRefreshToken = jwtUtil.createRefreshToken(user.getId(), user.getName(), REFRESH_EXP_MS);
 
-            String newRefresh = jwtUtil.createRefreshToken(userId, username, REFRESH_EXP_MS);
-            String newKey = buildRtKey(userId, newRefresh);
-            redisService.set(newKey, newRefresh, java.time.Duration.ofMillis(REFRESH_EXP_MS));
+            // DB 갱신
+            user.setRefreshToken(newRefreshToken);
+            userRepository.save(user);
 
-            String newAccess = jwtUtil.createJwt(userId, name, username, role, ACCESS_EXP_MS);
+            // 새 refreshToken을 다시 쿠키에 심음
+            addRefreshTokenCookie(response, newRefreshToken);
 
-            // 쿠키 교체
-            addRefreshTokenCookie(response, request, newRefresh);
-
-            return ResponseEntity.ok(Map.of("accessToken", newAccess));
-
+            return ResponseEntity.ok(Map.of(
+                    "accessToken", newAccessToken
+            ));
         } catch (RestApiException e) {
             throw e;
         } catch (Exception e) {
@@ -131,60 +137,40 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-                                    HttpServletResponse response,
-                                    HttpServletRequest request) {
+    public ResponseEntity<?> logout(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+            HttpServletResponse response
+    ) {
         Long userId = customOAuth2User.getUserResponseDTO().getId();
 
-        String refreshToken = extractRefreshCookie(request);
-        if (refreshToken != null && !refreshToken.isBlank()) {
-            redisService.delete(buildRtKey(userId, refreshToken));
-        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(MemberErrorStatus.MEMBER_NOT_FOUND));
 
-        removeCookie(response, request,"RefreshToken");
-        removeCookie(response, request,"Authorization");
+        // DB에서 Refresh Token 제거
+        user.setRefreshToken(null);
+        userRepository.save(user);
+
+        // === 쿠키 제거 ===
+        removeCookie(response, "RefreshToken");
+        removeCookie(response, "Authorization");
 
         return ResponseEntity.ok("로그아웃 성공");
     }
 
-    private String extractRefreshCookie(HttpServletRequest request) {
-        if (request.getCookies() == null) return null;
-        for (Cookie cookie : request.getCookies()) {
-            if ("RefreshToken".equals(cookie.getName())) return cookie.getValue();
-        }
-        return null;
-    }
-
-    private void removeCookie(HttpServletResponse response,
-                              HttpServletRequest request,
-                              String name) {
-        boolean isLocal = isLocalRequest(request);
-        String setCookieHeader = isLocal
-                ? String.format("%s=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax", name)
-                : String.format("%s=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=None", name);
-        response.addHeader("Set-Cookie", setCookieHeader);
-    }
-    private void addRefreshTokenCookie(HttpServletResponse response,
-                                       HttpServletRequest request,
-                                       String token) {
-        boolean isLocal = isLocalRequest(request);
-        String setCookieHeader = isLocal
-                // 로컬: Secure 없이, SameSite=Lax (HTTP에서도 전송됨)
-                ? String.format("RefreshToken=%s; Max-Age=%d; Path=/; HttpOnly; SameSite=Lax",
-                token, (int) (REFRESH_EXP_MS / 1000L))
-                // 운영: 교차사이트 위해 None + Secure
-                : String.format("RefreshToken=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
-                token, (int) (REFRESH_EXP_MS / 1000L));
-
+    private void removeCookie(HttpServletResponse response, String name) {
+        String setCookieHeader = String.format(
+                "%s=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=None",
+                name
+        );
         response.addHeader("Set-Cookie", setCookieHeader);
     }
 
-    private boolean isLocalRequest(HttpServletRequest request) {
-        String host = request.getServerName();
-        return "localhost".equalsIgnoreCase(host) || host.startsWith("127.0.0.1");
-    }
-
-    private String buildRtKey(Long userId, String refreshToken) {
-        return "rt:" + userId + ":" + Integer.toHexString(refreshToken.hashCode());
+    private void addRefreshTokenCookie(HttpServletResponse response, String token) {
+        String setCookieHeader = String.format(
+                "RefreshToken=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
+                token,
+                (int) (REFRESH_EXP_MS / 1000L)
+        );
+        response.addHeader("Set-Cookie", setCookieHeader);
     }
 }
