@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface JobSearchService {
     JobResponseDTO searchJobs(JobSearchRequestDTO requestDTO);
+    
     JobResponseDTO getAllActiveJobs();
 }
