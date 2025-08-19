@@ -6,7 +6,7 @@ spring:
     name: tomorrow
   messages:
     encoding: UTF-8
-    basename: messages_ko
+    basename: ValidationMessages
   data:
     redis:
       host: redis # docker-compose에 설정했던 이름이랑 같아야 해

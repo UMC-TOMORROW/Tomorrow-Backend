@@ -42,6 +42,46 @@ public class AuthController {
         this.env = env;
     }
 
+    @GetMapping("/check")
+    public ResponseEntity<?> checkAuthStatus(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        if (customOAuth2User == null) {
+            return ResponseEntity.status(401).body(Map.of(
+                "code", "AUTH_401",
+                "message", "Unauthorized",
+                "redirectUrl", "/login"
+            ));
+        }
+        
+        return ResponseEntity.ok(Map.of(
+            "code", "AUTH_200",
+            "message", "Authenticated",
+            "user", customOAuth2User.getUserResponseDTO()
+        ));
+    }
+
+    @GetMapping("/login")
+    public ResponseEntity<?> getLoginInfo() {
+        return ResponseEntity.ok(Map.of(
+            "oauth2Urls", Map.of(
+                "google", "/oauth2/authorization/google",
+                "naver", "/oauth2/authorization/naver",
+                "kakao", "/oauth2/authorization/kakao"
+            ),
+            "message", "Please choose an OAuth2 provider to login",
+            "swaggerTest", "Use these URLs in Swagger or browser to test OAuth2 login"
+        ));
+    }
+
+    @GetMapping("/oauth2/authorization/{provider}")
+    public ResponseEntity<?> redirectToOAuth2(@PathVariable String provider) {
+        String redirectUrl = "/oauth2/authorization/" + provider;
+        return ResponseEntity.ok(Map.of(
+            "message", "Redirecting to " + provider + " OAuth2",
+            "redirectUrl", redirectUrl,
+            "note", "This endpoint will redirect to the OAuth2 provider's login page"
+        ));
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(
             HttpServletRequest request,

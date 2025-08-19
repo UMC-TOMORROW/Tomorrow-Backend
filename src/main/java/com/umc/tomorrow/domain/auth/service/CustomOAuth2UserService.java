@@ -57,8 +57,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             null, // isOnboarded
             oAuth2Response.getProvider(),
             oAuth2Response.getProviderId(),
-            null, // resumeId
-            null  // profileImageUrl
+            null
         );
 
         return new CustomOAuth2User(userResponseDTO);
