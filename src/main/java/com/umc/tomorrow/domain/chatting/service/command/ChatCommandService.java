@@ -49,6 +49,7 @@ public class ChatCommandService {
 
 
         Message saved = messageRepository.save(Message.builder()
+                .user(user)
                 .chatPart(chatPart)
                 .chattingRoom(room)
                 .content(request.getContent())
