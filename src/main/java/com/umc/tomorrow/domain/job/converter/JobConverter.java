@@ -1,6 +1,7 @@
 package com.umc.tomorrow.domain.job.converter;
 
 import com.umc.tomorrow.domain.job.dto.request.*;
+import com.umc.tomorrow.domain.job.dto.response.BusinessResponseDTO;
 import com.umc.tomorrow.domain.job.dto.response.GetRecommendationResponse;
 import com.umc.tomorrow.domain.job.dto.response.JobDetailResponseDTO;
 import com.umc.tomorrow.domain.job.entity.*;
@@ -134,6 +135,15 @@ public class JobConverter {
                 .alwaysHiring(job.getAlwaysHiring())
                 .workDays(toWorkDaysRequestDTO(job.getWorkDays()))
                 .workEnvironment(workEnvironmentList)
+                .build();
+    }
+
+    public BusinessResponseDTO toBusinessResponseDTO(BusinessVerification business) {
+        return BusinessResponseDTO.builder()
+                .companyName(business.getCompanyName())
+                .bizNumber(business.getBizNumber())
+                .ownerName(business.getOwnerName())
+                .openingDate(business.getOpeningDate())
                 .build();
     }
 

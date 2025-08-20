@@ -7,12 +7,14 @@ import com.umc.tomorrow.domain.auth.security.CustomOAuth2User;
 import com.umc.tomorrow.domain.job.dto.request.BusinessRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.JobRequestDTO;
 import com.umc.tomorrow.domain.job.dto.request.PersonalRequestDTO;
+import com.umc.tomorrow.domain.job.dto.response.BusinessResponseDTO;
 import com.umc.tomorrow.domain.job.dto.response.GetRecommendationListResponse;
 import com.umc.tomorrow.domain.job.dto.request.PostStatusRequestDTO;
 import com.umc.tomorrow.domain.job.dto.response.JobCreateResponseDTO;
 import com.umc.tomorrow.domain.job.dto.response.JobStepResponseDTO;
 import com.umc.tomorrow.domain.job.enums.RegistrantType;
 import com.umc.tomorrow.domain.job.service.command.JobCommandService;
+import com.umc.tomorrow.domain.job.service.query.JobQueryService;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import com.umc.tomorrow.global.common.exception.RestApiException;
@@ -51,6 +53,7 @@ public class JobCommandController {
     private final UserRepository userRepository;
     private final Validator validator;
     private final S3Uploader s3Uploader;
+    private final JobQueryService jobQueryService;
 
 
     /**
@@ -169,6 +172,26 @@ public class JobCommandController {
         Long userId = user.getUserResponseDTO().getId();
         jobCommandService.saveBusinessVerification(userId, requestDTO);
         return ResponseEntity.ok(BaseResponse.onSuccess(null));
+
+    }
+
+
+    /**
+     * 사업자 등록 확인 페이지(GET)
+     * @param user 인증된 사용자
+     * @return 성공 응답
+     */
+    @Operation(summary = "사업자 등록 정보 확인", description = "유저가 등록한 사업자 정보 확인 페이지")
+    @PostMapping("/business-verifications/checkPage")
+    public ResponseEntity<BaseResponse<BusinessResponseDTO>> registerBusinessCheck(
+            @AuthenticationPrincipal CustomOAuth2User user
+    ) {
+        Long userId = user.getUserResponseDTO().getId();
+        jobQueryService.BusinessVerificationView(userId);
+
+        BusinessResponseDTO response = jobQueryService.BusinessVerificationView(userId);
+
+        return ResponseEntity.ok(BaseResponse.onSuccess(response));
 
     }
 

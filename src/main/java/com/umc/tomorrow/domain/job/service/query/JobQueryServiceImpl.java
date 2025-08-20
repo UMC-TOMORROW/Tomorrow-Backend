@@ -7,9 +7,11 @@ package com.umc.tomorrow.domain.job.service.query;
 
 import com.umc.tomorrow.domain.job.converter.JobConverter;
 import com.umc.tomorrow.domain.job.dto.request.MyPostResponseDTO;
+import com.umc.tomorrow.domain.job.dto.response.BusinessResponseDTO;
 import com.umc.tomorrow.domain.job.dto.response.GetRecommendationListResponse;
 import com.umc.tomorrow.domain.job.dto.response.GetRecommendationResponse;
 import com.umc.tomorrow.domain.job.dto.response.JobDetailResponseDTO;
+import com.umc.tomorrow.domain.job.entity.BusinessVerification;
 import com.umc.tomorrow.domain.job.entity.Job;
 import com.umc.tomorrow.domain.job.entity.WorkEnvironment;
 import com.umc.tomorrow.domain.job.enums.PostStatus;
@@ -70,6 +72,22 @@ public class JobQueryServiceImpl implements JobQueryService {
                 .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
 
         return jobConverter.toJobDetailResponseDTO(job);
+    }
+
+
+    // 사업자 등록 정보 확인
+    @Override
+    public BusinessResponseDTO BusinessVerificationView(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
+
+        BusinessVerification business = user.getBusinessVerification();
+        if (business == null) {
+            throw new RestApiException(JobErrorStatus.BUSINESS_NOT_FOUND);
+        }
+
+        return jobConverter.toBusinessResponseDTO(business);
     }
 
     // 내일 추천
