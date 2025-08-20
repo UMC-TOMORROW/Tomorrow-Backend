@@ -85,7 +85,7 @@ public class MemberController {
         return ResponseEntity.ok(updated);
     }
 
-    @Operation(summary = "프로필 사진 업로드", description = "현재 로그인한 회원의 프로필 사진을 업로드합니다.")
+    @Operation(summary = "프로필 사진 업로드/수정", description = "현재 로그인한 회원의 프로필 사진을 업로드하거나 수정합니다.")
     @PutMapping(value="/me/profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadProfileImage(
             @AuthenticationPrincipal CustomOAuth2User user,
@@ -93,6 +93,20 @@ public class MemberController {
     ){
         String url = memberService.uploadProfileImage(user.getUserResponseDTO().getId(), image);
         return ResponseEntity.ok(Map.of("profileImageUrl", url));
+    }
+
+    @Operation(summary = "프로필 사진 조회", description = "현재 로그인한 회원의 프로필 사진 URL을 조회합니다.")
+    @GetMapping("/me/profile-image")
+    public ResponseEntity<?> getProfileImage(@AuthenticationPrincipal CustomOAuth2User user) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        
+        Long userId = user.getUserResponseDTO().getId();
+        User currentUser = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
+        
+        return ResponseEntity.ok(Map.of("profileImageUrl", currentUser.getProfileImageUrl()));
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 API입니다. 14일 내로 복구가 가능합니다.")
@@ -142,7 +156,7 @@ public class MemberController {
             summary = "프로필 이미지 삭제",
             description = "프로필 이미지만 삭제합니다."
     )
-    @DeleteMapping("/profile-image")
+    @DeleteMapping("/me/profile-image")
     public ResponseEntity<String> deleteProfileImage(
             @Parameter(hidden = true) @AuthenticationPrincipal CustomOAuth2User user) {
 

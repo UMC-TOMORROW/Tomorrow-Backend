@@ -36,5 +36,5 @@ public class UserResponseDTO extends BaseEntity {
     private String provider; // 소셜 제공자 (KAKAO, NAVER, GOOGLE)
     private String providerUserId; // 소셜 제공자 ID
     private Long resumeId; // 이력서 ID
-    private String profileImageUrl; //이미지url
+    private String profileImageUrl; // 프로필 이미지 URL
 }
