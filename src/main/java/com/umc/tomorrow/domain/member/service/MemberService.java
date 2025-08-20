@@ -227,7 +227,7 @@ public class MemberService {
      * 프로필 이미지 삭제
      *
      * @param userId 사용자 ID
-     * @return
+     * @return 삭제 성공 여부
      */
     @Transactional
     public boolean deleteProfileImage(Long userId) {
@@ -244,6 +244,6 @@ public class MemberService {
         // 사용자 정보에서 이미지 URL 제거
         user.setProfileImageUrl(null);
         userRepository.save(user);
-        return false;
+        return true; // 삭제 성공
     }
 } 
