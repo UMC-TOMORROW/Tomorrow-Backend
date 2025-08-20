@@ -1,9 +1,3 @@
-/**
- *  EmailService 클래스
- *  이메일을 전송하는 서비스 로직
- *  작성자: 이승주
- *  작성일: 2025-07-27
- */
 package com.umc.tomorrow.domain.email.service;
 
 import com.umc.tomorrow.domain.email.dto.request.EmailRequestDTO;
@@ -61,7 +55,7 @@ public class EmailService {
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
         // 이메일 타입에 따른 지원 상태 검증
-        validateEmailTypeWithApplicationStatus(dto.getType(), application.getStatus());
+//        validateEmailTypeWithApplicationStatus(dto.getType(), application.getStatus());
 
         String to = user.getEmail();
 
@@ -78,7 +72,8 @@ public class EmailService {
 
         try {
             // 4) 접수 카드 이미지 생성
-            var image = receiptCardRenderer.render(jobTitle, companyName, submittedAt);
+            // ★ 수정된 부분: dto.getType()을 render 메서드의 첫 번째 인자로 전달
+            var image = receiptCardRenderer.render(dto.getType(), jobTitle, companyName, submittedAt);
 
             // 5) 인라인 이미지 메일 발송 (multipart=true)
             MimeMessage msg = javaMailSender.createMimeMessage();
@@ -135,44 +130,44 @@ public class EmailService {
     /**
      * 이메일 타입과 지원 상태 검증
      */
-    private void validateEmailTypeWithApplicationStatus(EmailType emailType, ApplicationStatus currentStatus) {
-        switch (emailType) {
-            case JOB_APPLY:
-                // 지원 완료는 PENDING 상태에서만 가능
-                if (currentStatus != ApplicationStatus.PENDING) {
-                    if (currentStatus == ApplicationStatus.ACCEPTED) {
-                        throw new EmailException(EmailErrorStatus.ALREADY_ACCEPTED);
-                    } else if (currentStatus == ApplicationStatus.REJECTED) {
-                        throw new EmailException(EmailErrorStatus.ALREADY_REJECTED);
-                    } else {
-                        throw new EmailException(EmailErrorStatus.APPLICATION_NOT_PENDING);
-                    }
-                }
-                break;
-            case JOB_ACCEPTED:
-                // 합격은 PENDING 상태에서만 가능
-                if (currentStatus != ApplicationStatus.PENDING) {
-                    if (currentStatus == ApplicationStatus.ACCEPTED) {
-                        throw new EmailException(EmailErrorStatus.ALREADY_ACCEPTED);
-                    } else if (currentStatus == ApplicationStatus.REJECTED) {
-                        throw new EmailException(EmailErrorStatus.ALREADY_REJECTED);
-                    } else {
-                        throw new EmailException(EmailErrorStatus.APPLICATION_NOT_PENDING);
-                    }
-                }
-                break;
-            case JOB_REJECTED:
-                // 불합격은 PENDING 상태에서만 가능
-                if (currentStatus != ApplicationStatus.PENDING) {
-                    if (currentStatus == ApplicationStatus.ACCEPTED) {
-                        throw new EmailException(EmailErrorStatus.ALREADY_ACCEPTED);
-                    } else if (currentStatus == ApplicationStatus.REJECTED) {
-                        throw new EmailException(EmailErrorStatus.ALREADY_REJECTED);
-                    } else {
-                        throw new EmailException(EmailErrorStatus.APPLICATION_NOT_PENDING);
-                    }
-                }
-                break;
-        }
-    }
+//    private void validateEmailTypeWithApplicationStatus(EmailType emailType, ApplicationStatus currentStatus) {
+//        switch (emailType) {
+//            case JOB_APPLY:
+//                // 지원 완료는 PENDING 상태에서만 가능
+//                if (currentStatus != ApplicationStatus.PENDING) {
+//                    if (currentStatus == ApplicationStatus.ACCEPTED) {
+//                        throw new EmailException(EmailErrorStatus.ALREADY_ACCEPTED);
+//                    } else if (currentStatus == ApplicationStatus.REJECTED) {
+//                        throw new EmailException(EmailErrorStatus.ALREADY_REJECTED);
+//                    } else {
+//                        throw new EmailException(EmailErrorStatus.APPLICATION_NOT_PENDING);
+//                    }
+//                }
+//                break;
+//            case JOB_ACCEPTED:
+//                // 합격은 PENDING 상태에서만 가능
+//                if (currentStatus != ApplicationStatus.PENDING) {
+//                    if (currentStatus == ApplicationStatus.ACCEPTED) {
+//                        throw new EmailException(EmailErrorStatus.ALREADY_ACCEPTED);
+//                    } else if (currentStatus == ApplicationStatus.REJECTED) {
+//                        throw new EmailException(EmailErrorStatus.ALREADY_REJECTED);
+//                    } else {
+//                        throw new EmailException(EmailErrorStatus.APPLICATION_NOT_PENDING);
+//                    }
+//                }
+//                break;
+//            case JOB_REJECTED:
+//                // 불합격은 PENDING 상태에서만 가능
+//                if (currentStatus != ApplicationStatus.PENDING) {
+//                    if (currentStatus == ApplicationStatus.ACCEPTED) {
+//                        throw new EmailException(EmailErrorStatus.ALREADY_ACCEPTED);
+//                    } else if (currentStatus == ApplicationStatus.REJECTED) {
+//                        throw new EmailException(EmailErrorStatus.ALREADY_REJECTED);
+//                    } else {
+//                        throw new EmailException(EmailErrorStatus.APPLICATION_NOT_PENDING);
+//                    }
+//                }
+//                break;
+//        }
+//    }
 }

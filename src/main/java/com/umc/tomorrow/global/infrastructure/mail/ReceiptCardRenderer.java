@@ -1,5 +1,6 @@
 package com.umc.tomorrow.global.infrastructure.mail;
 
+import com.umc.tomorrow.domain.email.enums.EmailType;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
@@ -22,40 +23,60 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReceiptCardRenderer {
 
-    private static final String TEMPLATE = "static/mail/tomorrowImage/receipt-card-base.png";
+    private static final String TEMPLATE_APPLY = "static/mail/tomorrowImage/apply-card-base.png";
+    private static final String TEMPLATE_ACCEPTED = "static/mail/tomorrowImage/accepted-card-base.png";
+    private static final String TEMPLATE_REJECTED = "static/mail/tomorrowImage/rejected-card-base.png";
+
     private static final String FONT_BLD = "static/fonts/NotoSansKR-Bold.ttf";
 
-    public ByteArrayResource render(String jobTitle, String companyName, String submittedAtIgnored) {
+    public ByteArrayResource render(EmailType emailType, String jobTitle, String companyName, String submittedAtIgnored) {
         try {
-            ClassPathResource res = new ClassPathResource(TEMPLATE);
-            if (!res.exists()) throw new IllegalStateException("Base image NOT FOUND: " + TEMPLATE);
+            // **이메일 타입에 따라 템플릿 경로를 동적으로 선택하는 로직 추가**
+            String templatePath;
+            switch (emailType) {
+                case JOB_APPLY:
+                    templatePath = TEMPLATE_APPLY;
+                    break;
+                case JOB_ACCEPTED:
+                    templatePath = TEMPLATE_ACCEPTED;
+                    break;
+                case JOB_REJECTED:
+                    templatePath = TEMPLATE_REJECTED;
+                    break;
+                default:
+                    // 알 수 없는 타입의 경우 기본값으로 JOB_APPLY 템플릿 사용
+                    templatePath = TEMPLATE_APPLY;
+                    break;
+            }
+
+            ClassPathResource res = new ClassPathResource(templatePath);
+            if (!res.exists()) {
+                throw new IllegalStateException("Base image NOT FOUND: " + templatePath);
+            }
 
             try (InputStream is = res.getInputStream()) {
                 BufferedImage base = ImageIO.read(is);
-                if (base == null) throw new IllegalStateException("ImageIO.read() returned null for: " + TEMPLATE);
+                if (base == null) {
+                    throw new IllegalStateException("ImageIO.read() returned null for: " + templatePath);
+                }
 
                 int W = base.getWidth(), H = base.getHeight();
-                float scale = W / 595f; // 템플릿 기준 595
+                float scale = W / 595f;
 
-                // PNG 투명도 보존을 위해 ARGB 사용
                 BufferedImage out = new BufferedImage(W, H, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D g = out.createGraphics();
                 g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 
-                // 배경 투명으로 초기화
                 g.setComposite(AlphaComposite.Clear);
                 g.fillRect(0, 0, W, H);
                 g.setComposite(AlphaComposite.SrcOver);
 
-                // 베이스 PNG 위에 그리기
                 g.drawImage(base, 0, 0, null);
 
-                // 글자 크기 18
                 Font bold = loadFont(FONT_BLD, 18f * scale);
 
-                // ===== 값 칸 좌표 =====
                 int leftMargin  = Math.round(90 * scale);
                 int rightMargin = Math.round(70 * scale);
                 int labelWidth  = Math.round(160 * scale);
@@ -64,33 +85,24 @@ public class ReceiptCardRenderer {
                 int rowH        = Math.round(66 * scale);
                 int vInset      = Math.round(10 * scale);
 
-                int valueX = leftMargin + labelWidth + gutter;     // 두 줄 동일 X
+                int valueX = leftMargin + labelWidth + gutter;
                 int valueW = (W - rightMargin) - valueX;
 
-                // 지원공고명만 아래로 추가 이동
-                int jobShiftDown = Math.round(22 * scale); // 필요 시 20~26 조정
+                int jobShiftDown = Math.round(22 * scale);
 
                 Rectangle jobRect =
-                        new Rectangle(valueX,
-                                tableTop + vInset + jobShiftDown,
-                                valueW,
-                                rowH - 2 * vInset);
+                        new Rectangle(valueX, tableTop + vInset + jobShiftDown, valueW, rowH - 2 * vInset);
 
                 Rectangle companyRect =
-                        new Rectangle(valueX,
-                                tableTop + rowH + vInset,
-                                valueW,
-                                rowH - 2 * vInset);
+                        new Rectangle(valueX, tableTop + rowH + vInset, valueW, rowH - 2 * vInset);
 
-                // 텍스트 그리기
                 g.setColor(new Color(0x11, 0x33, 0x19));
-                drawWrapped(g, jobTitle,    jobRect,    bold, 2, true);
+                drawWrapped(g, jobTitle, jobRect, bold, 2, true);
                 drawWrapped(g, companyName, companyRect, bold, 1, true);
 
                 g.dispose();
 
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                // >>> PNG로 저장 <<<
                 ImageIO.write(out, "png", bos);
                 return new ByteArrayResource(bos.toByteArray());
             }
@@ -110,14 +122,12 @@ public class ReceiptCardRenderer {
     }
 
     private void drawWrapped(Graphics2D g, String text, Rectangle area, Font font, int maxLines, boolean ellipsis) {
-        // null 체크 강화 및 빈 문자열 처리
         if (text == null || text.trim().isEmpty()) {
-            text = "정보 없음"; // 기본값 설정
+            text = "정보 없음";
         }
-        
+
         g.setFont(font);
 
-        // 빈 문자열이 아닌 경우에만 AttributedString 생성
         AttributedString att = new AttributedString(text);
         att.addAttribute(TextAttribute.FONT, font);
         LineBreakMeasurer lbm = new LineBreakMeasurer(att.getIterator(), g.getFontRenderContext());
