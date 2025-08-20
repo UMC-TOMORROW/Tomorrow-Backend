@@ -129,11 +129,12 @@ public class ChatController {
     @Operation(summary = "채팅방 메시지 조회 (무한 스크롤)", description = "채팅방 메시지를 무한 스크롤 방식으로 조회합니다.")
     @ApiResponse(responseCode = "200", description = "채팅 메시지 조회 성공")
     public ResponseEntity<BaseResponse<GetChatMessageListResponseDTO>> getChatMessages(
+            @AuthenticationPrincipal CustomOAuth2User user,
             @NotNull @Positive @PathVariable Long chattingRoomId,
             @Positive @RequestParam(required = false) Long cursor,
             @NotNull @Positive @RequestParam(defaultValue = "8") int size
     ) {
-        GetChatMessageListResponseDTO response = chatQueryService.getMessages(chattingRoomId, cursor, size);
+        GetChatMessageListResponseDTO response = chatQueryService.getMessages(user.getUserResponseDTO().getId(), chattingRoomId, cursor, size);
         return ResponseEntity.ok(BaseResponse.onSuccess(response));
     }
 }

@@ -12,6 +12,7 @@ import com.umc.tomorrow.domain.email.service.EmailService;
 import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,17 +26,19 @@ public class EmailController {
 
     private final EmailService emailService;
 
-    /**
-     * 이메일 전송(POST)
-     * @param dto 이메일 생성 요청 DTO
-     * @return 이메일 생성 응답 DTO
-     */
     @PostMapping("/send")
-    public ResponseEntity<BaseResponse<EmailResponseDTO>> send(
+    public ResponseEntity<BaseResponse> send(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @Valid @RequestBody EmailRequestDTO dto) {
 
-        Long id = customOAuth2User.getUserResponseDTO().getId();
-        return ResponseEntity.ok(BaseResponse.onSuccess(emailService.sendEmail(id,dto)));
+        Long userId = customOAuth2User.getUserResponseDTO().getId();
+
+        // 비동기 실행 (반환값 받지 않음)
+        emailService.sendEmail(userId, dto);
+
+        // 202 Accepted로 즉시 응답
+        return ResponseEntity.accepted()
+                .body(BaseResponse.onSuccess(Map.of("accepted", true)));
     }
+
 }

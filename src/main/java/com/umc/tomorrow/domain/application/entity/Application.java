@@ -52,7 +52,7 @@ public class Application extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_id")
+    @JoinColumn(name = "resume_id", nullable = true)
     private Resume resume;
 
     @Column(nullable = false)

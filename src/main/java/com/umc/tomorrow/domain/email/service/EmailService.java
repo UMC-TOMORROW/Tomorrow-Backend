@@ -49,7 +49,7 @@ public class EmailService {
     private final ApplicationRepository applicationRepository;
 
     @Async("emailExecutor")
-    public EmailResponseDTO sendEmail(Long userId, EmailRequestDTO dto) {
+    public void sendEmail(Long userId, EmailRequestDTO dto) {
         // 1) 사용자/공고 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
@@ -130,10 +130,6 @@ public class EmailService {
             log.error("[메일 발송 실패] to={}, err={}", to, e.toString());
             throw new EmailException(EmailErrorStatus.EMAIL_SEND_FAILED);
         }
-
-        return EmailResponseDTO.builder()
-                .to(to)
-                .build();
     }
 
     /**

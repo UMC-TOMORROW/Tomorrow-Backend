@@ -21,5 +21,5 @@ public class CreateApplicationRequestDTO {
     @Size(max = 50,message = "application.content.size")
     private String content;
 
-    private Long resumeId; //선택 입력
+    private String resumeId; //선택 입력
 }

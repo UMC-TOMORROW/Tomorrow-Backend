@@ -28,7 +28,7 @@ public class ChatQueryService {
     private final MessageRepository messageRepository;
     private final ChattingRoomRepository chattingRoomRepository;
 
-    public GetChatMessageListResponseDTO getMessages(Long chattingRoomId, Long cursor, int size) {
+    public GetChatMessageListResponseDTO getMessages(Long userId,Long chattingRoomId, Long cursor, int size) {
 
         ChattingRoom room = chattingRoomRepository.findById(chattingRoomId)
                 .orElseThrow(() -> new ChatException(ChatErrorStatus.CHATROOM_NOT_FOUND));
@@ -46,7 +46,7 @@ public class ChatQueryService {
         }
 
         List<GetChatMessageResponseDTO> messages = messageSlice.getContent().stream()
-                .map(ChatConverter::toGetChatMessageResponseDTO)
+                .map(message -> ChatConverter.toGetChatMessageResponseDTO(message, userId))
                 .toList();
 
         return GetChatMessageListResponseDTO.builder()

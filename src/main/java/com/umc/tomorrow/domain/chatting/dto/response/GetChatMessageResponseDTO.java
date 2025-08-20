@@ -27,4 +27,7 @@ public class GetChatMessageResponseDTO {
     @Schema(description = "메시지 작성 시간")
     private LocalDateTime createdAt;
 
+    @Schema(description = "메시지 본인 여부")
+    private boolean isMine;
+
 }

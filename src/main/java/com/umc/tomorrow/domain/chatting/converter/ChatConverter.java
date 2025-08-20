@@ -14,12 +14,19 @@ public class ChatConverter {
     /**
      * Message 엔티티 → GetChatMessageResponseDTO 변환
      */
-    public static GetChatMessageResponseDTO toGetChatMessageResponseDTO(Message message) {
+    public static GetChatMessageResponseDTO toGetChatMessageResponseDTO(Message message,Long currentUserId) {
+
+        boolean isMessageMine = false;
+        if (message.getUser() != null) {
+            isMessageMine = message.getUser().getId().equals(currentUserId);
+        }
+
         return GetChatMessageResponseDTO.builder()
                 .messageId(message.getId())
                 .anonymousName(message.getChatPart().getAnonymousName())
                 .content(message.getContent())
                 .createdAt(message.getCreatedAt())
+                .isMine(isMessageMine)
                 .build();
     }
 }

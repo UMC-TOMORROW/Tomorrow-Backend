@@ -5,6 +5,7 @@
  */
 package com.umc.tomorrow.domain.chatting.entity;
 
+import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.global.common.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,5 +43,9 @@ public class Message extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatting_room_id")
     private ChattingRoom chattingRoom;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

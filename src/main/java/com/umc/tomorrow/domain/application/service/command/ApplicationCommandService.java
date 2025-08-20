@@ -120,8 +120,11 @@ public class ApplicationCommandService {
 
         Application application;
 
-        if (requestDTO.getResumeId() != null) {
-            Resume resume = resumeRepository.findByIdAndUserId(requestDTO.getResumeId(), userId)
+        String raw = requestDTO.getResumeId();
+        Long resumeId = (raw == null || raw.isBlank()) ? null : Long.valueOf(raw);
+
+        if (resumeId != null) {
+            Resume resume = resumeRepository.findByIdAndUserId(resumeId, userId)
                     .orElseThrow(() -> new ResumeException(ResumeErrorStatus.RESUME_NOT_FOUND));
 
             application = Application.builder()
