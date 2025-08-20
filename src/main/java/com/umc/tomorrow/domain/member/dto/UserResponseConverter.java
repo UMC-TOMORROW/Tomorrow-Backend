@@ -10,6 +10,7 @@ package com.umc.tomorrow.domain.member.dto;
 import com.umc.tomorrow.domain.member.entity.User;
 import java.time.format.DateTimeFormatter;
 public class UserResponseConverter {
+
     public static UserResponseDTO toResponseDTO(User user) {
 
         final DateTimeFormatter ISO_FMT = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -35,7 +36,8 @@ public class UserResponseConverter {
                 user.getIsOnboarded(),
                 provider,
                 user.getProviderUserId(),
-                user.getResumeId()
+                user.getResumeId(),
+                user.getProfileImageUrl()
         );
     }
 
