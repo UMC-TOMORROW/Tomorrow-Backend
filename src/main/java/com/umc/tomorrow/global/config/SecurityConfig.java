@@ -81,11 +81,18 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/swagger-ui/index.html",
                                 "/v3/api-docs/**",
-                                "/login/**","//oauth2/**"
+                                "/login/**","//oauth2/**",
+                                "/api/auth/refresh"
                         ).permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(401);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"error\":\"Authentication required\",\"message\":\"로그인이 필요합니다.\"}");
+                        })
                 );
-
 
         return http.build();
     }

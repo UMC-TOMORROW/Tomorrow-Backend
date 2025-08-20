@@ -22,8 +22,21 @@ public class JWTUtil {
     }
 
     public String getUsername(String token) {
-
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
+        try {
+            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
+        } catch (Exception e) {
+            // Refresh Token의 경우 subject에서 username을 가져올 수 있음
+            try {
+                String subject = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getSubject();
+                if ("refresh".equals(subject)) {
+                    // Refresh Token의 경우 username claim이 없을 수 있으므로 null 반환
+                    return null;
+                }
+            } catch (Exception ex) {
+                // 무시
+            }
+            throw e;
+        }
     }
 
     public String getRole(String token) {
@@ -76,6 +89,15 @@ public class JWTUtil {
 
     public String getName(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("name", String.class);
+    }
+
+    // Refresh Token에서 username 추출
+    public String getUsernameFromRefreshToken(String token) {
+        try {
+            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private Claims getClaims(String token) {
