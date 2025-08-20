@@ -43,7 +43,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             throw new OAuth2AuthenticationException("지원하지 않는 로그인 방식입니다.");
         }
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO(
+        UserResponseDTO userResponseDTO =  new UserResponseDTO(
             null, // id
             null, // role
             null, // username
