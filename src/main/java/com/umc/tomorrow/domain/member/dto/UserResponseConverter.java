@@ -35,7 +35,8 @@ public class UserResponseConverter {
                 user.getIsOnboarded(),
                 provider,
                 user.getProviderUserId(),
-                user.getResumeId()
+                user.getResumeId(),
+                user.getProfileImageUrl()
         );
     }
 
