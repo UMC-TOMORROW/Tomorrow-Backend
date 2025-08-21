@@ -40,7 +40,7 @@ public class PreferenceController {
             @Valid @RequestBody PreferencesDTO dto) {
         // 실제 DB에 희망 조건 업데이트
         Long userId = user.getUserResponseDTO().getId();
-        preferenceService.updatePreferences(userId, dto);
+        preferenceService.savePreferences(userId, dto);
         return ResponseEntity.ok(
             BaseResponse.onSuccess(Map.of("saved", true))
         );
