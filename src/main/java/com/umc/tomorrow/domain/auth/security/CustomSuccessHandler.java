@@ -1,5 +1,6 @@
 package com.umc.tomorrow.domain.auth.security;
 
+import com.umc.tomorrow.domain.introduction.repository.IntroductionRepository;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.member.enums.Provider;
 import com.umc.tomorrow.domain.member.repository.UserRepository;
@@ -32,6 +33,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final UserRepository userRepository;
     private final ResumeRepository resumeRepository;
     private final Environment env; // profile 확인용
+    private final IntroductionRepository introductionRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -77,6 +79,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             defaultResume.setIntroduction(defaultIntroduction);
 
             Resume savedResume = resumeRepository.save(defaultResume);
+            introductionRepository.save(defaultIntroduction);
             user.setResumeId(savedResume.getId());
             userRepository.save(user);
 
