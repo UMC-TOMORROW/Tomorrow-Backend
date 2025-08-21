@@ -92,7 +92,7 @@
 
 ### ☁️ 시스템 아키텍처
 ---
-![스크린샷](https://github.com/user-attachments/assets/6ff0acb3-ecf1-481c-be0f-da736b2a5a48)
+![스크린샷](https://github.com/user-attachments/assets/aa3e1306-5631-476c-95cc-810647c8e67f)
 
 
 ## 프로젝트 구조
@@ -175,49 +175,61 @@ tomorrow
 
 ## ⚠️ 트러블슈팅 기록 (Troubleshooting)
 
-## 🔐 JWT Refresh Token 처리 방식 개선 과정
+## 🔐 JWT Refresh Token 처리 방식 개선
 
-### 1. 기존 구조의 한계
-- **구조**: `refreshToken`을 **Client 쿠키**에 저장하고, 서버에서 쿠키를 직접 추출
-- **문제점**
-  - API 테스트 도구 사용 불편  
-    (Swagger, Postman 등에서 Cookie 전달이 번거로움)
-  - **보안 취약성**  
-    - 초기 구현 시 `HttpOnly` 없이 저장 → **XSS 공격 위험**
-  - 환경 차이  
-    - 로컬 개발에서는 편리했으나, 실제 서비스·테스트 환경 모두에서 불편 발생
+1) 🔍 문제 상황
 
----
+* refreshToken을 쿠키에 저장했지만 초기에 HttpOnly 미적용 → XSS 노출 위험.
 
-### 2. 1차 개선 – Header 방식 수신
-- **변경 내용**
-  - `@RequestHeader("RefreshToken")`으로 refresh token을 받는 구조로 수정
-- **장점**
-  - Swagger / Postman 등에서 손쉽게 테스트 가능
-  - 프론트엔드에서 Header에 token만 추가하면 됨
-- **단점**
-  - 클라이언트가 Token을 직접 보관해야 하므로 여전히 **보안 리스크 존재** (탈취 위험)
+*  Swagger/Postman 테스트 불편(쿠키 의존).
 
----
+* 로컬·테스트·운영 환경별 전달 방식 불일치로 운영성 저하.
 
-### 3. 2차 개선 – HttpOnly + Secure 쿠키
-- **변경 내용**
-  - Refresh Token을 Response Body로 전달하지 않고, 서버에서 **HttpOnly + Secure** 속성을 가진 쿠키에 저장
-- **장점**
-  - **XSS 공격 차단** – JS에서 쿠키 접근 불가
-  - 토큰 저장/갱신을 서버에서 전담 → 보안성과 일관성 향상
-- **효과**
-  - 클라이언트 보관 부담 제거
-  - 실서비스·테스트 환경 모두에서 사용성 개선
+2) 🛠️ 개선 방법
+
+* 1차: @RequestHeader("RefreshToken")로 전달 → 테스트 편의성 확보.
+
+* 2차(최종): 서버가 HttpOnly + Secure(+SameSite=None) 쿠키로 발급/갱신, 바디/JS 노출 금지.
+
+3) ✅ 결과
+
+* 보안성↑: refreshToken의 XSS 노출 차단, 탈취 위험 축소.
+
+* 사용성↑: Swagger/Postman 테스트 간단, FE 구현 단순.
+
+* 일관성↑: 전 환경 동일 플로우로 유지보수/운영 안정성 향상.
 
 ---
 
-💡 **정리**
-- 개발 초기: 편의성 중심의 쿠키 저장 방식  
-- 개선 과정: Header 수신 방식 → 최종적으로 `HttpOnly + Secure` 쿠키 방식 채택  
-- 결과: **보안성 강화** + **유지보수성 향상**
+## ⚡️ 내일 추천 쿼리 개선
 
+1) 🔍 문제 상황
 
+* 온보딩 직후 내일 추천 리스트 로딩이 체감상 느림.
+
+* JPQL에서 OR이 다수 포함되고, 점수 계산을 애플리케이션에서 재계산하며 리뷰 수는 N+1 쿼리로 집계 → DB 부하·캐시 비효율.
+
+2) 🛠️ 개선 방법
+
+* 점수식 경량화: 사용자가 true로 고른 항목만 CASE WHEN 합산(불필요 분기 제거).
+
+* OR 제거: “원치 않는 조건”은 AND we.col = false로 명시 → 인덱스 타기 쉬운 형태(sargable)로 단순화.
+
+* 커서 점수 DB 계산: computeCursorScoreById()로 DB에서 즉시 산출(엔티티 로딩/LAZY 회피).
+
+* 리뷰 집계 배치화: IN (...) GROUP BY job_id로 한 번에 카운트 후 매핑(N+1 제거).
+
+* @Transactional(readOnly=true) + 읽기 전용 힌트로 불필요한 변경 감지(diry checking) 최소화.
+
+3) ✅ 결과(성능 지표)
+
+* p95: ~780ms → 690ms (약 11.5%↓)
+
+* 평균 응답시간: 540ms → 480ms (약 11%↓)
+
+* TPS: +8~12% 증가
+
+---
 
 
 
