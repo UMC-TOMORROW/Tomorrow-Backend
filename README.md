@@ -92,7 +92,7 @@
 
 ### ☁️ 시스템 아키텍처
 ---
-![스크린샷](https://github.com/user-attachments/assets/6ff0acb3-ecf1-481c-be0f-da736b2a5a48)
+![스크린샷](https://github.com/user-attachments/assets/aa3e1306-5631-476c-95cc-810647c8e67f)
 
 
 ## 프로젝트 구조
