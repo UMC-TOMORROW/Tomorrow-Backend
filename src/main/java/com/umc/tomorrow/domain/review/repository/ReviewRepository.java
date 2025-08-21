@@ -21,4 +21,20 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByJobId(@Param("jobId") Long jobId);
     @Query("SELECT COUNT(r) FROM Review r WHERE r.job.id = :jobId")
     long countByJobId(@Param("jobId") Long jobId);
+
+
+    // 여러 jobId에 대한 리뷰 수를 한 번에 조회 (GROUP BY)
+    @Query(
+            "select r.job.id as jobId, count(r) as cnt " +
+                    "from Review r " +
+                    "where r.job.id in :jobIds " +
+                    "group by r.job.id"
+    )
+    List<JobReviewCount> countByJobIdInGroupByJob(@Param("jobIds") List<Long> jobIds);
+
+    // (jobId, cnt) 형태로 반환하는 인터페이스 프로젝션
+    interface JobReviewCount {
+        Long getJobId();
+        Long getCnt();
+    }
 }
