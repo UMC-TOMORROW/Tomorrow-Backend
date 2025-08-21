@@ -13,6 +13,7 @@ import com.umc.tomorrow.domain.application.dto.response.ApplicationDetailsRespon
 import com.umc.tomorrow.domain.application.dto.response.UpdateApplicationStatusResponseDTO;
 import com.umc.tomorrow.domain.application.entity.Application;
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
+import com.umc.tomorrow.domain.job.entity.WorkEnvironment;
 import com.umc.tomorrow.domain.member.entity.User;
 import com.umc.tomorrow.domain.certificate.entity.Certificate;
 import com.umc.tomorrow.domain.resume.entity.Resume;
@@ -46,12 +47,24 @@ public class ApplicationConverter {
     */
     public static ApplicationStatusListResponseDTO toStatusListDTO(Application application) {
         String statusLabel = application.getStatus() != null ? application.getStatus().getLabel() : "불합격";
+        WorkEnvironment env = application.getJob().getWorkEnvironment();
+
         return ApplicationStatusListResponseDTO.builder()
                 .postTitle(application.getJob().getTitle())
                 .jobId(application.getJob().getId())
                 .company(application.getJob().getCompanyName())
                 .date(application.getAppliedAt().toLocalDate().toString())
                 .status(application.getStatus())
+                .jobImageUrl(application.getJob().getJobImageUrl())
+                .jobWorkEnvironment(
+                        ApplicationStatusListResponseDTO.WorkEnvironmentDTO.builder()
+                                .canCommunicate(env.isCanCommunicate())
+                                .canMoveActively(env.isCanMoveActively())
+                                .canWorkSitting(env.isCanWorkSitting())
+                                .canWorkStanding(env.isCanWorkStanding())
+                                .canCarryObjects(env.isCanCarryObjects())
+                                .build()
+                )
                 .build();
     }
 

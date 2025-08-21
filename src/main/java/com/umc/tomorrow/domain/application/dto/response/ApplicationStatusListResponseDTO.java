@@ -8,20 +8,31 @@
 package com.umc.tomorrow.domain.application.dto.response;
 
 import com.umc.tomorrow.domain.application.enums.ApplicationStatus;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class
-ApplicationStatusListResponseDTO {
+public class ApplicationStatusListResponseDTO {
     private String postTitle;
     private Long jobId;
     private String company;
     private String date;
+    private String jobImageUrl;
+    private WorkEnvironmentDTO jobWorkEnvironment;
 
-    @NotNull(message = "{application.status.notblank}")
-    private ApplicationStatus status; // "합격", "불합격" (default = 불합격)
+    @NotNull(message = "지원 상태는 필수입니다.")
+    private ApplicationStatus status;
+
+    // static 클래스
+    @Getter
+    @Builder
+    public static class WorkEnvironmentDTO {
+        private boolean canCommunicate;
+        private boolean canMoveActively;
+        private boolean canWorkSitting;
+        private boolean canWorkStanding;
+        private boolean canCarryObjects;
+    }
 }
