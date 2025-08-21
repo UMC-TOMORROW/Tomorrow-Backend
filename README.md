@@ -179,25 +179,25 @@ tomorrow
 
 1) 🔍 문제 상황
 
-refreshToken을 쿠키에 저장했지만 초기에 HttpOnly 미적용 → XSS 노출 위험.
+* refreshToken을 쿠키에 저장했지만 초기에 HttpOnly 미적용 → XSS 노출 위험.
 
-Swagger/Postman 테스트 불편(쿠키 의존).
+*  Swagger/Postman 테스트 불편(쿠키 의존).
 
-로컬·테스트·운영 환경별 전달 방식 불일치로 운영성 저하.
+* 로컬·테스트·운영 환경별 전달 방식 불일치로 운영성 저하.
 
 2) 🛠️ 개선 방법
 
-1차: @RequestHeader("RefreshToken")로 전달 → 테스트 편의성 확보.
+* 1차: @RequestHeader("RefreshToken")로 전달 → 테스트 편의성 확보.
 
-2차(최종): 서버가 HttpOnly + Secure(+SameSite=None) 쿠키로 발급/갱신, 바디/JS 노출 금지.
+* 2차(최종): 서버가 HttpOnly + Secure(+SameSite=None) 쿠키로 발급/갱신, 바디/JS 노출 금지.
 
 3) ✅ 결과
 
-보안성↑: refreshToken의 XSS 노출 차단, 탈취 위험 축소.
+* 보안성↑: refreshToken의 XSS 노출 차단, 탈취 위험 축소.
 
-사용성↑: Swagger/Postman 테스트 간단, FE 구현 단순.
+* 사용성↑: Swagger/Postman 테스트 간단, FE 구현 단순.
 
-일관성↑: 전 환경 동일 플로우로 유지보수/운영 안정성 향상.
+* 일관성↑: 전 환경 동일 플로우로 유지보수/운영 안정성 향상.
 
 ---
 
@@ -205,29 +205,29 @@ Swagger/Postman 테스트 불편(쿠키 의존).
 
 1) 🔍 문제 상황
 
-온보딩 직후 내일 추천 리스트 로딩이 체감상 느림.
+* 온보딩 직후 내일 추천 리스트 로딩이 체감상 느림.
 
-JPQL에서 OR이 다수 포함되고, 점수 계산을 애플리케이션에서 재계산하며 리뷰 수는 N+1 쿼리로 집계 → DB 부하·캐시 비효율.
+* JPQL에서 OR이 다수 포함되고, 점수 계산을 애플리케이션에서 재계산하며 리뷰 수는 N+1 쿼리로 집계 → DB 부하·캐시 비효율.
 
 2) 🛠️ 개선 방법
 
-점수식 경량화: 사용자가 true로 고른 항목만 CASE WHEN 합산(불필요 분기 제거).
+* 점수식 경량화: 사용자가 true로 고른 항목만 CASE WHEN 합산(불필요 분기 제거).
 
-OR 제거: “원치 않는 조건”은 AND we.col = false로 명시 → 인덱스 타기 쉬운 형태(sargable)로 단순화.
+* OR 제거: “원치 않는 조건”은 AND we.col = false로 명시 → 인덱스 타기 쉬운 형태(sargable)로 단순화.
 
-커서 점수 DB 계산: computeCursorScoreById()로 DB에서 즉시 산출(엔티티 로딩/LAZY 회피).
+* 커서 점수 DB 계산: computeCursorScoreById()로 DB에서 즉시 산출(엔티티 로딩/LAZY 회피).
 
-리뷰 집계 배치화: IN (...) GROUP BY job_id로 한 번에 카운트 후 매핑(N+1 제거).
+* 리뷰 집계 배치화: IN (...) GROUP BY job_id로 한 번에 카운트 후 매핑(N+1 제거).
 
-@Transactional(readOnly=true) + 읽기 전용 힌트로 불필요한 변경 감지(diry checking) 최소화.
+* @Transactional(readOnly=true) + 읽기 전용 힌트로 불필요한 변경 감지(diry checking) 최소화.
 
 3) ✅ 결과(성능 지표)
 
-p95: ~780ms → 690ms (약 11.5%↓)
+* p95: ~780ms → 690ms (약 11.5%↓)
 
-평균 응답시간: 540ms → 480ms (약 11%↓)
+* 평균 응답시간: 540ms → 480ms (약 11%↓)
 
-TPS: +8~12% 증가
+* TPS: +8~12% 증가
 
 ---
 
