@@ -175,7 +175,7 @@ tomorrow
 
 ## ⚠️ 트러블슈팅 기록 (Troubleshooting)
 
-## 1. 🔐 JWT Refresh Token 처리 방식 개선
+## 🔐 JWT Refresh Token 처리 방식 개선
 
 1) 🔍 문제 상황
 
@@ -201,7 +201,7 @@ tomorrow
 
 ---
 
-## 2. ⚡️ 내일 추천 쿼리 개선
+## ⚡️ 내일 추천 쿼리 개선
 
 1) 🔍 문제 상황
 
