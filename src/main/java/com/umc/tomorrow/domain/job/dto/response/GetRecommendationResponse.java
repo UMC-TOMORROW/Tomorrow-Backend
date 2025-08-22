@@ -30,7 +30,7 @@ public class GetRecommendationResponse {
     private Boolean isTimeNegotiable;
 
     private Boolean isSalaryNegotiable;
-    private int salary;
+    private Integer salary;
     private PaymentType paymentType;
 
     private long reviewCount;
