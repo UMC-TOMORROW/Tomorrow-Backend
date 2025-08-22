@@ -18,4 +18,6 @@ public interface PreferenceService {
      * 희망 조건 수정
      */
     PreferencesDTO updatePreferences(Long userId, PreferencesDTO dto);
+
+    PreferencesDTO getPreferences(Long userId);
 } 

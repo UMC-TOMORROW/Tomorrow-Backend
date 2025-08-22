@@ -73,4 +73,16 @@ public class PreferenceServiceImpl implements PreferenceService {
         preferenceRepository.save(entity);
         return PreferenceConverter.toDTO(entity);
     }
+
+    /** 희망 조건 조회 */
+    @Transactional(readOnly = true)
+    public PreferencesDTO getPreferences(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
+
+        Preference entity = preferenceRepository.findByUser(user)
+                .orElseThrow(() -> new PreferenceException(PreferenceErrorStatus.PREFERENCE_NOT_FOUND));
+
+        return PreferenceConverter.toDTO(entity);
+    }
 } 

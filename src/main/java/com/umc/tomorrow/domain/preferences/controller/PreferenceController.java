@@ -15,6 +15,7 @@ import com.umc.tomorrow.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -57,5 +58,15 @@ public class PreferenceController {
         return ResponseEntity.ok(
             BaseResponse.onSuccess(Map.of("saved", true))
         );
+    }
+
+    @Operation(summary = "희망 조건 조회", description = "사용자의 희망 조건을 조회합니다.")
+    @GetMapping ResponseEntity<BaseResponse> getPreferences(
+            @AuthenticationPrincipal CustomOAuth2User user
+    ){
+        Long userId = user.getUserResponseDTO().getId();
+        PreferencesDTO dto = preferenceService.getPreferences(userId);
+
+        return ResponseEntity.ok(BaseResponse.onSuccess(dto));
     }
 } 
