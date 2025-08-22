@@ -13,9 +13,9 @@ import com.umc.tomorrow.domain.job.dto.response.GetRecommendationResponse;
 import com.umc.tomorrow.domain.job.dto.response.JobDetailResponseDTO;
 import com.umc.tomorrow.domain.job.entity.BusinessVerification;
 import com.umc.tomorrow.domain.job.entity.Job;
-import com.umc.tomorrow.domain.job.entity.WorkEnvironment;
 import com.umc.tomorrow.domain.job.enums.PostStatus;
 import com.umc.tomorrow.domain.job.exception.JobException;
+import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
 import com.umc.tomorrow.domain.job.repository.JobRecommendationJpaRepository;
 import com.umc.tomorrow.domain.job.repository.JobRepository;
 import com.umc.tomorrow.domain.member.entity.User;
@@ -31,14 +31,12 @@ import com.umc.tomorrow.domain.review.repository.ReviewRepository;
 import com.umc.tomorrow.domain.review.repository.ReviewRepository.JobReviewCount;
 import com.umc.tomorrow.global.common.exception.RestApiException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.umc.tomorrow.domain.job.exception.code.JobErrorStatus;
-
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -54,8 +52,7 @@ public class JobQueryServiceImpl implements JobQueryService {
 
     @Override
     public List<MyPostResponseDTO> getMyPosts(Long userId, String status) {
-        PostStatus postStatus;
-
+        final PostStatus postStatus;
         try {
             postStatus = PostStatus.from(status);
         } catch (IllegalArgumentException e) {
@@ -71,18 +68,14 @@ public class JobQueryServiceImpl implements JobQueryService {
 
     @Override
     public JobDetailResponseDTO getJobDetail(Long jobId) {
-
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RestApiException(JobErrorStatus.JOB_NOT_FOUND));
-
         return jobConverter.toJobDetailResponseDTO(job);
     }
-
 
     // 사업자 등록 정보 확인
     @Override
     public BusinessResponseDTO BusinessVerificationView(Long userId) {
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorStatus.MEMBER_NOT_FOUND));
 
@@ -102,14 +95,15 @@ public class JobQueryServiceImpl implements JobQueryService {
         Preference pref = preferenceRepository.findByUserId(userId)
                 .orElseThrow(() -> new PreferenceException(PreferenceErrorStatus.PREFERENCE_NOT_FOUND));
 
-        Set<PreferenceType> positives = pref.getPreferences(); // 유저가 true로 고른 항목들
+        // 사용자가 true로 고른 항목들
+        Set<PreferenceType> positives = pref.getPreferences();
         boolean hasHuman    = positives.contains(PreferenceType.HUMAN);
         boolean hasDelivery = positives.contains(PreferenceType.DELIVERY);
         boolean hasPhysical = positives.contains(PreferenceType.PHYSICAL);
         boolean hasSit      = positives.contains(PreferenceType.SIT);
         boolean hasStand    = positives.contains(PreferenceType.STAND);
 
-        // 전부 false면 추천 x
+        // 전부 false면 추천 X
         if (!(hasHuman || hasDelivery || hasPhysical || hasSit || hasStand)) {
             return GetRecommendationListResponse.builder()
                     .recommendationList(List.of())
@@ -119,32 +113,41 @@ public class JobQueryServiceImpl implements JobQueryService {
 
         // 1) 커서 점수 DB에서 계산
         Integer cursorScore = null;
+        Long cursorIdForQuery = cursorJobId;
+
         if (cursorJobId != null) {
             cursorScore = jobRecommendationJpaRepository.computeCursorScoreById(
                     cursorJobId, hasHuman, hasDelivery, hasPhysical, hasSit, hasStand
             );
-            if (cursorScore == null) cursorScore = 0;
-        }
-
-        // 2) 추천 조회
-        var page = jobRecommendationJpaRepository.findRecommendedByUser(
-                userId,
-                hasHuman, hasDelivery, hasPhysical, hasSit, hasStand,
-                cursorScore, cursorJobId,
-                size
-        );
-
-        // 3) 리뷰 카운트 일괄 조회 (N+1 제거)
-        List<Long> jobIds = page.stream().map(jws -> jws.getJob().getId()).toList();
-        Map<Long, Long> countMap = new HashMap<>();
-        if (!jobIds.isEmpty()) {
-            List<JobReviewCount> rows = reviewRepository.countByJobIdInGroupByJob(jobIds);
-            for (JobReviewCount row : rows) {
-                countMap.put(row.getJobId(), row.getCnt());
+            // 0점(또는 null) 커서는 키셋 모순을 만들므로 무시
+            if (cursorScore == null || cursorScore <= 0) {
+                cursorScore = null;
+                cursorIdForQuery = null;
             }
         }
 
-        // 4) 변환
+        // 2) 추천 조회 (+1 페치로 hasNext 계산)
+        var rows = jobRecommendationJpaRepository.findRecommendedByUser(
+                userId,
+                hasHuman, hasDelivery, hasPhysical, hasSit, hasStand,
+                cursorScore, cursorIdForQuery,
+                size + 1
+        );
+
+        boolean hasNext = rows.size() > size;
+        var page = hasNext ? rows.subList(0, size) : rows;
+
+        // 3) 리뷰 카운트 일괄 조회 (N+1 제거) - page 기준
+        List<Long> jobIds = page.stream().map(jws -> jws.getJob().getId()).toList();
+        Map<Long, Long> countMap = new HashMap<>();
+        if (!jobIds.isEmpty()) {
+            List<JobReviewCount> reviewRows = reviewRepository.countByJobIdInGroupByJob(jobIds);
+            for (JobReviewCount r : reviewRows) {
+                countMap.put(r.getJobId(), r.getCnt());
+            }
+        }
+
+        // 4) 변환 (page 기준)
         List<GetRecommendationResponse> responseList = page.stream()
                 .map(jws -> jobConverter.toRecommendationResponse(
                         jws.getJob(),
@@ -154,7 +157,7 @@ public class JobQueryServiceImpl implements JobQueryService {
 
         return GetRecommendationListResponse.builder()
                 .recommendationList(responseList)
-                .hasNext(page.size() == size)
+                .hasNext(hasNext)
                 .build();
     }
 }
