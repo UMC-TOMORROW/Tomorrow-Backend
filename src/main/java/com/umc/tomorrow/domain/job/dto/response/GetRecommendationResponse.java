@@ -29,6 +29,7 @@ public class GetRecommendationResponse {
     private LocalTime workEnd;     // 조건부 포함
     private Boolean isTimeNegotiable;
 
+    private Boolean isSalaryNegotiable;
     private int salary;
     private PaymentType paymentType;
 
