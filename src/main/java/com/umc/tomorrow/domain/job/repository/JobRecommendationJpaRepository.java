@@ -16,6 +16,41 @@ public class JobRecommendationJpaRepository {
 
     private final EntityManager em;
 
+    /** ---- 유틸 ---- */
+    private String buildScoreExpr(boolean hasHuman, boolean hasDelivery, boolean hasPhysical, boolean hasSit, boolean hasStand) {
+        StringBuilder score = new StringBuilder();
+        int termCount = 0;
+
+        if (hasHuman)    { if (termCount++ > 0) score.append(" + "); score.append("(CASE WHEN we.canCommunicate   = true THEN 1 ELSE 0 END)"); }
+        if (hasDelivery) { if (termCount++ > 0) score.append(" + "); score.append("(CASE WHEN we.canCarryObjects  = true THEN 1 ELSE 0 END)"); }
+        if (hasPhysical) { if (termCount++ > 0) score.append(" + "); score.append("(CASE WHEN we.canMoveActively  = true THEN 1 ELSE 0 END)"); }
+        if (hasSit)      { if (termCount++ > 0) score.append(" + "); score.append("(CASE WHEN we.canWorkSitting   = true THEN 1 ELSE 0 END)"); }
+        if (hasStand)    { if (termCount++ > 0) score.append(" + "); score.append("(CASE WHEN we.canWorkStanding  = true THEN 1 ELSE 0 END)"); }
+
+        return score.toString();
+    }
+
+    private List<String> buildNegatives(boolean hasHuman, boolean hasDelivery, boolean hasPhysical, boolean hasSit, boolean hasStand) {
+        // 체크하지 않은 항목은 false 라고 가정(= NULL도 false로 본다)
+        List<String> negatives = new ArrayList<>(5);
+        if (!hasHuman)    negatives.add("coalesce(we.canCommunicate,  false) = false");
+        if (!hasDelivery) negatives.add("coalesce(we.canCarryObjects, false) = false");
+        if (!hasPhysical) negatives.add("coalesce(we.canMoveActively, false) = false");
+        if (!hasSit)      negatives.add("coalesce(we.canWorkSitting,  false) = false");
+        if (!hasStand)    negatives.add("coalesce(we.canWorkStanding, false) = false");
+        return negatives;
+    }
+
+    private int countScoreTerms(boolean hasHuman, boolean hasDelivery, boolean hasPhysical, boolean hasSit, boolean hasStand) {
+        int c = 0;
+        if (hasHuman) c++;
+        if (hasDelivery) c++;
+        if (hasPhysical) c++;
+        if (hasSit) c++;
+        if (hasStand) c++;
+        return c;
+    }
+
     /**
      * 커서 공고의 score를 DB에서 직접 계산 (엔티티 로딩/LAZY 회피)
      */
@@ -27,22 +62,14 @@ public class JobRecommendationJpaRepository {
             boolean hasSit,
             boolean hasStand
     ) {
-        // 사용자가 true로 고른 항목만 더하는 경량 scoreExpr
-        StringBuilder score = new StringBuilder();
-        int termCount = 0;
-        if (hasHuman)    { if (termCount++ > 0) score.append("+"); score.append("(CASE WHEN we.canCommunicate   = true THEN 1 ELSE 0 END)"); }
-        if (hasDelivery) { if (termCount++ > 0) score.append("+"); score.append("(CASE WHEN we.canCarryObjects  = true THEN 1 ELSE 0 END)"); }
-        if (hasPhysical) { if (termCount++ > 0) score.append("+"); score.append("(CASE WHEN we.canMoveActively  = true THEN 1 ELSE 0 END)"); }
-        if (hasSit)      { if (termCount++ > 0) score.append("+"); score.append("(CASE WHEN we.canWorkSitting   = true THEN 1 ELSE 0 END)"); }
-        if (hasStand)    { if (termCount++ > 0) score.append("+"); score.append("(CASE WHEN we.canWorkStanding  = true THEN 1 ELSE 0 END)"); }
-
-        if (termCount == 0) {
-            // 사용자가 아무것도 선택 안 했다면 score는 의미 없음(호출측에서 이미 빈 결과 처리)
+        if (countScoreTerms(hasHuman, hasDelivery, hasPhysical, hasSit, hasStand) == 0) {
             return 0;
         }
 
-        String jpql = "select " + score + " " +
-                "from Job j join j.workEnvironment we " +
+        String scoreExpr = buildScoreExpr(hasHuman, hasDelivery, hasPhysical, hasSit, hasStand);
+
+        String jpql = "select " + scoreExpr + " " +
+                "from Job j left join j.workEnvironment we " +
                 "where j.id = :cursorId";
 
         Query q = em.createQuery(jpql);
@@ -52,7 +79,7 @@ public class JobRecommendationJpaRepository {
     }
 
     public List<JobWithScore> findRecommendedByUser(
-            Long userId, // 현재 시그니처 유지 (사용 안 해도 OK)
+            Long userId, // 현재 시그니처 유지
             boolean hasHuman,
             boolean hasDelivery,
             boolean hasPhysical,
@@ -62,35 +89,19 @@ public class JobRecommendationJpaRepository {
             Long cursorId,       // 첫 페이지면 null
             int size
     ) {
-        // 1) 사용자가 true로 고른 항목만 더하는 scoreExpr 구성
-        StringBuilder score = new StringBuilder();
-        int termCount = 0;
-        if (hasHuman)    { if (termCount++ > 0) score.append("+"); score.append("(CASE WHEN we.canCommunicate   = true THEN 1 ELSE 0 END)"); }
-        if (hasDelivery) { if (termCount++ > 0) score.append("+"); score.append("(CASE WHEN we.canCarryObjects  = true THEN 1 ELSE 0 END)"); }
-        if (hasPhysical) { if (termCount++ > 0) score.append("+"); score.append("(CASE WHEN we.canMoveActively  = true THEN 1 ELSE 0 END)"); }
-        if (hasSit)      { if (termCount++ > 0) score.append("+"); score.append("(CASE WHEN we.canWorkSitting   = true THEN 1 ELSE 0 END)"); }
-        if (hasStand)    { if (termCount++ > 0) score.append("+"); score.append("(CASE WHEN we.canWorkStanding  = true THEN 1 ELSE 0 END)"); }
+        int termCount = countScoreTerms(hasHuman, hasDelivery, hasPhysical, hasSit, hasStand);
+        if (termCount == 0) return List.of();
 
-        if (termCount == 0) {
-            // 호출측에서 이미 빈 결과 처리하겠지만 안전장치
-            return List.of();
-        }
-
-        // 2) 사용자가 false로 고른 항목만 AND we.col = false 조건 추가 (OR 제거)
-        List<String> negatives = new ArrayList<>(5);
-        if (!hasHuman)    negatives.add("we.canCommunicate   = 0");
-        if (!hasDelivery) negatives.add("we.canCarryObjects  = 0");
-        if (!hasPhysical) negatives.add("we.canMoveActively  = 0");
-        if (!hasSit)      negatives.add("we.canWorkSitting   = 0");
-        if (!hasStand)    negatives.add("we.canWorkStanding  = 0");
-
+        String scoreExpr = buildScoreExpr(hasHuman, hasDelivery, hasPhysical, hasSit, hasStand);
+        List<String> negatives = buildNegatives(hasHuman, hasDelivery, hasPhysical, hasSit, hasStand);
 
         StringBuilder jpql = new StringBuilder();
-        jpql.append("select j, ").append(score).append(" as sc ")
-                .append("from Job j join j.workEnvironment we ");
+        jpql.append("select j, ").append(scoreExpr).append(" as sc ")
+                .append("from Job j left join j.workEnvironment we ");
 
-        // 2-1) 네거티브 필터
         boolean hasWhere = false;
+
+        // 네거티브 필터(선택 안 한 항목은 false여야 함; NULL도 false 취급)
         if (!negatives.isEmpty()) {
             jpql.append("where ");
             hasWhere = true;
@@ -100,22 +111,19 @@ public class JobRecommendationJpaRepository {
             }
         }
 
-        // 2-2) 최소 1개 이상 만족 (score >= 1) — scoreExpr이 0만 더할 수도 있으니 보장
-        if (termCount > 0) {
-            jpql.append(hasWhere ? " and " : " where ")
-                    .append("(").append(score).append(") >= 1 ");
-            hasWhere = true;
-        }
+        // 최소 1개 이상 만족 (score >= 1)
+        jpql.append(hasWhere ? " and " : " where ")
+                .append("(").append(scoreExpr).append(") >= 1 ");
+        hasWhere = true;
 
-        // 3) 키셋 페이징 (score DESC, id DESC)
+        // 키셋 페이징 (score DESC, id DESC)
         if (cursorScore != null && cursorId != null) {
-            jpql.append(hasWhere ? " and (" : " where (")
-                    .append("(").append(score).append(") < :cursorScore ")
-                    .append("or (").append(score).append(") = :cursorScore and j.id < :cursorId)) ");
+            jpql.append(" and ( (").append(scoreExpr).append(") < :cursorScore ")
+                    .append("or (").append(scoreExpr).append(") = :cursorScore and j.id < :cursorId ) ");
         }
 
-        // 4) 정렬
-        jpql.append(" order by ").append(score).append(" desc, j.id desc");
+        // 정렬
+        jpql.append(" order by ").append(scoreExpr).append(" desc, j.id desc");
 
         Query q = em.createQuery(jpql.toString());
         if (cursorScore != null && cursorId != null) {
