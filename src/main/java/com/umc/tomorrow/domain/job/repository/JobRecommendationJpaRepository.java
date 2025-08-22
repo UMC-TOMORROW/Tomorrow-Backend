@@ -78,11 +78,12 @@ public class JobRecommendationJpaRepository {
 
         // 2) 사용자가 false로 고른 항목만 AND we.col = false 조건 추가 (OR 제거)
         List<String> negatives = new ArrayList<>(5);
-        if (!hasHuman)    negatives.add("we.canCommunicate   = false");
-        if (!hasDelivery) negatives.add("we.canCarryObjects  = false");
-        if (!hasPhysical) negatives.add("we.canMoveActively  = false");
-        if (!hasSit)      negatives.add("we.canWorkSitting   = false");
-        if (!hasStand)    negatives.add("we.canWorkStanding  = false");
+        if (!hasHuman)    negatives.add("we.canCommunicate   = 0");
+        if (!hasDelivery) negatives.add("we.canCarryObjects  = 0");
+        if (!hasPhysical) negatives.add("we.canMoveActively  = 0");
+        if (!hasSit)      negatives.add("we.canWorkSitting   = 0");
+        if (!hasStand)    negatives.add("we.canWorkStanding  = 0");
+
 
         StringBuilder jpql = new StringBuilder();
         jpql.append("select j, ").append(score).append(" as sc ")
