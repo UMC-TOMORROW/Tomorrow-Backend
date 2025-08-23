@@ -57,7 +57,7 @@ public class JobRequestDTO {
             example = "12000",
             requiredMode = Schema.RequiredMode.REQUIRED)
 //    @NotNull(message = "{job.salary.notnull}")
-    @Min(value = 1, message = "{job.salary.min}")
+//    @Min(value = 1, message = "{job.salary.min}")
     private Integer salary;
 
     private Boolean isSalaryNegotiable = false;
