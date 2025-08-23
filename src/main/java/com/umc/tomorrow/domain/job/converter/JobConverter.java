@@ -177,13 +177,13 @@ public class JobConverter {
                 .title(job.getTitle())
                 .location(job.getLocation())
                 .isSalaryNegotiable(job.getIsSalaryNegotiable())
-                .salary(job.getIsSalaryNegotiable()? null: job.getSalary())
+                .salary(job.getSalary())
                 .paymentType(job.getPaymentType())
                 .isTimeNegotiable(job.getIsTimeNegotiable())
-                .workStart(job.getIsTimeNegotiable() ? null : job.getWorkStart())
-                .workEnd(job.getIsTimeNegotiable() ? null : job.getWorkEnd())
+                .workStart(job.getWorkStart())
+                .workEnd( job.getWorkEnd())
                 .isPeriodNegotiable(job.getIsPeriodNegotiable())
-                .workPeriod(job.getIsPeriodNegotiable() ? null : job.getWorkPeriod())
+                .workPeriod(job.getWorkPeriod())
                 .reviewCount(reviewCount)
                 .build();
     }
