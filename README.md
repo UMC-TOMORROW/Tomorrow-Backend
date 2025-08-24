@@ -162,8 +162,9 @@ tomorrow
 
 <h2>🎥 주요 기능 화면 및 시연 영상</h2>
 
-## 구인자 화면
+## 구인자 화면 & 온보딩
 <img src="https://github.com/user-attachments/assets/f9f1e513-5814-4243-8be2-12014e33e2d4" width="500"/>
+<img src="https://github.com/user-attachments/assets/fba26605-5e03-4070-947c-ad75cc0d7502" width="500"/>
 
 
 <p>
