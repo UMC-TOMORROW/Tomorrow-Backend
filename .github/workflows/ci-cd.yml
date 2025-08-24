@@ -37,52 +37,52 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/tomorrow:latest -f docker/Dockerfile .
           docker push ${{ secrets.DOCKER_USERNAME }}/tomorrow:latest
 
-     - name: Deploy on EC2 with Docker Compose (overwrite .env)
-  uses: appleboy/ssh-action@v1
-  with:
-    host: ${{ secrets.EC2_HOST }}
-    username: ${{ secrets.EC2_USER }}
-    key: ${{ secrets.EC2_KEY }}
-    port: 22
-    script_stop: true
-    script: |
-      set -euo pipefail
+      # 6. SSH 배포 (.env 덮어쓰기)
+      - name: Deploy on EC2 with Docker Compose (overwrite .env)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            set -euo pipefail
 
-      cd /home/***/Tomorrow-Backend
-      git pull origin develop
+            cd /home/***/Tomorrow-Backend
+            git pull origin develop
 
-      cd docker
+            cd docker
 
-      # 1) 새 파일로 만들고 원자적으로 교체 (.env.new -> .env)
-      cat > .env.new << 'ENVEOF'
-      SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}
-      SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-      DEV_DATABASE_URL=${{ secrets.DEV_DATABASE_URL }}
-      AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      MAILNAME=${{ secrets.MAILNAME }}
-      MAILPASSWORD=${{ secrets.MAILPASSWORD }}
-      KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
-      KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}
-      KAKAO_REST_SECRET=${{ secrets.KAKAO_REST_SECRET }}
-      NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}
-      NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}
-      GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-      GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-      GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }}
-      DEV_REDIS_HOST=${{ secrets.DEV_REDIS_HOST }}
-      DEV_REDIS_PASSWORD=${{ secrets.DEV_REDIS_PASSWORD }}
-      ENVEOF
+            # 1) 새 파일로 만들고 원자적으로 교체 (.env.new -> .env)
+            cat > .env.new << 'ENVEOF'
+            SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}
+            SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}
+            SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+            DEV_DATABASE_URL=${{ secrets.DEV_DATABASE_URL }}
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            MAILNAME=${{ secrets.MAILNAME }}
+            MAILPASSWORD=${{ secrets.MAILPASSWORD }}
+            KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
+            KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}
+            KAKAO_REST_SECRET=${{ secrets.KAKAO_REST_SECRET }}
+            NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}
+            NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }}
+            DEV_REDIS_HOST=${{ secrets.DEV_REDIS_HOST }}
+            DEV_REDIS_PASSWORD=${{ secrets.DEV_REDIS_PASSWORD }}
+            ENVEOF
 
-      # 권한 및 원자적 교체
-      chmod 600 .env.new
-      mv -f .env.new .env
+            chmod 600 .env.new
+            mv -f .env.new .env
 
-      # 2) 배포
-      docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            # 2) 배포
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-      # compose v1/v2 아무거나: 서버에 맞춰 사용
-      docker-compose down || docker compose down || true
-      docker-compose pull || docker compose pull
-      docker-compose up -d --build || docker compose up -d --build
+            # compose v1/v2 아무거나: 서버에 맞춰 사용
+            docker-compose down || docker compose down || true
+            docker-compose pull || docker compose pull
+            docker-compose up -d --build || docker compose up -d --build
