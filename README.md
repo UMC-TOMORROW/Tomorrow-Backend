@@ -171,11 +171,17 @@ tomorrow
 <img src="https://github.com/user-attachments/assets/e0846a1b-2c5e-4b50-9cb5-3cc693ce9e1d" width="500"/>
 
 ## 합/불 관리 및 합격 여부에 따른 이메일 발송
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/845eb0c6-c895-4c4c-b67b-242114beac16" height="420" alt="지원자 목록"/>
-  &nbsp;&nbsp;
-  <img src="https://github.com/user-attachments/assets/574c0c7c-29d0-4d0f-adb2-baa2c8203cda" height="420" alt="전형 결과 안내"/>
-</p>
+<table>
+  <tr>
+    <td valign="middle" align="center">
+      <img src="https://github.com/user-attachments/assets/845eb0c6-c895-4c4c-b67b-242114beac16" width="420" alt="지원자 목록"/>
+    </td>
+    <td valign="middle" align="center">
+      <img src="https://github.com/user-attachments/assets/574c0c7c-29d0-4d0f-adb2-baa2c8203cda" width="420" alt="전형 결과 안내"/>
+    </td>
+  </tr>
+</table>
+
 
 
 ## 커리어 담당자와의 실시간 채팅과 온보딩에 맞는 맞춤형 직업 추천까지!
