@@ -162,9 +162,22 @@ tomorrow
 
 <h2>🎥 주요 기능 화면 및 시연 영상</h2>
 
-## 구인자 화면 & 온보딩
+## 구인자 화면 & 맞춤형 온보딩
 <img src="https://github.com/user-attachments/assets/f9f1e513-5814-4243-8be2-12014e33e2d4" width="500"/>
 <img src="https://github.com/user-attachments/assets/fba26605-5e03-4070-947c-ad75cc0d7502" width="500"/>
+
+## 일자리 등록 및 공고 관리
+<img src="https://github.com/user-attachments/assets/a205b271-5027-4810-85d2-9c1efe685941" width="500"/>
+<img src="https://github.com/user-attachments/assets/e0846a1b-2c5e-4b50-9cb5-3cc693ce9e1d" width="500"/>
+
+## 합/불 관리 및 합격 여부에 따른 이메일 발송
+<img src="https://github.com/user-attachments/assets/845eb0c6-c895-4c4c-b67b-242114beac16" width="500"/>
+<img src="https://github.com/user-attachments/assets/574c0c7c-29d0-4d0f-adb2-baa2c8203cda" width="500"/>
+
+## 커리어 담당자와의 실시간 채팅과 온보딩에 맞는 맞춤형 직업 추천까지!
+<img src="https://github.com/user-attachments/assets/acc935d4-5097-47c5-a985-4b50fa3696c3" width="500"/>
+<img src="https://github.com/user-attachments/assets/f82825e4-e82d-4e5d-9579-5643d7a274e2" width="500"/>
+
 
 
 <p>
