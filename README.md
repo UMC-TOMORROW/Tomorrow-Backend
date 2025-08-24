@@ -160,11 +160,13 @@ tomorrow
 
 
 
-<h2>🎥 시연 영상 및 배포 주소</h2>
+<h2>🎥 주요 기능 화면 및 시연 영상</h2>
+
+## 구인자 화면
+<img src="https://github.com/user-attachments/assets/f9f1e513-5814-4243-8be2-12014e33e2d4" width="500"/>
+
+
 <p>
-  <a href="https://umctomorrow.shop/" target="_blank">
-    <img src="https://img.shields.io/badge/서비스-바로가기-4CAF50?style=for-the-badge&logo=google-chrome&logoColor=white">
-  </a>
   <a href="https://www.youtube.com/watch?v=90jnHS6DWto&feature=youtu.be" target="_blank">
     <img src="https://img.shields.io/badge/시연영상-유튜브-red?style=for-the-badge&logo=youtube&logoColor=white">
   </a>
