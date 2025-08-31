@@ -190,7 +190,7 @@ tomorrow
 
 
 
-[![시연 영상 바로가기](https://www.youtube.com/watch?v=_yVH2V30CU4)](https://www.youtube.com/watch?v=IY32V1HoiFE)
+[![시연 영상 바로가기](https://www.youtube.com/watch?v=_yVH2V30CU4)](https://www.youtube.com/watch?v=_yVH2V30CU4)
 
 
 ## ⚠️ 트러블슈팅 기록 (Troubleshooting)
