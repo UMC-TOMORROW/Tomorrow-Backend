@@ -190,13 +190,7 @@ tomorrow
 
 
 
-<p>
-  <a href="https://www.youtube.com/watch?v=_yVH2V30CU4" target="_blank">
-    <img src="https://img.shields.io/badge/시연영상-유튜브-red?style=for-the-badge&logo=youtube&logoColor=white">
-  </a>
-</p>
-
-
+[![시연 영상 바로가기](https://www.youtube.com/watch?v=_yVH2V30CU4)](https://www.youtube.com/watch?v=IY32V1HoiFE)
 
 
 ## ⚠️ 트러블슈팅 기록 (Troubleshooting)
