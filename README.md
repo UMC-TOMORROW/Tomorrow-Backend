@@ -190,7 +190,7 @@ tomorrow
 
 
 * 시연 영상
-  ---
+----
 [![시연 영상 바로가기](https://img.youtube.com/vi/_yVH2V30CU4/0.jpg)](https://www.youtube.com/watch?v=_yVH2V30CU4)
 
 
