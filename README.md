@@ -189,7 +189,7 @@ tomorrow
 <img src="https://github.com/user-attachments/assets/f82825e4-e82d-4e5d-9579-5643d7a274e2" width="500"/>
 
 
-* 시연 영상
+## * 시연 영상
 ----
 [![시연 영상 바로가기](https://img.youtube.com/vi/_yVH2V30CU4/0.jpg)](https://www.youtube.com/watch?v=_yVH2V30CU4)
 
